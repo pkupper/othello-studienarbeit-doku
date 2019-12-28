@@ -1,1 +1,16 @@
 \section{Suchbäume}
+
+Gesucht ist eine Abfolge von Aktionen, die zum Sieg des Spiels führen.
+Zur Darstellung kann ein Suchbaum verwendet werden, dessen Wurzel gleich dem Startzustand des Spiels ist.
+Die Zweige des Baums stellen Aktionen dar, die zu einem neuen Knoten, also einem neuen Spielzustand, führen.
+Jeder Knoten kann so erweitert werden, dass für jeden möglichen Spielzug, also jede Aktion, ein Zweig zu einem neuen Knoten, also zu einem neuen Spielzustand, führt.
+Dieser Baum kann nach einem bestimmten Zustand durchsucht werden, der das gegebene Problem löst.
+Die Vorgehensweise dabei ist, zunächst eine Option zu untersuchen und erst falls diese nicht zu einer Lösung des Problems führt, die übrigen Optionen in Betracht zu ziehen.
+\cite[S.~75]{ai2010russel}
+
+Im allgemeinen Fall können Zustände mehrfach im Suchbaum auftreten.
+Das passiert, wenn Spielzüge rückgängig gemacht werden können, beispielsweise können im Schach manche Figuren auf das vorherige Feld zurückgestellt werden.
+Für diese Spiele ist es sinnvoll, zyklische Pfade auszuschließen. %TODO: Graph statt Baum?
+Dadurch wird verhindert, dass durch beliebig viele Wiederholungen eine unendliche Menge an Pfaden entsteht.
+\cite[S.~75]{ai2010russel}
+In dem Spiel Othello kann allerdings kein Zustand mehrfach auftreten, da nach jedem Spielzug ein Spielstein mehr auf dem Feld liegt und Spielsteine nicht wieder weggenommen werden können.
