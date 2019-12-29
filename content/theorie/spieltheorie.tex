@@ -20,7 +20,13 @@ Bei einem Nullsummenspiel handelt es sich um ein Spiel, bei dem das Ergebnis bei
 Beim Schach bekommt z.B. der Gewinner einen Punkt und der Verlierer keinen Punkt, bei einem Unentschieden bekommen beide Spieler einen halben Punkt.
 Die Summe beträgt also immer eins.
 In Othello können am Ende des Spiels für jeden Spieler die belegten Felder gezählt werden.
-Da sich die Anzahl der Gesamtfelder nicht ändert, beträgt die Summe der Punkte beider Spieler bei einer Spielfeldgröße von 8x8 immer 64 und somit handelt es sich beid Othello um ein Nullsummenspiel.
+Da sich die Anzahl der Gesamtfelder nicht ändert, beträgt die Summe der Punkte beider Spieler bei einer Spielfeldgröße von 8x8 immer 64 und somit handelt es sich bei Othello um ein Nullsummenspiel.
 Bei einem Spiel mit perfekter Information können beide Spieler zu jeder Zeit den kompletten Zustand des Spiels einsehen.
 Anders als bei vielen Kartenspielen, in denen die Karten der Gegenspieler unbekannt sind, ist das in Othello der Fall.
 \cite[S.~161f.]{ai2010russel}
+
+Ein 6-Tupel $\langle S_0, Player(s), Actions(s), Result(s, a), TerminalTest(s), Utility(s, p) \rangle$ stellt ein solches Spiel dar, wenn gilt:
+\begin{enumerate}
+    \item $S_0$ ist der Anfangszustand zu Beginn des Spiels.
+    \item $Player(s)$ ist eine Funktion, die einen Spielzustand als Parameter bekommt und für diesen den Spieler, der an der Reihe ist zurück gibt.
+\end{enumerate}
