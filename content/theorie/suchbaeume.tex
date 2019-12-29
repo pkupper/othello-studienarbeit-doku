@@ -1,16 +1,26 @@
 \section{Suchbäume}
 
-Gesucht ist eine Abfolge von Aktionen, die zum Sieg des Spiels führen.
-Zur Darstellung kann ein Suchbaum verwendet werden, dessen Wurzel gleich dem Startzustand des Spiels ist.
+Ein Suchproblem in einem Spiel hat als Lösung eine Abfolge von Aktionen, die zum Sieg des Spiels führen.
+Zur Darstellung kann ein Baum verwendet werden, dessen Wurzel gleich dem Startzustand des Spiels ist.
 Die Zweige des Baums stellen Aktionen dar, die zu einem neuen Knoten, also einem neuen Spielzustand, führen.
 Jeder Knoten kann so erweitert werden, dass für jeden möglichen Spielzug, also jede Aktion, ein Zweig zu einem neuen Knoten, also zu einem neuen Spielzustand, führt.
 Dieser Baum kann nach einem bestimmten Zustand durchsucht werden, der das gegebene Problem löst.
 Die Vorgehensweise dabei ist, zunächst eine Option zu untersuchen und erst falls diese nicht zu einer Lösung des Problems führt, die übrigen Optionen in Betracht zu ziehen.
 \cite[S.~75]{ai2010russel}
 
-Im allgemeinen Fall können Zustände mehrfach im Suchbaum auftreten.
+In einem Spiel können die Züge des Gegners nicht beeinflusst werden.
+Deswegen ist nicht nur ein Pfad von Aktionen interessant, sondern eine sogenannte Strategie, die nach dem ersten Zug alle möglichen Reaktionen des Gegners betrachtet.
+\cite[S.~163]{ai2010russel}
+
+Im allgemeinen Fall können Zustände mehrfach im Baum auftreten.
 Das passiert, wenn Spielzüge rückgängig gemacht werden können, beispielsweise können im Schach manche Figuren auf das vorherige Feld zurückgestellt werden.
 Für diese Spiele ist es sinnvoll, zyklische Pfade auszuschließen. %TODO: Graph statt Baum?
 Dadurch wird verhindert, dass durch beliebig viele Wiederholungen eine unendliche Menge an Pfaden entsteht.
 \cite[S.~75]{ai2010russel}
 In dem Spiel Othello kann allerdings kein Zustand mehrfach auftreten, da nach jedem Spielzug ein Spielstein mehr auf dem Feld liegt und Spielsteine nicht wieder weggenommen werden können.
+
+Der Baum eines gesamten Spiels kann je nach Spiel sehr groß sein.
+Für das Spiel Othello besteht der Baum aus schätzungsweise $10^{54}$ Knoten %TODO: Quelle (https://en.wikipedia.org/wiki/Computer_Othello)
+Der Spielbaum muss also als theoretisches Konstrukt betrachtet werden und kann nicht komplett dargestellt werden.
+Ein Suchbaum ist ein Baum, der auf den Spielbaum aufgesetzt ist, jedoch nur die für die Entscheidung relevanten Knoten betrachtet.
+\cite[S.~162f.]{ai2010russel}
