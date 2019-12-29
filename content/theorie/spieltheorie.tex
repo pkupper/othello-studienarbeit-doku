@@ -25,8 +25,12 @@ Bei einem Spiel mit perfekter Information können beide Spieler zu jeder Zeit de
 Anders als bei vielen Kartenspielen, in denen die Karten der Gegenspieler unbekannt sind, ist das in Othello der Fall.
 \cite[S.~161f.]{ai2010russel}
 
-Ein 6-Tupel $\langle S_0, Player(s), Actions(s), Result(s, a), TerminalTest(s), Utility(s, p) \rangle$ stellt ein solches Spiel dar, wenn gilt:
+Formal besteht ein Spiel aus folgenden sechs Elementen:
 \begin{enumerate}
     \item $S_0$ ist der Anfangszustand zu Beginn des Spiels.
-    \item $Player(s)$ ist eine Funktion, die einen Spielzustand als Parameter bekommt und für diesen den Spieler, der an der Reihe ist zurück gibt.
+    \item $Player(s)$ ist eine Funktion, die einen Spielzustand $s$ den Spieler berechnet, der gerade an der Reihe ist.
+    \item $Actions(s)$ ist eine Funktion, die für einen Spielzustand $s$ alle gültigen Züge berechnet.
+    \item $Result(s, a)$ ist eine Funktion, die für einen Spielzustand $s$ und eine Aktion, also einen Spielzug $a$ einen neuen Spielzustand berechnet.
+    \item $TerminalTest(s)$ ist eine Funktion, die für einen Spielzustand $s$ berechnet, ob das Spiel vorbei ist oder nicht. Zustände, an denen das Spiel vorbei ist, werden Endzustände genannt.
+    \item $Utility(s, p)$ ist eine Funktion, die für einen Endzustand $s$ ein numerisches Endergebnis für den Spieler $p$ berechnet.
 \end{enumerate}
