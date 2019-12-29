@@ -1,1 +1,12 @@
 \section{Der Minimax-Algorithmus}
+
+Minimax ist ein Algorithmus zur Bestimmung des optimalen Spielzugs in einem deterministischen, rundenbasierten, zwei-Spieler Nullsummenspiel mit perfekter Information.
+
+Dabei wird der Spielbaum des Spiels rekursiv durch eine Tiefensuche durchsucht und an jedem Knoten jeweils Zug mit dem größten Nutzen, für den Spieler der am Zug ist ausgewählt.
+Die Rekursion wird bis zu den Blatt-Knoten des Spielbaums durchgeführt, an denen der Nutzen für alle Spieler bekannt ist - das Spielergebnis.
+Dadurch lässt sich der gegen einen optimal spielenden Gegner beste Zug für den aktuellen Spielzustand bestimmen.
+
+Bei vielen praktisch relevanten Spielen ist es aufgrund der Größe des Suchbaums nicht möglich diesen vollständing zu durchsuchen.
+In der Praxis kann der Suchbaum deshalb häufig nur bis zu einer begrenzten Tiefe durchsucht werden. An diesem Punkt kommt eine Heuristik zum Einsatz um den Nutzen des Spielzustands für einen Spieler anzunähern.
+
+Die Angewandte Heuristik ist vom Spiel abhängig.
