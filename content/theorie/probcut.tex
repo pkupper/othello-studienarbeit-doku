@@ -1,1 +1,8 @@
 \section{ProbCut}
+
+Der Minimax-Algorithmus erfordert das Durchsuchen des kompletten Spielbaums.
+Die Optimierung durch die Alpha-Beta-Suche ermöglicht das Weglassen von Teilen des Spielbaums, aber da auch hier der korrekte Minimax-Wert berechnet werden muss, kann der Baum nur rückwärts reduziert werden.
+
+ProbCut erweitert die Alpha-Beta-Suche durch eine statische Betrachtung, wodurch Zweige, die wahrscheinlich nicht zum besten Ergebnis führen, auch vorwärts weggelassen werden können.
+Diese Verkleinerungen des Baums werden "`probabilistic forward cuts"' genannt.
+\cite[S.~1]{probcut}
