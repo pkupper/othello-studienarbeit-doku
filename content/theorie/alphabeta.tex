@@ -1,4 +1,14 @@
-\section{Alpha-Beta-Suche}
+\section{Alpha-Beta-Pruning}
 
-Die Alpha-Beta-Suche ist eine Optimierung des Minimax Algorithmus, bei der komplette Zweige des Suchbaums ausgeschlossen werden können, da sie das Ergebnis des Algorithmus' nicht beeinflussen können.
+Die Alpha-Beta-Pruning ist eine Optimierung des Minimax Algorithmus, bei der komplette Zweige des Suchbaums ausgeschlossen werden können, die das Ergebnis des Algorithmus' nicht mehr beeinflussen können.
 Ein Zweig kann ausgeschlossen werden, wenn für einen Spieler bereits ein Zug mit einem größeren Nutzen gefunden wurde, als bei dem zu betrachtenden Zweig maximal noch erzielbar ist.
+
+Durch Anwendung von Alpha-Beta-Pruning wird das Ergenis des Minimax Algorithmus' nicht beeinflusst. Jeoch kann durch die Betrachtung einer geringeren Zahl von Knoten die Performanz signifikant verbessert werden.
+
+Bei einer nicht vollständingen Alpha-Beta-Suche, unter Anwendung einer heuristischen Evaluations-Funktion kann gegenüber dem Minimax Algorithmus die maximale Suchtiefe bei gleicher Rechenzeit erhöht werden, was zu einem besseren Ergebnis führt.
+
+Da Alpha-Beta-Pruning nur dann Zweige ausschließen kann, wenn bereits bessere Zweige betrachtet wurden ist es von Vorteil, die Zweige in der Reihenfolge absteigenden Nutzens zu betrachten, da so die Anzahl der ausgeschlossenen
+Zweige maximiert werden kann.
+Dies ist jedoch in der Praxis nicht optimal möglich, da dafür ja bereits eine korrekte Bewertung der Züge stattgefunden haben muss, was die Anwendung der Alpha-Beta Suche überflüssig machet.
+Eine ungefähre Anordnung der Züge, die dennoch zu einer wesentlichen Effizienzverbesserung führt ist jedoch häufig möglich. Beispielsweise können beim Schach Züge in denen eine gegnerische Figur
+geschlagen wird priorisiert werden, und beim Othello Züge in den Ecken und am Rand des Spielfelds, gegenüber denen in der Mitte bevorzugt werden.
