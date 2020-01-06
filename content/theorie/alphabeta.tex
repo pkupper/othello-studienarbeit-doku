@@ -1,9 +1,14 @@
 \section{Alpha-Beta-Pruning}
 
 Die Alpha-Beta-Pruning ist eine Optimierung des Minimax Algorithmus, bei der komplette Zweige des Suchbaums ausgeschlossen werden können, die das Ergebnis des Algorithmus' nicht mehr beeinflussen können.
-Ein Zweig kann ausgeschlossen werden, wenn für einen Spieler bereits ein Zug mit einem größeren Nutzen gefunden wurde, als bei dem zu betrachtenden Zweig maximal noch erzielbar ist.
+Ein Zweig kann dann ausgeschlossen werden, wenn für den Spieler am Zug bereits ein Zug mit einem größeren Nutzen gefunden wurde, als bei dem zu betrachtenden Zweig maximal noch erzielbar ist.
 
-Durch Anwendung von Alpha-Beta-Pruning wird das Ergenis des Minimax Algorithmus' nicht beeinflusst. Jeoch kann durch die Betrachtung einer geringeren Zahl von Knoten die Performanz signifikant verbessert werden.
+Erreicht wird dies durch zwei variablen Alpha und Beta die jeweils für den maximierenden und den minimierenden Spieler den garantierten Nutzen representieren den diese selbst bei einem optimal spielenden Gegner
+erreichen können. Alpha und Beta werden zu Beginn mit dem jeweils schlechtmöglichsten Nutzen, also -Unendlich und Unendlich, initialisiert und an die rekursiven Funktionsaufrufe weitergegeben und, falls ein besserer Zug
+für einen der Spieler auftaucht, aktualisiert.
+Ist Beta < Alpha, d.h. sowohl der maximierende als auch der minimierende Spieler können bereits einen für sich jeweils besseren Zug forcieren, so muss der Zweig nicht weiter beachtet werden, da er bei optimalem Spiel nicht auftritt.
+
+Durch Anwendung von Alpha-Beta-Pruning wird das Ergenis des Minimax Algorithmus' nicht beeinflusst. Jedoch kann durch die Betrachtung einer geringeren Zahl von Knoten die Performanz signifikant verbessert werden.
 
 Bei einer nicht vollständingen Alpha-Beta-Suche, unter Anwendung einer heuristischen Evaluations-Funktion kann gegenüber dem Minimax Algorithmus die maximale Suchtiefe bei gleicher Rechenzeit erhöht werden, was zu einem besseren Ergebnis führt.
 
