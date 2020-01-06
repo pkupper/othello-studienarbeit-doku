@@ -3,17 +3,17 @@
 Die Alpha-Beta-Pruning ist eine Optimierung des Minimax Algorithmus, bei der komplette Zweige des Suchbaums ausgeschlossen werden können, die das Ergebnis des Algorithmus' nicht mehr beeinflussen können.
 Ein Zweig kann dann ausgeschlossen werden, wenn für den Spieler am Zug bereits ein Zug mit einem größeren Nutzen gefunden wurde, als bei dem zu betrachtenden Zweig maximal noch erzielbar ist.
 
-Erreicht wird dies durch zwei variablen Alpha und Beta die jeweils für den maximierenden und den minimierenden Spieler den garantierten Nutzen representieren den diese selbst bei einem optimal spielenden Gegner
+Erreicht wird dies durch zwei variablen Alpha und Beta die jeweils für den maximierenden und den minimierenden Spieler den garantierten Nutzen repräsentieren den diese selbst bei einem optimal spielenden Gegner
 erreichen können. Alpha und Beta werden zu Beginn mit dem jeweils schlechtmöglichsten Nutzen, also -Unendlich und Unendlich, initialisiert und an die rekursiven Funktionsaufrufe weitergegeben und, falls ein besserer Zug
 für einen der Spieler auftaucht, aktualisiert.
 Ist Beta < Alpha, d.h. sowohl der maximierende als auch der minimierende Spieler können bereits einen für sich jeweils besseren Zug forcieren, so muss der Zweig nicht weiter beachtet werden, da er bei optimalem Spiel nicht auftritt.
 
-Durch Anwendung von Alpha-Beta-Pruning wird das Ergenis des Minimax Algorithmus' nicht beeinflusst. Jedoch kann durch die Betrachtung einer geringeren Zahl von Knoten die Performanz signifikant verbessert werden.
+Durch Anwendung von Alpha-Beta-Pruning wird das Ergebnis des Minimax Algorithmus' nicht beeinflusst. Jedoch kann durch die Betrachtung einer geringeren Zahl von Knoten die Performanz signifikant verbessert werden.
 
-Bei einer nicht vollständingen Alpha-Beta-Suche, unter Anwendung einer heuristischen Evaluations-Funktion kann gegenüber dem Minimax Algorithmus die maximale Suchtiefe bei gleicher Rechenzeit erhöht werden, was zu einem besseren Ergebnis führt.
+Bei einer nicht vollständigen Alpha-Beta-Suche, unter Anwendung einer heuristischen Evaluations-Funktion kann gegenüber dem Minimax Algorithmus die maximale Suchtiefe bei gleicher Rechenzeit erhöht werden, was zu einem besseren Ergebnis führt.
 
 Da Alpha-Beta-Pruning nur dann Zweige ausschließen kann, wenn bereits bessere Zweige betrachtet wurden ist es von Vorteil, die Zweige in der Reihenfolge absteigenden Nutzens zu betrachten, da so die Anzahl der ausgeschlossenen
 Zweige maximiert werden kann.
-Dies ist jedoch in der Praxis nicht optimal möglich, da dafür ja bereits eine korrekte Bewertung der Züge stattgefunden haben muss, was die Anwendung der Alpha-Beta Suche überflüssig machet.
+Dies ist jedoch in der Praxis nicht optimal möglich, da dafür ja bereits eine korrekte Bewertung der Züge stattgefunden haben muss, was die Anwendung der Alpha-Beta Suche überflüssig macht.
 Eine ungefähre Anordnung der Züge, die dennoch zu einer wesentlichen Effizienzverbesserung führt ist jedoch häufig möglich. Beispielsweise können beim Schach Züge in denen eine gegnerische Figur
 geschlagen wird priorisiert werden, und beim Othello Züge in den Ecken und am Rand des Spielfelds, gegenüber denen in der Mitte bevorzugt werden.
