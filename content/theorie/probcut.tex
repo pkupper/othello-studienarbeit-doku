@@ -12,7 +12,7 @@ Ob das der Fall ist ist jedoch in der Regel erst nach Anwendung des Alpha-Beta A
 
 ProbCut stellt einen statistischen Zusammenhang zwischen dem Minimax Wert einer tieferen Suche der Tiefe \(d\) und dem Wert einer flacheren Suche der Tiefe \(d'<d\) her.
 Anhand des Minimax Werts der flachen Suche wird bestimmt ob der Wert der tiefen Suche mit einer gegebenen Wahrscheinlichkeit \(p\) außerhalb des Alpha-Beta Fensters liegt.
-Ist dies der Fall so wird bereits nach der flachen Suche abgebrochen, sodass die Tiefe Suche nicht mehr durchgeführt werden muss.
+Ist dies der Fall, so wird bereits nach der flachen Suche abgebrochen, sodass die Tiefe Suche nicht mehr durchgeführt werden muss.
 
 Dazu verwendet ProbCut ein lineares statistisches Modell \(v=a*v'+b+e\) wobei \(v\) der Minimax Wert der tiefen Suche, \(v'\) der Minimax Wert der flachen Suche, \(a\) und \(b\) konstanten und \(e\) eine normalverteilte Fehlervariable ist.
 \(a\) und \(b\) werden im Vorraus so gewählt dass die Standardabweichung \(\sigma\) von \(e\) möglichst gering ist.
@@ -25,7 +25,7 @@ und
 
 \(v>=\beta\) genau dann wenn \(v'>=(-\Phi^{-1}(p)*\sigma+\beta-b)/a\)
 
-Trifft nach der flachen Suche einer der beiden Fälle auf der rechten Seite ein, so wird keine tiefe Suche durchgeführt, da \(v\) nach der linken Seite min Wahrscheinlichkeit \(p\) außerhalb des Alpha-Beta Fensters liegt
+Trifft nach der flachen Suche einer der beiden Fälle auf der rechten Seite ein, so wird keine tiefe Suche durchgeführt, da \(v\) nach der linken Seite mit Wahrscheinlichkeit \(p\) außerhalb des Alpha-Beta Fensters liegt
 und somit nicht relevant ist.
 
 Wie auch beim Alpha-Beta Algorithmus ergibt sich der Vorteil von ProbCut durch die Zeitersparnis, die durch das Weglassen von Zweigen erreicht wird. Dadurch kann die Suchtiefe bei den relevanten Zweigen erhöht werden.
