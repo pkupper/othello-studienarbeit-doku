@@ -6,24 +6,24 @@ Die Optimierung des Algorithmus durch die Alpha-Beta-Suche ermöglicht zwar das 
 ProbCut erweitert die Alpha-Beta-Suche durch eine statistische Betrachtung, wobei auch Zweige, die nur mit einer bestimmten Wahrscheinlichkeit nicht zu einer Veränderung des Ergebnisses beitragen, weggelassen werden können.
 Die mithilfe von ProbCut durchgeführten Verkleinerungen des Baums werden "`probabilistic forward cuts"' genannt.
 
-Ein Zug ist dann für die Entscheidung irrelevant, wenn dessen Minimax Wert außerhalb des Alpha-Beta Fensters, dh. außerhalb des Intervalls \([\alpha,\beta]\) liegt, da dieser Zug von beiden Spielern umgangen wird und deshalb im Spiel nicht auftritt.
+Ein Zug ist dann für die Entscheidung irrelevant, wenn dessen Minimax Wert außerhalb des Alpha-Beta Fensters, d.h. außerhalb des Intervalls \([\alpha,\beta]\) liegt, da dieser Zug von beiden Spielern umgangen wird und deshalb im Spiel nicht auftritt.
 Dies entspricht der Abbruchbedingung beim Alpha-Beta Algorithmus.
-Ob das der Fall ist ist jedoch in der Regel erst nach Anwendung des Alpha-Beta Algorithmus' mit der maximal gewünschten Suchtiefe bekannt.
+Ob das der Fall ist, ist jedoch in der Regel erst nach Anwendung des Alpha-Beta Algorithmus' mit der maximal gewünschten Suchtiefe bekannt.
 
 ProbCut stellt einen statistischen Zusammenhang zwischen dem Minimax Wert einer tieferen Suche der Tiefe \(d\) und dem Wert einer flacheren Suche der Tiefe \(d'<d\) her.
 Anhand des Minimax Werts der flachen Suche wird bestimmt ob der Wert der tiefen Suche mit einer gegebenen Wahrscheinlichkeit \(p\) außerhalb des Alpha-Beta Fensters liegt.
 Ist dies der Fall, so wird bereits nach der flachen Suche abgebrochen, sodass die Tiefe Suche nicht mehr durchgeführt werden muss.
 
-Dazu verwendet ProbCut ein lineares statistisches Modell \(v=a*v'+b+e\) wobei \(v\) der Minimax Wert der tiefen Suche, \(v'\) der Minimax Wert der flachen Suche, \(a\) und \(b\) konstanten und \(e\) eine normalverteilte Fehlervariable ist.
-\(a\) und \(b\) werden im Vorraus so gewählt dass die Standardabweichung \(\sigma\) von \(e\) möglichst gering ist.
+Dazu verwendet ProbCut ein lineares statistisches Modell \(v=a*v'+b+e\), wobei \(v\) der Minimax Wert der tiefen Suche, \(v'\) der Minimax Wert der flachen Suche, \(a\) und \(b\) reelle Konstanten und \(e\) eine normalverteilte Fehlervariable ist.
+\(a\) und \(b\) werden im Vorraus so gewählt, dass die Standardabweichung \(\sigma^{2}\) von \(e\) möglichst gering ist.
 
-Daraus lässt sich herleiten dass mit einer Wahrscheinlichkeit von mindestens \(p\) gilt:
+Daraus lässt sich herleiten, dass mit einer Wahrscheinlichkeit von mindestens \(p\) gilt:
 
-\(v<=\alpha\) genau dann wenn \(v'<=(\Phi^{-1}(p)*\sigma+\alpha-b)/a\)
+\(v\leq\alpha \iff v'\leq\frac{\Phi^{-1}(p)*\sigma+\alpha-b}{a}\)
 
 und
 
-\(v>=\beta\) genau dann wenn \(v'>=(-\Phi^{-1}(p)*\sigma+\beta-b)/a\)
+\(v\geq\beta\ \iff v'\geq\frac{-\Phi^{-1}(p)*\sigma+\beta-b}{a}\)
 
 Trifft nach der flachen Suche einer der beiden Fälle auf der rechten Seite ein, so wird keine tiefe Suche durchgeführt, da \(v\) nach der linken Seite mit Wahrscheinlichkeit \(p\) außerhalb des Alpha-Beta Fensters liegt
 und somit nicht relevant ist.
