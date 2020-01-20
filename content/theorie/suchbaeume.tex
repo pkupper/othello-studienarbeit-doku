@@ -6,7 +6,8 @@ Ein Suchproblem in einem Spiel hat als Lösung eine Abfolge von Aktionen, die zu
 Zur Darstellung eines solchen Problems kann ein Baum verwendet werden, dessen Wurzel gleich dem Startzustand des Spiels ist.
 Die Kanten des Baums stellen Aktionen dar, die zu einem neuen Knoten, also einem neuen Spielzustand, führen.
 Jeder Knoten kann so erweitert werden, dass für jeden möglichen Spielzug, also jede Aktion, eine Kante zu einem neuen Knoten, also zu einem neuen Spielzustand, führt.
-Dieser Baum kann nach einem bestimmten Zustand durchsucht werden, der das gegebene Problem löst.
+Vorerst sei angenommen, dass die Spielzüge des Gegners ausgesucht werden können.
+Der Baum kann dann nach einem bestimmten Zustand durchsucht werden, der das gegebene Problem löst.
 Die Vorgehensweise dabei ist, zunächst eine Option zu untersuchen und erst falls diese nicht zu einer Lösung des Problems führt, die übrigen Optionen in Betracht zu ziehen.
 \cite[S.~75]{ai2010russel}
 

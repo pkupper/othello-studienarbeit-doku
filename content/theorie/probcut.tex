@@ -1,9 +1,8 @@
 \section{ProbCut}
 
 Der Minimax-Algorithmus erfordert in seiner Grundform das Durchsuchen des kompletten Spielbaums.
-Die Optimierung des Algorithmus durch die Alpha-Beta-Suche ermöglicht zwar das Weglassen von Teilen des Spielbaums, aber da auch hier der korrekte Minimax-Wert berechnet werden muss, kann der Baum nur
-%TODO: "rückwärts" Erklären oder Entfernen
-rückwärts reduziert werden.
+Die Optimierung des Algorithmus durch die Alpha-Beta-Suche ermöglicht zwar das Weglassen von Teilen des Spielbaums, aber da auch hier der korrekte Minimax-Wert berechnet werden muss, kann der Baum nur "'rückwärts"' reduziert werden.
+Das heißt, um einen Zweig auszuschließen, muss bereits eine bessere Option mit der gewünschten Suchtiefe bekannt sein.
 
 ProbCut erweitert die Alpha-Beta-Suche durch eine statistische Betrachtung, wobei auch Zweige, die nur mit einer bestimmten Wahrscheinlichkeit nicht zu einer Veränderung des Ergebnisses beitragen, weggelassen werden können.
 Die mithilfe von ProbCut durchgeführten Verkleinerungen des Baums werden "`probabilistic forward cuts"' genannt.
@@ -26,7 +25,7 @@ Daraus lässt sich herleiten, dass mit einer Wahrscheinlichkeit von mindestens \
 
 und
 
-\(v\geq\beta\ \iff v'\geq\frac{-\Phi^{-1}(p)*\sigma+\beta-b}{a}\)
+\(v\geq\beta \iff v'\geq\frac{-\Phi^{-1}(p)*\sigma+\beta-b}{a}\)
 
 Trifft nach der flachen Suche einer der beiden Fälle auf der rechten Seite ein, so wird keine tiefe Suche durchgeführt, da \(v\) nach der linken Seite mit Wahrscheinlichkeit \(p\) außerhalb des Alpha-Beta Fensters liegt
 und somit nicht relevant ist.

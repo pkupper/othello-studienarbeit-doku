@@ -4,14 +4,14 @@ Minimax ist ein Algorithmus zur Bestimmung des optimalen Spielzugs in einem dete
 
 Dabei wird für jeden Knoten im Spielbaum des Spiels, durch Rekursion, der Nutzen des entsprechenden Spielzustands für alle Spieler bestimmt.
 An den Blatt-Knoten des Spielbaums ist der Nutzen für alle Spieler, in Form des Spielergebnisses, bereits bekannt.
-Die Nutzen-Werte der restlichen Knoten werden bestimmt indem, unter der Annahme das beide Spieler optimal spielen, immer der größte Nutzen aus den Kind-Knoten für den aktuell spielenden Spieler ausgewählt wird.
+Die Nutzen-Werte der restlichen Knoten werden bestimmt, indem, unter der Annahme das beide Spieler optimal spielen, immer der größte Nutzen aus den Kind-Knoten für den aktuell spielenden Spieler ausgewählt wird.
 \cite[S.~165]{ai2010russel}
 
 Dadurch lässt sich zu jedem Spielzustand der Zug bestimmen, der gegen einen optimal spielenden Gegner von größtem Nutzen ist.
 
-Da bei einem zwei-Spieler Nullsummenspiel die Summe der Nutzen der beiden Spieler konstant ist, und sich somit der Nutzen für einem Spieler aus dem Nutzen des anderen Spielers ergibt, muss nur der Nutzen
-für einen Spieler betrachtet werden. Dieser wird dann abwechselnd von diesem Spieler maximiert, und von dessen Gegner minimiert. Die Spieler werden dann maximierender und einen minimierender Spieler genannt.
-Aus diesem Vorgehensweise ergibt sich der Name "Minimax" für die zwei-Spieler Variante des Algorithmus.
+Da bei einem zwei-Spieler Nullsummenspiel die Summe der Nutzen der beiden Spieler konstant ist, und sich somit der Nutzen für einem Spieler aus dem Nutzen des anderen Spielers ergibt, muss nur der Nutzen für einen Spieler betrachtet werden. Dieser wird dann abwechselnd von diesem Spieler maximiert, und von dessen Gegner minimiert.
+Die Spieler werden dann maximierender und einen minimierender Spieler genannt.
+Aus diesem Vorgehensweise ergibt sich der Name "'Minimax"' für die zwei-Spieler Variante des Algorithmus.
 Bei Spielen mit mehr als zwei Spielern kann diese Optimierung nicht angewandt werden, weshalb in diesem Fall immer der Nutzen für alle Spieler getrennt betrachtet werden muss.
 \cite[S.~165]{ai2010russel}
 
@@ -20,10 +20,10 @@ In der Praxis kann der Suchbaum deshalb nicht vollständig, sondern nur bis zu e
 die den Nutzen des Spielzustands für einen Spieler approximiert.
 \cite[S.~171]{ai2010russel}
 
-Durch die Anwendung einer Evaluations-Funktion verliert der Minimax Algorithmus seine Optimalität. Es wird also nichtmehr garantiert der Zug mit dem größten Nutzen gewählt.
+Durch die Anwendung einer Evaluations-Funktion verliert der Minimax Algorithmus seine Optimalität.
+Es wird also nichtmehr garantiert der Zug mit dem größten Nutzen gewählt.
 
-Die Wahl der Evaluations-Funktion ist vom Spiel abhängig. Beim Spiel Othello kann beispielsweise die Differenz der Anzahlen von eigenen Steinen und gegnerischen Steinen auf dem Spielfeld als Heuristik verwendet werden.
-Unterschiedliche Evaluations-Funktionen führen zu unterschieden guten Ergebnissen.
+Die Wahl der Evaluations-Funktion ist vom Spiel abhängig.
 
 %TODO: Mathematische Beschreibung / evtl. Implementation
 
