@@ -30,7 +30,7 @@ Anders als bei vielen Kartenspielen, in denen die Karten der Gegenspieler unbeka
 Formal besteht ein Spiel aus folgenden sechs Elementen:
 \begin{enumerate}
     \item $S_0$ ist der Anfangszustand zu Beginn des Spiels.
-    \item $Player(s)$ ist eine Funktion, die einen Spielzustand $s$ den Spieler berechnet, der gerade an der Reihe ist.
+    \item $Player(s)$ ist eine Funktion, die in einem Spielzustand $s$ den Spieler berechnet, der gerade an der Reihe ist.
     \item $Actions(s)$ ist eine Funktion, die für einen Spielzustand $s$ alle gültigen Züge berechnet.
     \item $Result(s, a)$ ist eine Funktion, die für einen Spielzustand $s$ und eine Aktion, also einen Spielzug $a$ einen neuen Spielzustand berechnet.
     \item $TerminalTest(s)$ ist eine Funktion, die für einen Spielzustand $s$ berechnet, ob das Spiel vorbei ist oder nicht. Zustände, an denen das Spiel vorbei ist, werden Endzustände genannt.

@@ -1,5 +1,7 @@
 \section{Suchbäume}
 
+%TODO: Aufteilung in Suchbäume allgemein und adversative Suche
+
 Ein Suchproblem in einem Spiel hat als Lösung eine Abfolge von Aktionen, die zum Sieg des Spiels führen.
 Zur Darstellung eines solchen Problems kann ein Baum verwendet werden, dessen Wurzel gleich dem Startzustand des Spiels ist.
 Die Kanten des Baums stellen Aktionen dar, die zu einem neuen Knoten, also einem neuen Spielzustand, führen.
@@ -9,7 +11,7 @@ Die Vorgehensweise dabei ist, zunächst eine Option zu untersuchen und erst fall
 \cite[S.~75]{ai2010russel}
 
 In einem Spiel können die Züge des Gegners nicht beeinflusst werden.
-Deswegen ist nicht nur ein Pfad von Aktionen interessant, sondern eine sogenannte Strategie, die nach dem ersten Zug alle möglichen Reaktionen des Gegners betrachtet.
+Deswegen ist ein einzelner Pfad von Aktionen uninteressant, sondern eine sogenannte Strategie, die nach dem ersten Zug alle möglichen Reaktionen des Gegners betrachtet.
 \cite[S.~163]{ai2010russel}
 
 Im allgemeinen Fall können Zustände mehrfach im Baum auftreten.
