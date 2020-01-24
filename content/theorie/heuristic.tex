@@ -10,5 +10,16 @@ Viel wichtiger ist z.B. Möglichkeit, neue Steine zu platzieren.
 
 Diesen Ansatz verfolgt die Betrachtung der Mobilität.
 
-%TODO: Mobilität
-\cite{evaluationfunctions}
+Die aktuelle Mobilität ist ein Maß dafür, wie viele mögliche Züge die Spieler haben.
+Eine niedrige Anzahl an möglichen Zügen ist häufig schlecht, da der Spieler gezwungen ist, einen weniger guten Zug zu machen.
+Als quantitatives Merkmal kann zunächst die Differenz der möglichen Züge beider Spieler betrachtet werden.
+Allerdings ist eine Stellung häufig besser, wenn man mehr mögliche Züge hat und der Gegner bei gleicher Differenz weniger mögliche Züge hat.
+Um diese Tatsache zu berücksichtigen, kann eine nicht-lineare Funktion verwendet werden.
+%TODO: Buro verwendet aus Performancegründen eine Approximation
+\cite[S. 7]{evaluationfunctions}
+
+Neben der aktuellen Mobilität kann auch die potentielle Mobilität betrachtet werden.
+Diese ist ein Indikatior für die mögliche Mobilität in folgenden Zügen.
+Michael Buro hat als aussagekräftigstes Merkmal die Summe aller Anzahlen freier Felder um gegnerische Steine ausgemacht.
+\cite[S. 8f.]{evaluationfunctions}
+
