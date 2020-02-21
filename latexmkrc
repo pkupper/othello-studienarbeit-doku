@@ -22,7 +22,7 @@ sub run_makeglossaries {
   return $return;
 }
 
-$pdflatex = 'internal mypdflatex %D %O %S';
+$pdflatex = 'internal mypdflatex %D %O --shell-escape %S';
 
 sub mypdflatex {
   use File::Copy qw(copy);

@@ -43,11 +43,11 @@ outputdir-legacy:
 
 # Generate PDF output from LaTeX input files.
 report-legacy: 
-	pdflatex -interaction=errorstopmode -output-directory=$(OUTPUT_DIR) $(DOCUMENT_NAME)
+	pdflatex --shell-escape -interaction=errorstopmode -output-directory=$(OUTPUT_DIR) $(DOCUMENT_NAME)
 	biber --output-directory $(OUTPUT_DIR) $(DOCUMENT_NAME)
 	makeglossaries -d $(OUTPUT_DIR) -q $(DOCUMENT_NAME)
-	pdflatex -interaction=errorstopmode -output-directory=$(OUTPUT_DIR) $(DOCUMENT_NAME)
-	pdflatex -interaction=errorstopmode -output-directory=$(OUTPUT_DIR) $(DOCUMENT_NAME)
+	pdflatex --shell-escape -interaction=errorstopmode -output-directory=$(OUTPUT_DIR) $(DOCUMENT_NAME)
+	pdflatex --shell-escape -interaction=errorstopmode -output-directory=$(OUTPUT_DIR) $(DOCUMENT_NAME)
 	cp $(OUTPUT_DIR)/$(DOCUMENT_NAME).pdf $(DOCUMENT_NAME).pdf 
 
 
