@@ -83,7 +83,7 @@ Koordinaten \passthrough{\lstinline!row!} und
 \begin{lstlisting}[language=Python]
 def make_move(state, row, col):
     if (row, col) not in state.frontier:
-        print(row, ", ", col)
+        print("(", row, ", ", col, ") not in Frontier")
         raise InvalidMoveException
     next_turn = state.turn
         
@@ -407,4 +407,7 @@ canvas[1].on_mouse_down(mouse_down)
 
 \begin{lstlisting}[language=Python]
 #display_board(state)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
 \end{lstlisting}

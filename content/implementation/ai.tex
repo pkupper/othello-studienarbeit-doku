@@ -111,7 +111,7 @@ def weight_heuristic(state, weights):
 
 Die Gewichte-Matrix \passthrough{\lstinline!cowthello\_weights!} nutzt
 die Gewichte aus dem Online-Othello Programm Cowthello. Cowthello ist
-unter der URL \url{http://www.aurochs.org/games/cowthello/} verfügbar.
+unter der URL \url{https://www.aurochs.org/games/cowthello/} verfügbar.
 
 \begin{lstlisting}[language=Python]
 cowthello_weights = gen_weight_matrix(default=1, corner=100, adj_corner=-25, sup_corner=25, edge=10, dia_corner=-50, support=50, sup_edge=5)
@@ -129,7 +129,7 @@ Die oben implementierten Heuristiken bewerten jeweils nur ein Merkmal
 der aktuellen Spielsitation. Durch eine Kombination mehrerer dieser
 Heuristiken können mehrere Merkmale gleichzeitig betrachtet werden. Die
 Kombination der Heuristiken kann in Abhängigkeit der aktuellen
-Spielphase geschehen. Beispielsweise wird zu Ende des Spiels, die
+Spielphase geschehen. Beispielsweise wird zu Ende des Spiels die
 Disc-Count-Heuristik wichtiger.
 
 \begin{lstlisting}[language=Python]
@@ -265,7 +265,7 @@ def alphabeta(state, depth, alpha, beta, heuristic):
         # minimizing
         utility = math.inf
         
-    for (_,  tmp_state) in ordered_moves:
+    for (_, tmp_state) in ordered_moves:
         debug_ab_count += 1
         tmp_utility = alphabeta(tmp_state, depth - 1, alpha, beta, heuristic)
         transposition_table[(tmp_state.board.tobytes(), tmp_state.turn, heuristic)] = tmp_utility
@@ -369,6 +369,7 @@ def alphabeta_id_make_move_timelimited(state, heuristic):
 
 An dieser Stelle beginnt die Implementierung der Künstlichen Intelligenz
 mittels des Minimax Algorithmus und ProbCut
+
 \begin{lstlisting}[language=Python]
 PERCENTILE = 1.5
 PROBCUT_SHALLOW_DEPTH = 3
@@ -384,12 +385,12 @@ def probcut(state, depth, alpha, beta, heuristic):
         return heuristic(state)
     
     if depth == PROBCUT_DEPTH:
-        # v >= β with prob. of at least p? yes => cutoff
+        # v >= beta with prob. of at least p? yes => cutoff
         bound = PERCENTILE * PROBCUT_SIGMA + beta
         if probcut(state, PROBCUT_SHALLOW_DEPTH, bound-1, bound, heuristic) >= bound:
             return beta
 
-        # v <= α with prob. of at least p? yes => cutoff
+        # v <= alpha with prob. of at least p? yes => cutoff
         bound = -PERCENTILE * PROBCUT_SIGMA + alpha
         if probcut(state, PROBCUT_SHALLOW_DEPTH, bound, bound+1, heuristic) <= bound:
             return alpha
@@ -454,12 +455,12 @@ def probcut_ai_make_move(state, heuristic):
 Im folgenden wird für beide Spieler die zu verwendende Künstliche
 Intelligenz, sowie die jeweils angewandte Heuristik festgelegt. Ein Wert
 von \passthrough{\lstinline!None!} bei der KI steht hierbei für einen
-nenschlichen Spieler
+menschlichen Spieler.
 
 \begin{lstlisting}[language=Python]
 # Settings
 BLACK_PLAYER_AI = random_ai_make_move
-WHITE_PLAYER_AI = alphabeta_id_make_move
+WHITE_PLAYER_AI = None #alphabeta_id_make_move
 
 BLACK_PLAYER_HEURISTIC = combined_heuristic
 WHITE_PLAYER_HEURISTIC = combined_heuristic
@@ -468,18 +469,24 @@ PLAYER_AI = {BLACK: BLACK_PLAYER_AI, WHITE: WHITE_PLAYER_AI}
 PLAYER_HEURISTIC = {BLACK: BLACK_PLAYER_HEURISTIC, WHITE: WHITE_PLAYER_HEURISTIC}
 \end{lstlisting}
 
-Zum Starten der interaktiven Applikation wird der folgende Code
-ausgeführt
+Folgender Code dient zum Starten der interaktiven Applikation. Die
+Funktion \passthrough{\lstinline!next\_move!} wird für jeden Spielzug
+ausgeführt. Sie wird zu Beginn einmal aufgerufen. Wenn eine KI spielt,
+wird die Funktion rekursiv für den nächsten Zug aufgerufen. Wenn der
+Spieler menschlich ist, muss die Ausführung unterbrochen werden, da auf
+das Aufrufen eines Callbacks durch einen Klick gewartet werden muss. Im
+Callback wird auch die Funktion \passthrough{\lstinline!next\_move!} für
+den nächsten Zug aufgerufen.
 
 \begin{lstlisting}[language=Python]
 state = GameState()
 display_board(state)
 
 def next_move(state):
-    time.sleep(0.2)
     # Check if/which AI is playing
-    strat = BLACK_PLAYER_AI if state.turn == BLACK else WHITE_PLAYER_AI
+    strat = PLAYER_AI[state.turn]
     if strat is not None:
+        time.sleep(0.2)
         strat(state, PLAYER_HEURISTIC[state.turn])
         update_output(state)
         if not state.game_over:
@@ -489,22 +496,6 @@ try:
     next_move(state)
 except KeyboardInterrupt:
     pass
-\end{lstlisting}
-
-\begin{lstlisting}
-MultiCanvas(height=560, width=560)
-
-
-
-Label(value='Black Player : 2 White Player : 2')
-
-
-
-Label(value='Blacks Move')
-
-
-
-Output()
 \end{lstlisting}
 
 \hypertarget{testing-code}{%

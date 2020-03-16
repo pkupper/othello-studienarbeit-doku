@@ -79,39 +79,45 @@
 \newcommand{\ladefarben}{%
 	\definecolor{LinkColor}{HTML}{00007A}
 	\definecolor{ListingBackground}{HTML}{FCF7DE}
-    \definecolor{lightergray}{gray}{0.95}
+	\definecolor{lightergray}{gray}{0.95}
+	
+	\definecolor{deepblue}{rgb}{0,0,0.5}
+	\definecolor{deepred}{rgb}{0.6,0,0}
+	\definecolor{deepgreen}{rgb}{0,0.5,0}
+	\definecolor{deepturquoise}{rgb}{0.016, 0.502, 0.502}
 }
 %% Mathematikpakete benutzen (Pakete aktivieren)
 %\usepackage{amsmath}
 %\usepackage{amssymb}
 
 %% Programmiersprachen Highlighting (Listings)
+
+\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{12}
+\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{12}
+
 \newcommand{\listingsettings}{%
 	\lstset{%
-		language=Java,			% Standardsprache des Quellcodes
+		language=Python,
+		basicstyle=\ttm,
+		otherkeywords={self},
+		keywordstyle=\ttb\color{deepgreen},
+		stringstyle=\color{deepred},
+		commentstyle=\color{deepturquoise},
+		ndkeywordstyle=\color{deepgreen},
+		frame=tb,
+		showstringspaces=false 
+		postbreak=\space,		% Bei Leerzeichen umbrechen.
+		tabsize=4,				% Tabulatorgrösse 2
+		showspaces=false,		% Leerzeichen nicht anzeigen.
+		showstringspaces=false,	% Leerzeichen auch in Strings ('') nicht anzeigen.
+		extendedchars=true,		% Alle Zeichen vom Latin1 Zeichensatz anzeigen.
+		captionpos=b,			% sets the caption-position to bottom
 		numbers=left,			% Zeilennummern links
 		stepnumber=1,			% Jede Zeile nummerieren.
 		numbersep=5pt,			% 5pt Abstand zum Quellcode
 		numberstyle=\tiny,		% Zeichengrösse 'tiny' für die Nummern.
 		breaklines=true,		% Zeilen umbrechen wenn notwendig.
 		breakautoindent=true,	% Nach dem Zeilenumbruch Zeile einrücken.
-		postbreak=\space,		% Bei Leerzeichen umbrechen.
-		tabsize=2,				% Tabulatorgrösse 2
-		basicstyle=\ttfamily\footnotesize, % Nichtproportionale Schrift, klein für den Quellcode
-		showspaces=false,		% Leerzeichen nicht anzeigen.
-		showstringspaces=false,	% Leerzeichen auch in Strings ('') nicht anzeigen.
-		extendedchars=true,		% Alle Zeichen vom Latin1 Zeichensatz anzeigen.
-		captionpos=b,			% sets the caption-position to bottom
-		backgroundcolor=\color{ListingBackground}, % Hintergrundfarbe des Quellcodes setzen.
-		xleftmargin=0pt,		% Rand links
-		xrightmargin=0pt,		% Rand rechts
-		frame=single,			% Rahmen an
-		frameround=ffff,
-		rulecolor=\color{darkgray},	% Rahmenfarbe
-		fillcolor=\color{ListingBackground},
-		keywordstyle=\color[rgb]{0.133,0.133,0.6},
-		commentstyle=\color[rgb]{0.133,0.545,0.133},
-		stringstyle=\color[rgb]{0.627,0.126,0.941}
 	}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
