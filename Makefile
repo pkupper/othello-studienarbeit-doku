@@ -50,4 +50,11 @@ report-legacy:
 	pdflatex --shell-escape -interaction=errorstopmode -output-directory=$(OUTPUT_DIR) $(DOCUMENT_NAME)
 	cp $(OUTPUT_DIR)/$(DOCUMENT_NAME).pdf $(DOCUMENT_NAME).pdf 
 
+# Generate implementation section from jupyter notebook
+implementation:
+	git submodule update --recursive --remote
+	ipython nbconvert --to markdown othello-studienarbeit-code/othello_game.ipynb --output ../content/implementation/gamelogic.md
+	ipython nbconvert --to markdown othello-studienarbeit-code/othello_ai.ipynb --output ../content/implementation/ai.md
+	pandoc content/implementation/gamelogic.md -t latex -o content/implementation/gamelogic.tex --listings
+	pandoc content/implementation/ai.md -t latex -o content/implementation/ai.tex --listings
 

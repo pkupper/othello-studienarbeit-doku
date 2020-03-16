@@ -1,0 +1,3 @@
+[submodule "othello-studienarbeit-code"]
+	path = othello-studienarbeit-code
+	url = git@github.com:pkupper/othello-studienarbeit-code.git
