@@ -362,14 +362,13 @@ def alphabeta_id_make_move_timelimited(state, heuristic):
         depth += 1
     print("Reached depth: ", depth-1)
     make_move(state, best_move[0], best_move[1])
-
+\end{lstlisting}
 
 \hypertarget{probcut-ki}{%
 \subsubsection{ProbCut KI}\label{probcut-ki}}
 
-An dieser Stelle beginnt die Implementierung der Kuenstlichen Intelligenz
+An dieser Stelle beginnt die Implementierung der Künstlichen Intelligenz
 mittels des Minimax Algorithmus und ProbCut
-
 \begin{lstlisting}[language=Python]
 PERCENTILE = 1.5
 PROBCUT_SHALLOW_DEPTH = 3
@@ -385,12 +384,12 @@ def probcut(state, depth, alpha, beta, heuristic):
         return heuristic(state)
     
     if depth == PROBCUT_DEPTH:
-        # v >= beta with prob. of at least p? yes => cutoff
+        # v >= β with prob. of at least p? yes => cutoff
         bound = PERCENTILE * PROBCUT_SIGMA + beta
         if probcut(state, PROBCUT_SHALLOW_DEPTH, bound-1, bound, heuristic) >= bound:
             return beta
 
-        # v <= alpha with prob. of at least p? yes => cutoff
+        # v <= α with prob. of at least p? yes => cutoff
         bound = -PERCENTILE * PROBCUT_SIGMA + alpha
         if probcut(state, PROBCUT_SHALLOW_DEPTH, bound, bound+1, heuristic) <= bound:
             return alpha
