@@ -52,6 +52,7 @@ report-legacy:
 
 # Generate implementation section from jupyter notebook
 implementation:
+	git submodule init
 	git submodule update --recursive --remote
 	ipython nbconvert --to markdown othello-studienarbeit-code/othello_game.ipynb --output ../content/implementation/gamelogic.md
 	ipython nbconvert --to markdown othello-studienarbeit-code/othello_ai.ipynb --output ../content/implementation/ai.md
