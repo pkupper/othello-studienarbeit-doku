@@ -7,11 +7,43 @@ betrachtenden Zweig maximal noch erzielbar ist.
 
 Erreicht wird dies durch zwei Variablen $Alpha$ und $Beta$ die jeweils für den maximierenden und den minimierenden
 Spieler den garantierten Nutzen repräsentieren, den diese selbst bei einem optimal spielenden Gegner erreichen können.
-$Alpha$ und $Beta$ werden zu Beginn mit dem jeweils schlechtmöglichsten Nutzen initialisiert, also $Alpha = -\infty$ und
-$Beta = \infty$. Die Variablen werden an die rekursiven Funktionsaufrufe weitergegeben und, falls ein besserer Zug für
-einen der Spieler auftritt, aktualisiert. Ist $Beta < Alpha$, d.h. sowohl der maximierende als auch der minimierende
-Spieler können bereits einen für sich jeweils besseren Zug forcieren, so muss der Zweig nicht weiter beachtet werden, da
-er in einem Spiel mit optimalen Spielern nicht auftritt.
+$Alpha$ und $Beta$ werden zu Beginn mit dem jeweils schlechtmöglichsten Nutzen initialisiert, also $Alpha = -\infty$ und $Beta = \infty$.
+Die Variablen werden an die rekursiven Funktionsaufrufe weitergegeben und, falls ein besserer Zug für einen der Spieler auftritt, aktualisiert.
+Ist $Beta < Alpha$, d.h. sowohl der maximierende als auch der minimierende
+Spieler können bereits einen für sich jeweils besseren Zug forcieren, so muss der Zweig nicht weiter beachtet werden, da er in einem Spiel mit optimalen Spielern nicht auftritt.
+
+Das Beispiel in Abbildung \ref{fig:game_tree_ab_pruning} veranschaulicht das Alpha-Beta-Pruning:
+An Konten $A$ ist der maximierende Spieler an der Reihe, an den Knoten $B$ und $C$ der minimierende Spieler.
+Der maximierende Spieler überprüft zunächst den Spielzug, der zu Konten $B$ führt.
+Alpha und Beta betragen noch $-\infty$ und $\infty$.
+An dieser Stelle werden die für den minimierenden Spieler möglichen Züge berechnet.
+Diese haben Minimax-Werte von $0.3$ und $0.6$.
+Da der minimierende Spieler an der Reihe ist, wird dieser den Spielzug auswählen, der den Nutzen $0.3$ hat.
+Der maximierende Spieler kann nun Alpha auf 0.3 setzen, da durch den in $B$ resultierenden Zug dieser Nutzen erzwungen werden kann.
+Als nächstes wird der zweite mögliche Zug des maximierenden Spielers untersucht.
+Da der erste Endknoten den Wert $0.2$ hat, wird für den Knoten $C$ Beta auf 0.2 gesetzt.
+Nun ist aber $Beta=0.2<0.3=Aplha$.
+Der minimierende Spieler wird entweder den Nutzen $0.2$, oder einen geringeren Wert wählen.
+Da der maximierende Spieler aber einen Wert von $0.3$ erzwingen kann, wird er sich nicht für den Zug entscheiden, der zu Zustand $C$ führt, egal welchen Wert Knoten $D$ hat.
+Knoten $D$ muss also gar nicht betrachtet werden.
+
+\begin{figure}[]
+    \centering
+    \begin{tikzpicture}[every node/.style = {regular polygon, regular polygon sides=3, draw=black}]
+        \tikzset{level distance=60pt}
+        \tikzset{border rotated/.style={shape border rotate=180}}
+        \Tree[.A
+            [.\node[border rotated]{B};
+                0.3 0.6
+            ]
+            [.\node[border rotated]{C};
+                0.2 D
+            ]
+        ]
+    \end{tikzpicture}
+    \caption{Spielbaum}
+    \label{fig:game_tree_ab_pruning}
+\end{figure}
 
 Das folgende Python Listing zeigt eine beispielhafte Implementierung des Alpha-Beta Algorithmus. Hierbei ist Weiß der
 maximierende Spieler und Schwarz der minimierende Spieler. Zur Vermeidung von Redundanz wird statt zwei Funktionen $min$
@@ -42,7 +74,6 @@ kann $n$ entweder vorher festgelegt, oder dynamisch anhand der Laufzeit ermittel
 Deepening besteht darin, dass die Ausführung jederzeit unterbrochen werden kann und der bestmögliche Zug der bisherigen
 Suchtiefe bekannt ist.
 \cite{alphabetaefficiency}
-
 
 \ifx false
 % Template for game tree
