@@ -2,34 +2,41 @@
 \section{Implementation der
 Spiellogik}\label{implementation-der-spiellogik}}
 
-Im folgenden ist das Spiel Othello implementiert. Ausgangspunkt für
+Im Folgenden ist das Spiel Othello implementiert. Ausgangspunkt für
 diese Implementierung ist Das Python Gui für Othello von Kevan Nguyen,
 welches unter \url{https://github.com/kevannguyen/Othello} verfügbar
 ist.
 
-\hypertarget{abhuxe4ngigkeiten-importieren}{%
-\subsection{Abhängigkeiten
-Importieren}\label{abhuxe4ngigkeiten-importieren}}
+\hypertarget{importieren-der-externen-abhuxe4ngigkeiten}{%
+\subsection{Importieren der externen
+Abhängigkeiten}\label{importieren-der-externen-abhuxe4ngigkeiten}}
+
+Die Implementation stützt sich für bessere Performanz auf die Python,
+Bibliothek \passthrough{\lstinline!numpy!} welche unter anderem homogene
+Felder und Matrizen implementiert.
 
 \begin{lstlisting}[language=Python]
-import ipycanvas
-import ipywidgets
 import numpy
-import math
 \end{lstlisting}
 
 \hypertarget{globale-konstanten}{%
 \subsection{Globale Konstanten}\label{globale-konstanten}}
 
+\passthrough{\lstinline!BOARD\_SIZE!} gibt die Anzahl an Zeilen und
+Spalten des quadratischen Spielfelds an.
+
+Die Konstanten \passthrough{\lstinline!BLACK!},
+\passthrough{\lstinline!WHITE!} und \passthrough{\lstinline!NONE!}
+werden auf die Zahlenwerte -1 , 1 und 0 abgebildet und werden für
+mehrere Zwecke genutzt: - zur Repräsentation des Spielbretts - zur
+Identifikation eines Spielers - zur Berechnung der Heuristiken.
+
 \begin{lstlisting}[language=Python]
 BOARD_SIZE = 8
 
 BLACK = -1 # MINIMIZING PLAYER
-NONE = 0
 WHITE = 1 # MAXIMIZING PLAYER
-
-SHOW_FRONTIER = False
-SHOW_POSSIBLE_MOVES = True
+NONE = 0
 \end{lstlisting}
 
 \hypertarget{game-state}{%
@@ -217,9 +224,9 @@ def is_valid_directional_move(state, row, col, rowdelta, coldelta, player):
         return last_cell_color == player
 \end{lstlisting}
 
-Diese Funktion dreht im Spielzustand \passthrough{\lstinline!state!}
+Diese Funktion dreht im Spielzustand \passthrough{\lstinline!state!},
 ausgehend von dem durch \passthrough{\lstinline!row!} und
-\passthrough{\lstinline!col!} gegebenen Feld die für den Spieler
+\passthrough{\lstinline!col!} gegebenen Feld, die für den Spieler
 \passthrough{\lstinline!player!} generischen Steine in die durch
 \passthrough{\lstinline!rowdelta!} und
 \passthrough{\lstinline!coldelta!} gegebene Richtung um.
@@ -279,8 +286,46 @@ def get_player_string(player):
 \section{Implementation der Grafischen
 Benutzeroberfläche}\label{implementation-der-grafischen-benutzeroberfluxe4che}}
 
+Im folgenden Abschnitt wird eine Benutzeroberfläche für das Spiel
+Othello implementiert.
+
+\hypertarget{importieren-der-externen-abhuxe4ngigkeiten-1}{%
+\subsection{Importieren der externen
+Abhängigkeiten}\label{importieren-der-externen-abhuxe4ngigkeiten-1}}
+
+Die Grafische Benutzeroberfläche verwendet zur Darstellung des
+Spielzustandes, zum Anzeigen weiterer Informationen sowie für die
+Benutzerinteraktion die Bibliotheken \passthrough{\lstinline!ipycanvas!}
+und \passthrough{\lstinline!ipywidgets!}. Diese Lassen sich direkt im
+Jupyter Notebook verwenden.
+
+Zusätzlich werden aus dem Paket \passthrough{\lstinline!math!} der
+Python Standardbibliothek die Variable \passthrough{\lstinline!pi!}
+sowie die Funktion \passthrough{\lstinline!floor!} benötigt.
+
+\begin{lstlisting}[language=Python]
+import ipycanvas
+import ipywidgets
+import math
+\end{lstlisting}
+
+\hypertarget{globale-konstanten-1}{%
+\subsection{Globale Konstanten}\label{globale-konstanten-1}}
+
 \hypertarget{canvas-initialisieren}{%
 \subsection{Canvas Initialisieren}\label{canvas-initialisieren}}
+
+\passthrough{\lstinline!SHOW\_FRONTIER!} gibt an ob in der
+Visualisierung leere Felder, die an bereits gesetzte Spielsteine
+angrenzen hervorgehoben werden sollen.
+
+\passthrough{\lstinline!SHOW\_POSSIBLE\_MOVES!} gibt ob für den aktuell
+ziehenden Spieler mögliche Züge visualisiert werden sollen.
+
+\begin{lstlisting}[language=Python]
+SHOW_FRONTIER = False
+SHOW_POSSIBLE_MOVES = True
+\end{lstlisting}
 
 \begin{lstlisting}[language=Python]
 CELL_SIZE = 70
