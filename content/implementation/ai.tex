@@ -370,11 +370,13 @@ An dieser Stelle beginnt die Implementierung der Künstlichen Intelligenz
 mittels des Minimax Algorithmus und ProbCut
 
 \begin{lstlisting}[language=Python]
-PERCENTILE = 1.5
-PROBCUT_SHALLOW_DEPTH = 3
-PROBCUT_DEPTH = 6
-PROBCUT_SIGMA = 0.75
+PERCENTILE = 1.5 # 93.3%
+PROBCUT_SHALLOW_DEPTH = 2
+PROBCUT_DEPTH = 4
+PROBCUT_SIGMA = 0.05
+\end{lstlisting}
 
+\begin{lstlisting}[language=Python]
 debug_pc_count= 0
 
 def probcut(state, depth, alpha, beta, heuristic):
@@ -413,7 +415,7 @@ def probcut(state, depth, alpha, beta, heuristic):
         
     for (_, tmp_state) in ordered_moves:
         debug_pc_count += 1
-        tmp_utility = alphabeta(tmp_state, depth - 1, alpha, beta, heuristic)
+        tmp_utility = probcut(tmp_state, depth - 1, alpha, beta, heuristic)
         transposition_table[(tmp_state.board.tobytes(), tmp_state.turn, heuristic)] = tmp_utility
         
         if state.turn == WHITE:
@@ -442,6 +444,82 @@ def probcut_ai_make_move(state, heuristic):
         best_score, _ = min(scored_moves)
     best_move = random.choice([move for move in scored_moves if move[0] == best_score])[1]
     make_move(state, best_move[0], best_move[1])
+\end{lstlisting}
+
+\hypertarget{ermitteln-der-standardabweichung}{%
+\paragraph{Ermitteln der
+Standardabweichung}\label{ermitteln-der-standardabweichung}}
+
+Im Folgenden werden zunächst einige Datenpunkte gesammelt, indem in
+verschiedenen Spielzuständen jeweils eine tiefe, und eine flache Suche
+durchgeführt wird. Die Spielzustände werden durch zufälliges Ziehen
+erreicht.
+
+\begin{lstlisting}[language=Python]
+import csv
+import os
+
+filename = f'probcut_dataset_{PROBCUT_SHALLOW_DEPTH}_{PROBCUT_DEPTH}.csv'
+
+file_empty = not os.path.isfile(filename) or os.stat(filename).st_size == 0
+with open(filename, 'a+', newline='') as file:
+    writer = csv.writer(file, delimiter=',')
+    if file_empty:
+        writer.writerow(('moves', 'shallow', 'deep'))
+    while True:
+        state = GameState()
+        try:
+            while not state.game_over:
+                random_ai_make_move(state, None)
+                shallow_value = alphabeta(state, PROBCUT_SHALLOW_DEPTH, -math.inf, math.inf, combined_heuristic)
+                deep_value = alphabeta(state, PROBCUT_DEPTH, -math.inf, math.inf, combined_heuristic)
+                print(f'shallow: {shallow_value}, deep: {deep_value}')
+                writer.writerow((state.num_pieces, shallow_value, deep_value)) 
+        except KeyboardInterrupt:
+            file.close()
+\end{lstlisting}
+
+Daten Laden
+
+\begin{lstlisting}[language=Python]
+import pandas
+filename = 'probcut_dataset_2_4.csv'
+df = pandas.read_csv(filename)
+shallow = df['shallow']
+deep = df['deep']
+\end{lstlisting}
+
+\hypertarget{daten-visualisieren}{%
+\paragraph{Daten Visualisieren}\label{daten-visualisieren}}
+
+\begin{lstlisting}[language=Python]
+import matplotlib.pyplot as plt
+import sklearn.linear_model as lm
+import seaborn as sns
+model = lm.LinearRegression()
+model.fit(shallow.values.reshape(len(shallow), 1), deep)
+plt.figure(figsize=(15, 10))
+sns.set(style='whitegrid')
+plt.scatter(shallow, deep)
+plt.axvline(x=0.0, c='k')
+plt.axhline(y=0.0, c='k')
+plt.plot(shallow, shallow * model.coef_ + model.intercept_)
+plt.xlabel('shallow search')
+plt.ylabel('deep search')
+plt.title('Probcut Values')
+plt.show()
+\end{lstlisting}
+
+Varianz, erklärte Varianz und Standardabweichung berechnen
+
+\begin{lstlisting}[language=Python]
+import numpy as np
+import sklearn.metrics as skl
+variance = np.var(np.stack([shallow, deep], axis=1))
+print(f'variance: {variance}')
+explained_variance = skl.explained_variance_score(shallow, deep)
+print(f'standard distribution: {np.sqrt(variance)}')
+print(f'explained variance: {explained_variance}')
 \end{lstlisting}
 
 \hypertarget{applikation-starten}{%
@@ -531,37 +609,58 @@ Zweige durch den Algorithmus ausgeschlossen werden konnten und nicht
 überprüft werden mussten.
 
 \begin{lstlisting}[language=Python]
-def debug_num_visited_states(state):
+def debug_num_visited_states(state, depth):
+    global transposition_table
     global debug_mm_count
     global debug_ab_count
     global debug_pc_count
+    global MINIMAX_DEPTH_LIMIT
+    global ALPHABETA_DEPTH_LIMIT
+    global PROBCUT_DEPTH
+    global PROBCUT_SHALLOW_DEPTH
+    # save old variables
+    old_mm_depth = MINIMAX_DEPTH_LIMIT
+    old_ab_depth = ALPHABETA_DEPTH_LIMIT
+    old_pb_depth = PROBCUT_DEPTH
+    old_pb_shallow_depth = PROBCUT_SHALLOW_DEPTH
+    # set depth limit for all algorithms
+    MINIMAX_DEPTH_LIMIT = depth
+    ALPHABETA_DEPTH_LIMIT = depth
+    PROBCUT_DEPTH = depth
+    PROBCUT_SHALLOW_DEPTH = math.ceil(depth / 2)
+    # calculate next move with each algorithm and measure time
     debug_mm_count= 0
     start = time.time()
     minimax_ai_make_move(copy.deepcopy(state), combined_heuristic)
     secs = time.time() - start
-    print("Minimax takes ", secs, " seconds and checks ", debug_mm_count, "substates")
+    print("Minimax takes", secs, "seconds and checks", debug_mm_count, "substates")
     debug_ab_count= 0
     transposition_table = {}
     start = time.time()
     alphabeta_ai_make_move(copy.deepcopy(state), combined_heuristic)
     secs = time.time() - start
-    print("AlphaBeta takes ", secs, " seconds and checks ", debug_ab_count, "substates")
+    print("AlphaBeta takes", secs, "seconds and checks", debug_ab_count, "substates")
     debug_ab_count= 0
     transposition_table = {}
     start = time.time()
     alphabeta_id_make_move(copy.deepcopy(state), combined_heuristic)
     secs = time.time() - start
-    print("AlphaBeta with iterative deepening takes ", secs, " seconds and checks ", debug_ab_count, "substates")
+    print("AlphaBeta with iterative deepening takes", secs, "seconds and checks", debug_ab_count, "substates")
     debug_pc_count= 0
     transposition_table = {}
     start = time.time()
     probcut_ai_make_move(copy.deepcopy(state), combined_heuristic)
     secs = time.time() - start
-    print("ProbCut takes ", secs, " seconds and checks ", debug_pc_count, "substates")
+    print("ProbCut takes", secs, "seconds and checks", debug_pc_count, "substates")
+    # restore old variables
+    MINIMAX_DEPTH_LIMIT = old_mm_depth
+    ALPHABETA_DEPTH_LIMIT = old_ab_depth
+    PROBCUT_DEPTH = old_pb_depth
+    PROBCUT_SHALLOW_DEPTH = old_pb_shallow_depth
 \end{lstlisting}
 
 \begin{lstlisting}[language=Python]
-debug_num_visited_states(test_board)
+debug_num_visited_states(test_board, 5)
 \end{lstlisting}
 
 Die Funktion \passthrough{\lstinline!get\_statistics!} ist dazu da,
