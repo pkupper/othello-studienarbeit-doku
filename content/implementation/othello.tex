@@ -1,0 +1,67 @@
+\begin{lstlisting}[language=Python]
+%%HTML
+<style>
+.container { width:100% }
+</style>
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+%run othello_game.ipynb
+%run othello_ai.ipynb
+%run othello_gui.ipynb
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+import time
+\end{lstlisting}
+
+\hypertarget{applikation-starten}{%
+\subsubsection{Applikation Starten}\label{applikation-starten}}
+
+Im folgenden wird für beide Spieler die zu verwendende Künstliche
+Intelligenz, sowie die jeweils angewandte Heuristik festgelegt. Ein Wert
+von \passthrough{\lstinline!None!} bei der KI steht hierbei für einen
+menschlichen Spieler. Die KIs und Heuristiken werden jeweils in einem
+Dictionary gespeicher, sodass mit Spieler als Index auf die
+entsprechende KI oder Heuristik zugegriffen werden kann.
+
+\begin{lstlisting}[language=Python]
+# Settings
+BLACK_PLAYER_AI = random_ai_make_move
+WHITE_PLAYER_AI = probcut_ai_make_move
+
+BLACK_PLAYER_HEURISTIC = combined_heuristic
+WHITE_PLAYER_HEURISTIC = combined_heuristic
+
+PLAYER_AI = {BLACK: BLACK_PLAYER_AI, WHITE: WHITE_PLAYER_AI}
+PLAYER_HEURISTIC = {BLACK: BLACK_PLAYER_HEURISTIC, WHITE: WHITE_PLAYER_HEURISTIC}
+\end{lstlisting}
+
+Folgender Code dient zum Starten der interaktiven Applikation. Die
+Funktion \passthrough{\lstinline!next\_move!} wird für jeden Spielzug
+ausgeführt. Sie wird zu Beginn einmal aufgerufen. Wenn eine KI spielt,
+wird die Funktion rekursiv für den nächsten Zug aufgerufen. Wenn der
+Spieler menschlich ist, muss die Ausführung unterbrochen werden, da auf
+das Aufrufen eines Callbacks durch einen Klick gewartet werden muss. Im
+Callback wird auch die Funktion \passthrough{\lstinline!next\_move!} für
+den nächsten Zug aufgerufen.
+
+\begin{lstlisting}[language=Python]
+state = GameState()
+display_board(state)
+
+def next_move(state):
+    # Check if/which AI is playing
+    strat = PLAYER_AI[state.turn]
+    if strat is not None:
+        time.sleep(0.2)
+        strat(state, PLAYER_HEURISTIC[state.turn])
+        update_output(state)
+        if not state.game_over:
+            next_move(state)
+
+try:
+    next_move(state)
+except KeyboardInterrupt:
+    pass
+\end{lstlisting}

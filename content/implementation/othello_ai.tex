@@ -1,3 +1,10 @@
+\begin{lstlisting}[language=Python]
+%%HTML
+<style>
+.container { width:100% }
+</style>
+\end{lstlisting}
+
 \hypertarget{implementierung-einer-kuxfcnstlichen-intelligenz-fuxfcr-das-spiel-othello}{%
 \section{Implementierung einer Künstlichen Intelligenz für das Spiel
 Othello}\label{implementierung-einer-kuxfcnstlichen-intelligenz-fuxfcr-das-spiel-othello}}
@@ -11,13 +18,8 @@ Die Implementierung der Spielelogik findet in einem separaten Jupyter
 Notebook statt. Diese wird deshalb hier zunächst ausgeführt.
 
 \begin{lstlisting}[language=Python]
-%run othello_game.ipynb
-\end{lstlisting}
-
-\begin{lstlisting}[language=Python]
 import math
 import copy
-import time
 import numpy
 import random
 \end{lstlisting}
@@ -371,9 +373,9 @@ mittels des Minimax Algorithmus und ProbCut
 
 \begin{lstlisting}[language=Python]
 PERCENTILE = 1.5 # 93.3%
+PROBCUT_DEPTH_LIMIT = 5
+PROBCUT_DEEP_DEPTH = 4
 PROBCUT_SHALLOW_DEPTH = 2
-PROBCUT_DEPTH = 4
-PROBCUT_SIGMA = 0.05
 \end{lstlisting}
 
 \begin{lstlisting}[language=Python]
@@ -386,16 +388,18 @@ def probcut(state, depth, alpha, beta, heuristic):
     if(depth <= 0):
         return heuristic(state)
     
-    if depth == PROBCUT_DEPTH:
-        # v >= beta with prob. of at least p? yes => cutoff
-        bound = PERCENTILE * PROBCUT_SIGMA + beta
-        if probcut(state, PROBCUT_SHALLOW_DEPTH, bound-1, bound, heuristic) >= bound:
-            return beta
+    if depth == PROBCUT_DEEP_DEPTH - 1:
+        if state.num_pieces <= 45: # if there are not more than 45 pieces on the board sigma can be calculated based on statistic values with the combined_heuristic
+            sigma = state.num_pieces * 0.001948723205790693 - 0.001604049443613545
+            # v >= beta with prob. of at least p? yes => cutoff
+            bound = PERCENTILE * sigma + beta
+            if probcut(state, PROBCUT_SHALLOW_DEPTH, bound-1, bound, heuristic) >= bound:
+                return beta
 
-        # v <= alpha with prob. of at least p? yes => cutoff
-        bound = -PERCENTILE * PROBCUT_SIGMA + alpha
-        if probcut(state, PROBCUT_SHALLOW_DEPTH, bound, bound+1, heuristic) <= bound:
-            return alpha
+            # v <= alpha with prob. of at least p? yes => cutoff
+            bound = -PERCENTILE * sigma + alpha
+            if probcut(state, PROBCUT_SHALLOW_DEPTH, bound, bound+1, heuristic) <= bound:
+                return alpha
     
     moves = get_possible_moves(state, state.turn)
     child_states = [make_move(copy.deepcopy(state), move[0], move[1]) for move in moves]
@@ -435,7 +439,7 @@ def probcut(state, depth, alpha, beta, heuristic):
 def probcut_ai_make_move(state, heuristic):
     if(state.game_over):
         return
-    scored_moves = [(probcut(make_move(copy.deepcopy(state), move[0], move[1]), PROBCUT_DEPTH-1, -math.inf, math.inf, heuristic), move) for move in state.possible_moves]
+    scored_moves = [(probcut(make_move(copy.deepcopy(state), move[0], move[1]), PROBCUT_DEPTH_LIMIT-1, -math.inf, math.inf, heuristic), move) for move in state.possible_moves]
     if state.turn == WHITE:
         # maximizing
         best_score, _ = max(scored_moves)
@@ -444,276 +448,4 @@ def probcut_ai_make_move(state, heuristic):
         best_score, _ = min(scored_moves)
     best_move = random.choice([move for move in scored_moves if move[0] == best_score])[1]
     make_move(state, best_move[0], best_move[1])
-\end{lstlisting}
-
-\hypertarget{ermitteln-der-standardabweichung}{%
-\paragraph{Ermitteln der
-Standardabweichung}\label{ermitteln-der-standardabweichung}}
-
-Im Folgenden werden zunächst einige Datenpunkte gesammelt, indem in
-verschiedenen Spielzuständen jeweils eine tiefe, und eine flache Suche
-durchgeführt wird. Die Spielzustände werden durch zufälliges Ziehen
-erreicht.
-
-\begin{lstlisting}[language=Python]
-import csv
-import os
-
-filename = f'probcut_dataset_{PROBCUT_SHALLOW_DEPTH}_{PROBCUT_DEPTH}.csv'
-
-file_empty = not os.path.isfile(filename) or os.stat(filename).st_size == 0
-with open(filename, 'a+', newline='') as file:
-    writer = csv.writer(file, delimiter=',')
-    if file_empty:
-        writer.writerow(('moves', 'shallow', 'deep'))
-    while True:
-        state = GameState()
-        try:
-            while not state.game_over:
-                random_ai_make_move(state, None)
-                shallow_value = alphabeta(state, PROBCUT_SHALLOW_DEPTH, -math.inf, math.inf, combined_heuristic)
-                deep_value = alphabeta(state, PROBCUT_DEPTH, -math.inf, math.inf, combined_heuristic)
-                print(f'shallow: {shallow_value}, deep: {deep_value}')
-                writer.writerow((state.num_pieces, shallow_value, deep_value)) 
-        except KeyboardInterrupt:
-            file.close()
-\end{lstlisting}
-
-Daten Laden
-
-\begin{lstlisting}[language=Python]
-import pandas
-filename = 'probcut_dataset_2_4.csv'
-df = pandas.read_csv(filename)
-shallow = df['shallow']
-deep = df['deep']
-\end{lstlisting}
-
-\hypertarget{daten-visualisieren}{%
-\paragraph{Daten Visualisieren}\label{daten-visualisieren}}
-
-\begin{lstlisting}[language=Python]
-import matplotlib.pyplot as plt
-import sklearn.linear_model as lm
-import seaborn as sns
-model = lm.LinearRegression()
-model.fit(shallow.values.reshape(len(shallow), 1), deep)
-plt.figure(figsize=(15, 10))
-sns.set(style='whitegrid')
-plt.scatter(shallow, deep)
-plt.axvline(x=0.0, c='k')
-plt.axhline(y=0.0, c='k')
-plt.plot(shallow, shallow * model.coef_ + model.intercept_)
-plt.xlabel('shallow search')
-plt.ylabel('deep search')
-plt.title('Probcut Values')
-plt.show()
-\end{lstlisting}
-
-Varianz, erklärte Varianz und Standardabweichung berechnen
-
-\begin{lstlisting}[language=Python]
-import numpy as np
-import sklearn.metrics as skl
-variance = np.var(np.stack([shallow, deep], axis=1))
-print(f'variance: {variance}')
-explained_variance = skl.explained_variance_score(shallow, deep)
-print(f'standard distribution: {np.sqrt(variance)}')
-print(f'explained variance: {explained_variance}')
-\end{lstlisting}
-
-\hypertarget{applikation-starten}{%
-\subsubsection{Applikation Starten}\label{applikation-starten}}
-
-Im folgenden wird für beide Spieler die zu verwendende Künstliche
-Intelligenz, sowie die jeweils angewandte Heuristik festgelegt. Ein Wert
-von \passthrough{\lstinline!None!} bei der KI steht hierbei für einen
-menschlichen Spieler. Die KIs und Heuristiken werden jeweils in einem
-Dictionary gespeicher, sodass mit Spieler als Index auf die
-entsprechende KI oder Heuristik zugegriffen werden kann.
-
-\begin{lstlisting}[language=Python]
-# Settings
-BLACK_PLAYER_AI = random_ai_make_move
-WHITE_PLAYER_AI = probcut_ai_make_move
-
-BLACK_PLAYER_HEURISTIC = combined_heuristic
-WHITE_PLAYER_HEURISTIC = combined_heuristic
-
-PLAYER_AI = {BLACK: BLACK_PLAYER_AI, WHITE: WHITE_PLAYER_AI}
-PLAYER_HEURISTIC = {BLACK: BLACK_PLAYER_HEURISTIC, WHITE: WHITE_PLAYER_HEURISTIC}
-\end{lstlisting}
-
-Folgender Code dient zum Starten der interaktiven Applikation. Die
-Funktion \passthrough{\lstinline!next\_move!} wird für jeden Spielzug
-ausgeführt. Sie wird zu Beginn einmal aufgerufen. Wenn eine KI spielt,
-wird die Funktion rekursiv für den nächsten Zug aufgerufen. Wenn der
-Spieler menschlich ist, muss die Ausführung unterbrochen werden, da auf
-das Aufrufen eines Callbacks durch einen Klick gewartet werden muss. Im
-Callback wird auch die Funktion \passthrough{\lstinline!next\_move!} für
-den nächsten Zug aufgerufen.
-
-\begin{lstlisting}[language=Python]
-state = GameState()
-display_board(state)
-
-def next_move(state):
-    # Check if/which AI is playing
-    strat = PLAYER_AI[state.turn]
-    if strat is not None:
-        time.sleep(0.2)
-        strat(state, PLAYER_HEURISTIC[state.turn])
-        update_output(state)
-        if not state.game_over:
-            next_move(state)
-
-try:
-    next_move(state)
-except KeyboardInterrupt:
-    pass
-\end{lstlisting}
-
-\hypertarget{testing-code}{%
-\subsubsection{Testing code}\label{testing-code}}
-
-Der folgende Code dient zum Test, sowie zum Debuggen der oben
-implementierten Funktionen.
-
-\begin{lstlisting}[language=Python]
-test_board = GameState()
-\end{lstlisting}
-
-\begin{lstlisting}[language=Python]
-alphabeta_ai_make_move(test_board, combined_heuristic)
-test_board.board
-\end{lstlisting}
-
-Mit Hilfe des Pakets \passthrough{\lstinline!cProfile!} lassen sich
-Statistiken darüber sammeln, wie viel Zeit in welchen Funktionen
-benötigt wird.
-
-\begin{lstlisting}[language=Python]
-import cProfile
-
-cProfile.run('alphabeta_ai_make_move(test_board, combined_heuristic)')
-test_board.board
-\end{lstlisting}
-
-Die Funktion \passthrough{\lstinline!debug\_num\_visited\_states!}
-berechnet für einen Spielzustand den nächsten Zug mit verschiedenen
-Algorithmen und misst dabei die benötigte Zeit. Zusätzlich werden mit
-den globalen Variablen \passthrough{\lstinline!debug\_mm\_count!} und
-\passthrough{\lstinline!debug\_ab\_count!} die Anzahl der überprüften
-Zustände gezählt. Diese Zahlen geben einen Überblick darüber, wie viele
-Zweige durch den Algorithmus ausgeschlossen werden konnten und nicht
-überprüft werden mussten.
-
-\begin{lstlisting}[language=Python]
-def debug_num_visited_states(state, depth):
-    global transposition_table
-    global debug_mm_count
-    global debug_ab_count
-    global debug_pc_count
-    global MINIMAX_DEPTH_LIMIT
-    global ALPHABETA_DEPTH_LIMIT
-    global PROBCUT_DEPTH
-    global PROBCUT_SHALLOW_DEPTH
-    # save old variables
-    old_mm_depth = MINIMAX_DEPTH_LIMIT
-    old_ab_depth = ALPHABETA_DEPTH_LIMIT
-    old_pb_depth = PROBCUT_DEPTH
-    old_pb_shallow_depth = PROBCUT_SHALLOW_DEPTH
-    # set depth limit for all algorithms
-    MINIMAX_DEPTH_LIMIT = depth
-    ALPHABETA_DEPTH_LIMIT = depth
-    PROBCUT_DEPTH = depth
-    PROBCUT_SHALLOW_DEPTH = math.ceil(depth / 2)
-    # calculate next move with each algorithm and measure time
-    debug_mm_count= 0
-    start = time.time()
-    minimax_ai_make_move(copy.deepcopy(state), combined_heuristic)
-    secs = time.time() - start
-    print("Minimax takes", secs, "seconds and checks", debug_mm_count, "substates")
-    debug_ab_count= 0
-    transposition_table = {}
-    start = time.time()
-    alphabeta_ai_make_move(copy.deepcopy(state), combined_heuristic)
-    secs = time.time() - start
-    print("AlphaBeta takes", secs, "seconds and checks", debug_ab_count, "substates")
-    debug_ab_count= 0
-    transposition_table = {}
-    start = time.time()
-    alphabeta_id_make_move(copy.deepcopy(state), combined_heuristic)
-    secs = time.time() - start
-    print("AlphaBeta with iterative deepening takes", secs, "seconds and checks", debug_ab_count, "substates")
-    debug_pc_count= 0
-    transposition_table = {}
-    start = time.time()
-    probcut_ai_make_move(copy.deepcopy(state), combined_heuristic)
-    secs = time.time() - start
-    print("ProbCut takes", secs, "seconds and checks", debug_pc_count, "substates")
-    # restore old variables
-    MINIMAX_DEPTH_LIMIT = old_mm_depth
-    ALPHABETA_DEPTH_LIMIT = old_ab_depth
-    PROBCUT_DEPTH = old_pb_depth
-    PROBCUT_SHALLOW_DEPTH = old_pb_shallow_depth
-\end{lstlisting}
-
-\begin{lstlisting}[language=Python]
-debug_num_visited_states(test_board, 5)
-\end{lstlisting}
-
-Die Funktion \passthrough{\lstinline!get\_statistics!} ist dazu da,
-mehrere Spiele zu berechnen, in denen zwei KIs gegeneinander spielen und
-Statistiken darüber zu sammeln. \passthrough{\lstinline!num!} ist die
-Anzahl der Spiele, die durchgeführt werden sollen. Die weiteren
-Parameter legen fest, welche KIs und welche Heuristiken für die Spieler
-verwendet werden sollen. Statistiken werden nach jedem Spiel
-aktualisiert.
-
-Da das Spielfeld nicht gezeichnet werden soll, werden statt
-\passthrough{\lstinline!next\_move!} die Funktion
-\passthrough{\lstinline!next\_move\_blind!} verwendet.
-
-\begin{lstlisting}[language=Python]
-def get_statistics(num, black_ai, black_h, white_ai, white_h):
-    status = ipywidgets.widgets.Label()
-    display(status)
-    result = []
-    wins = [0, 0, 0]
-    status.value = f'0 / {num} games played, b/d/w: {wins[0]}/{wins[1]}/{wins[2]}'
-    try:
-        for i in range(num):
-            (b, w) = play_game(black_ai, black_h, white_ai, white_h)
-            result.append((b, w))
-            if b > w:
-                wins[0] += 1
-            elif w == b:
-                wins[1] += 1
-            else:
-                wins[2] += 1
-            status.value = f'{i+1} / {num} games played, b/d/w: {wins[0]}/{wins[1]}/{wins[2]}'
-    except KeyboardInterrupt:
-        status.value = f'Interrupted: {i} / {num} games played, b/d/w: {wins[0]}/{wins[1]}/{wins[2]}'
-    print_statistics(result)
-
-def play_game(black_ai, black_h, white_ai, white_h):
-    state = GameState()
-    next_move_blind(state, black_ai, white_ai, {BLACK: black_h, WHITE: white_h})
-    return count_disks(state, BLACK), count_disks(state, WHITE)
-
-
-def next_move_blind(state, black_ai, white_ai, heuristics):
-    # Check if/which AI is playing
-    strat = black_ai if state.turn == BLACK else white_ai
-    strat(state, heuristics[state.turn])
-    if not state.game_over:
-        next_move_blind(state, black_ai, white_ai, heuristics)
-
-def print_statistics(results):
-    print(results)
-\end{lstlisting}
-
-\begin{lstlisting}[language=Python]
-get_statistics(5, random_ai_make_move, cowthello_heuristic, random_ai_make_move, cowthello_heuristic)
 \end{lstlisting}

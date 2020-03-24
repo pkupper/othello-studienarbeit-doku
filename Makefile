@@ -2,11 +2,16 @@ DOCUMENT_NAME = dokumentation
 OUTPUT_DIR    = output
 ABGABE_DIR    = ../abgabe/
 
+IMPLEMENTATION_DIR = content/implementation
+NOTEBOOK_DIR = othello-studienarbeit-code
+NOTEBOOK_FILES = $(wildcard $(NOTEBOOK_DIR)/*.ipynb)
+IMPLEMENTATION_FILES = $(NOTEBOOK_FILES:$(NOTEBOOK_DIR)/%.ipynb=$(IMPLEMENTATION_DIR)/%.tex)
+
 
 ####latexmk
 
 # Build the LaTeX document with latexmk
-all: report
+all: implementation report
 
 # Remove output directory and generated document
 clean:
@@ -51,11 +56,15 @@ report-legacy:
 	cp $(OUTPUT_DIR)/$(DOCUMENT_NAME).pdf $(DOCUMENT_NAME).pdf 
 
 # Generate implementation section from jupyter notebook
-implementation:
+implementation: submodules $(IMPLEMENTATION_FILES)
+
+$(IMPLEMENTATION_DIR)/%.tex: $(IMPLEMENTATION_DIR)/%.md
+	pandoc $< -t latex -o $@ --listings
+
+$(IMPLEMENTATION_DIR)/%.md: $(NOTEBOOK_DIR)/%.ipynb
+	ipython nbconvert --to markdown $< --output ../$@
+
+submodules:
 	git submodule init
 	git submodule update --recursive --remote
-	ipython nbconvert --to markdown othello-studienarbeit-code/othello_game.ipynb --output ../content/implementation/gamelogic.md
-	ipython nbconvert --to markdown othello-studienarbeit-code/othello_ai.ipynb --output ../content/implementation/ai.md
-	pandoc content/implementation/gamelogic.md -t latex -o content/implementation/gamelogic.tex --listings
-	pandoc content/implementation/ai.md -t latex -o content/implementation/ai.tex --listings
 
