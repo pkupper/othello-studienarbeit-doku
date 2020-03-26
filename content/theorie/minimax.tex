@@ -1,14 +1,16 @@
 \section{Der Minimax-Algorithmus}
 
-Minimax ist ein Algorithmus zur Bestimmung des optimalen Spielzugs in einem deterministischen, rundenbasierten, zwei-Spieler Nullsummenspiel mit perfekter Information.
+Minimax ist ein Algorithmus zur Bestimmung des optimalen Spielzugs in einem deterministischen, rundenbasierten,
+zwei-Spieler Nullsummenspiel mit perfekter Information.
 
-Dabei wird für jeden Knoten im Spielbaum des Spiels rekursiv der Nutzen des entsprechenden Spielzustands für alle Spieler bestimmt.
-Dieser Wert des Nutzens wird $Minimax$-Wert genannt.
+Dabei wird für jeden Knoten im Spielbaum des Spiels rekursiv der Nutzen des entsprechenden Spielzustands für alle
+Spieler bestimmt. Dieser Wert des Nutzens wird $Minimax$-Wert genannt.
 
-An den Blatt-Knoten des Spielbaums ist der Nutzen für alle Spieler bekannt, da der Gewinner bereits feststeht.
-Der Minimax-Wert beträgt dann für den Zustand $s$ und den Spieler $p$ genau $Utility(s)$.
-Der Nutzen der restlichen Knoten wird bestimmt, indem unter der Annahme, dass beide Spieler optimal spielen, immer der größte Nutzen aus den Kind-Knoten für den aktuell spielenden Spieler ausgewählt wird.
-Ist der maximiernde Spieler an der Reihe, gilt für einen Spielzustand $s$ also:
+An den Blatt-Knoten des Spielbaums ist der Nutzen für alle Spieler bekannt, da der Gewinner bereits feststeht. Der
+Minimax-Wert beträgt dann für den Zustand $s$ und den Spieler $p$ genau $Utility(s, p)$. Der Nutzen der restlichen Knoten
+wird bestimmt, indem unter der Annahme, dass beide Spieler optimal spielen, immer der größte Nutzen aus den Kind-Knoten
+für den aktuell spielenden Spieler ausgewählt wird. Ist der maximiernde Spieler an der Reihe, gilt für einen
+Spielzustand $s$ also:
 
 \hspace*{1.3cm}
 $Minimax=max(\{Minimax(Result(s, a)) \mid a \in Actions(s)\})$
@@ -18,14 +20,16 @@ Wenn der minimierende Spieler an der Reihe ist, gilt analog:
 \hspace*{1.3cm}
 $Minimax=min(\{Minimax(Result(s, a)) \mid a \in Actions(s)\})$
 
-Für den maximierenden bzw. minimierenden Spieler ist der Zug mit dem größten bzw. kleinsten $Minimax$-Wert der beste Zug gegen einen optimal spielenden Gegner.
+Für den maximierenden bzw. minimierenden Spieler ist der Zug mit dem größten bzw. kleinsten $Minimax$-Wert der beste Zug
+gegen einen optimal spielenden Gegner.
 \cite[S.~164f.]{ai2010russel}
 
-Da bei einem zwei-Spieler Nullsummenspiel die Summe der Nutzen der beiden Spieler konstant ist, und sich somit der Nutzen für einem Spieler aus dem Nutzen des anderen Spielers ergibt, muss nur der Nutzen für einen Spieler betrachtet werden.
-Dieser wird dann abwechselnd von diesem Spieler maximiert, und von dessen Gegner minimiert.
-Die Spieler werden dann maximierender und einen minimierender Spieler genannt.
-Aus dieser Vorgehensweise ergibt sich der Name "'Minimax"' für die zwei-Spieler Variante des Algorithmus.
-Bei Spielen mit mehr als zwei Spielern kann diese Optimierung nicht angewandt werden, weshalb in diesem Fall immer der Nutzen für alle Spieler getrennt betrachtet werden muss.
+Da bei einem zwei-Spieler Nullsummenspiel die Summe der Nutzen der beiden Spieler konstant ist und sich somit der
+Nutzen für einen Spieler aus dem Nutzen des anderen Spielers ergibt, muss nur der Nutzen für einen Spieler betrachtet
+werden. Dieser wird dann abwechselnd von diesem Spieler maximiert und von dessen Gegner minimiert. Die Spieler werden
+dann maximierender und minimierender Spieler genannt. Aus dieser Vorgehensweise ergibt sich der Name "'Minimax"'
+für die zwei-Spieler Variante des Algorithmus. Bei Spielen mit mehr als zwei Spielern kann diese Optimierung nicht
+angewandt werden, weshalb in diesem Fall immer der Nutzen für alle Spieler getrennt betrachtet werden muss.
 \cite[S.~165]{ai2010russel}
 
 %TODO: Mathematische Beschreibung / evtl. Implementation

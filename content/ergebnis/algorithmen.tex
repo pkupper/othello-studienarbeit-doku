@@ -1,11 +1,14 @@
 \section{Verbesserungen durch Pruning}
 
-Um den Einfluss von AlphaBeta-Pruning, Iterative Deepening und ProbCut auf die Leistung der KI beurteilen zu können, kann die Ausgabe der Funktion $debug\_num\_visited\_states$ betrachtet werden.
-Die Anzahl der überprüften Zustände ist ein gutes Maß für benötigte Rechenleistung.
-Diese wurden für verschiedene Suchtiefen berechnet und in Tabelle \ref{table:numstates} zusammengefasst.
-Hier ist deutlich zu erkennen, dass der AlphaBeta-Algorithmus durch das Anwenden von Pruning im Gegensatz zum reinen MiniMax-Algorithmus vor allem für größere Suchtiefen deutlich weniger Zustände überprüfen muss und somit performanter ist.
-AlphaBeta mit Iterative Deepening hat bei geringen Suchtiefen einen relativ hohen Overhead, sodass mehr Zustände überprüft werden müssen als ohne Iterative Deepening.
-Ab einer Suchtiefe von sieben ist Iterative Deepening allerdings deutlich überlegen, da durch die bessere Sortierung so viele Zweige ausgeschlossen werden können, dass trotz Overhead deutlich weniger Zustände betrachtet werden müssen.
+Um den Einfluss von AlphaBeta-Pruning, Iterative Deepening und ProbCut auf die Leistung der KI beurteilen zu können,
+kann die Ausgabe der Funktion $debug\_num\_visited\_states$ betrachtet werden. Die Anzahl der überprüften Zustände ist
+ein gutes Maß für benötigte Rechenleistung. Diese wurden für verschiedene Suchtiefen berechnet und in Tabelle
+\ref{table:numstates} zusammengefasst. Hier ist deutlich zu erkennen, dass der AlphaBeta-Algorithmus durch das Anwenden
+von Pruning im Gegensatz zum reinen MiniMax-Algorithmus vor allem für größere Suchtiefen deutlich weniger Zustände
+überprüfen muss und somit performanter ist. AlphaBeta mit Iterative Deepening hat bei geringen Suchtiefen einen relativ
+hohen Overhead, sodass mehr Zustände überprüft werden müssen als ohne Iterative Deepening. Ab einer Suchtiefe von sieben
+ist Iterative Deepening allerdings deutlich überlegen, da durch die bessere Sortierung so viele Zweige ausgeschlossen
+werden können, dass trotz Overhead deutlich weniger Zustände betrachtet werden müssen.
 
 \begin{table}[hb]
 \centering
