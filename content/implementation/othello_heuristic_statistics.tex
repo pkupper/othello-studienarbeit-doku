@@ -1,0 +1,105 @@
+\begin{lstlisting}[language=Python]
+%%HTML
+<style>
+.container { width:100% }
+</style>
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+%run othello_test_util.ipynb
+\end{lstlisting}
+
+Der folgende Code dient zum Überprüfen, ob die Heuristik besser ist,
+wenn für den Gegner die möglichen Züge bestimmt werden, obwohl er nicht
+an der Reihe ist, oder wenn die durchschnittliche Anzahl an möglichen
+Zügen in der Spielphase verwendet wird.
+
+\begin{lstlisting}[language=Python]
+def mobility_heuristic_avg(state):
+    x = state.num_pieces
+    if state.turn == WHITE:
+        return (len(state.possible_moves) - (-0.0113 * x*x + 0.7178 * x + 0.5166)) / 64
+    else:
+        return ((-0.0113 * x * x + 0.7178 * x + 0.5166) - len(state.possible_moves)) / 64
+    
+def mobility_heuristic_both(state):
+    if state.turn == WHITE:
+        return (len(state.possible_moves) - len(get_possible_moves(state, BLACK))) / 64
+    else:
+        return (len(get_possible_moves(state, WHITE)) - len(state.possible_moves)) / 64
+
+def test_combined_heuristic_both(state):
+    if state.num_pieces >= 50:
+        return disc_count_heuristic(state)
+    mobility = mobility_heuristic_both(state)
+    cowthello = cowthello_heuristic(state)
+    return 0.5 * mobility + 0.5 * cowthello
+
+def test_combined_heuristic_avg(state):
+    if state.num_pieces >= 50:
+        return disc_count_heuristic(state)
+    mobility = mobility_heuristic_avg(state)
+    cowthello = cowthello_heuristic(state)
+    return 0.5 * mobility + 0.5 * cowthello
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+# actual moves of opponent vs average possible moves
+settings = { BLACK: { 'heuristic': test_combined_heuristic_both,
+                      'algorithm': alphabeta,
+                      'depth': 4,
+                      'mode': ai_make_move },
+             WHITE: { 'heuristic': test_combined_heuristic_avg,
+                      'algorithm': alphabeta,
+                      'depth': 4,
+                      'mode': ai_make_move }}
+
+get_statistics(20, settings)
+\end{lstlisting}
+
+Der folgende Code dient dazu, die beste Gewichtung einzelnen Komponenten
+der kombinierten Heuristik zu bestimmen.
+
+\begin{lstlisting}[language=Python]
+def heuristic_weighting_interval(num, settings, lower, upper):
+    global MOBILITY_PROPORTION
+    global MOBILITY_PROPORTION2
+    MOBILITY_PROPORTION = (lower + upper) / 2
+    MOBILITY_PROPORTION2 = lower
+    print("Black mobility:", MOBILITY_PROPORTION, "/ White mobility:", MOBILITY_PROPORTION2)
+    [b1,d1,w1] = get_statistics(num, settings)
+    MOBILITY_PROPORTION2 = upper
+    print("Black mobility:", MOBILITY_PROPORTION, "/ White mobility:", MOBILITY_PROPORTION2)
+    [b2,d2,w2] = get_statistics(num, settings)
+    
+MOBILITY_PROPORTION = 0.5
+
+def test_combined_heuristic_1(state):
+    if state.num_pieces >= 50:
+        return disc_count_heuristic(state)
+    mobility = mobility_heuristic(state)
+    cowthello = cowthello_heuristic(state)
+    return MOBILITY_PROPORTION * mobility + (1 - MOBILITY_PROPORTION) * cowthello
+
+MOBILITY_PROPORTION2 = 0.5
+
+def test_combined_heuristic_2(state):
+    if state.num_pieces >= 50:
+        return disc_count_heuristic(state)
+    mobility = mobility_heuristic(state)
+    cowthello = cowthello_heuristic(state)
+    return MOBILITY_PROPORTION2 * mobility + (1 - MOBILITY_PROPORTION2) * cowthello
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+settings = { BLACK: { 'heuristic': test_combined_heuristic_1,
+                      'algorithm': alphabeta,
+                      'depth': 4,
+                      'mode': ai_make_move },
+             WHITE: { 'heuristic': test_combined_heuristic_2,
+                      'algorithm': alphabeta,
+                      'depth': 4,
+                      'mode': ai_make_move }}
+
+heuristic_weighting_interval(20, settings, 0, 1)
+\end{lstlisting}

@@ -30,6 +30,7 @@ sowie die Funktion \passthrough{\lstinline!floor!} benötigt.
 import ipycanvas
 import ipywidgets
 import math
+from ipywidgets import RadioButtons, HBox, VBox, IntSlider, Label
 \end{lstlisting}
 
 \hypertarget{globale-konstanten}{%
@@ -95,6 +96,10 @@ möglich.
 output = ipywidgets.widgets.Output()
 \end{lstlisting}
 
+\begin{lstlisting}[language=Python]
+utility_lbl = ipywidgets.widgets.Label()
+\end{lstlisting}
+
 Die Funktion \passthrough{\lstinline!display\_board!} stellt den
 angegebenen Spielzustand dar, indem zunächst der Canvas aktualisiert,
 und dann zusammen mit den Status-Widgets angezeigt wird.
@@ -105,6 +110,7 @@ def display_board(state):
     display(canvas)
     display(score_lbl)
     display(turn_lbl)
+    display(utility_lbl)
     display(output)
 \end{lstlisting}
 
@@ -122,22 +128,33 @@ def update_output(state):
                 canvas[1].fill_style = 'black'
             else:
                 canvas[1].fill_style = 'white'
-            canvas[1].fill_arc((x + 0.5) * CELL_SIZE, (y + 0.5) * CELL_SIZE, CELL_SIZE / 2.2, 0, 2 * math.pi)
-            
+            canvas[1].fill_arc((x + 0.5) * CELL_SIZE, (y + 0.5)
+                               * CELL_SIZE, CELL_SIZE / 2.2, 0, 2 * math.pi)
+
+        if state.last_move != None:
+            (x, y) = state.last_move
+            canvas[1].stroke_style = 'red'
+            canvas[1].line_width = 2
+            canvas[1].stroke_arc((x + 0.5) * CELL_SIZE, (y + 0.5)
+                               * CELL_SIZE, CELL_SIZE / 2.2, 0, 2 * math.pi)
+
         if SHOW_FRONTIER:
             for (x, y) in state.frontier:
                 canvas[1].fill_style = 'gray'
-                canvas[1].fill_arc((x + 0.5) * CELL_SIZE, (y + 0.5) * CELL_SIZE, CELL_SIZE / 6, 0, 2 * math.pi)
-        
+                canvas[1].fill_arc((x + 0.5) * CELL_SIZE, (y + 0.5)
+                                   * CELL_SIZE, CELL_SIZE / 6, 0, 2 * math.pi)
+
         if SHOW_POSSIBLE_MOVES:
             for (x, y) in get_possible_moves(state, state.turn):
                 if state.turn == BLACK:
                     canvas[1].fill_style = 'black'
                 else:
                     canvas[1].fill_style = 'white'
-                canvas[1].fill_arc((x + 0.5) * CELL_SIZE, (y + 0.5) * CELL_SIZE, CELL_SIZE / 6, 0, 2 * math.pi)
-            
+                canvas[1].fill_arc((x + 0.5) * CELL_SIZE, (y + 0.5)
+                                   * CELL_SIZE, CELL_SIZE / 6, 0, 2 * math.pi)
+
     score_lbl.value = f'Black Player : {count_disks(state, BLACK)} White Player : {count_disks(state, WHITE)}'
+    utility_lbl.value = f'Utility: Black: {utilities[BLACK]} / White: {utilities[WHITE]}'
     if state.game_over:
         turn_lbl.value = f'{get_player_string(get_winner(state))} wins'
     else:
@@ -160,11 +177,68 @@ def mouse_down(x_px, y_px):
             x = math.floor(x_px / CELL_SIZE)
             y = math.floor(y_px / CELL_SIZE)
             try:
-                make_move(state, x, y)
+                make_move(state, (x, y))
             except InvalidMoveException:
                 print('Invalid Move')
             update_output(state)
-            next_move(state)
+            try:
+                next_move(state)
+            except KeyboardInterrupt:
+                pass
+
 
 canvas[1].on_mouse_down(mouse_down)
+\end{lstlisting}
+
+\hypertarget{spieleinstellungen}{%
+\subsection{Spieleinstellungen}\label{spieleinstellungen}}
+
+\begin{lstlisting}[language=Python]
+def configure_settings():
+    global algorithms, modes
+    global black_algorithm, black_mode, black_depth
+    global white_algorithm, white_mode, white_depth
+    algorithms = { 'Menschlicher Spieler': None,
+                   'ProbCut': probcut,
+                   'AlphaBeta': alphabeta,
+                   'Minimax': minimax,
+                   'Zufällig': random_ai }
+    modes = { 'Feste Tiefe': ai_make_move,
+              'Iterative Vertiefung': ai_make_move_id,
+              'Zeitbegrenzte Vertiefung': ai_make_move_id_timelimited }
+    black_algorithm = RadioButtons(
+        options=algorithms.keys(),
+        value='Menschlicher Spieler',
+        description='Schwarz:'
+    )
+    black_mode = RadioButtons(
+        options=modes.keys(),
+        value='Zeitbegrenzte Vertiefung'
+    )
+    black_depth = IntSlider(value = 5, min=1, max=10, description='Suchtiefe:')
+    black_settings = HBox([black_algorithm, black_mode, black_depth])
+    white_algorithm = RadioButtons(
+        options=algorithms.keys(),
+        value='ProbCut',
+        description='Weiß:'
+    )
+    white_mode = RadioButtons(
+        options=modes.keys(),
+        value='Zeitbegrenzte Vertiefung'
+    )
+    white_depth = IntSlider(value = 5, min=1, max=10, description='Suchtiefe:')
+    white_settings = HBox([white_algorithm, white_mode, white_depth])
+    display(ipywidgets.VBox([black_settings, white_settings]))
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+def get_settings():
+    return { BLACK: { 'heuristic': combined_heuristic,
+                      'algorithm': algorithms[black_algorithm.value],
+                      'depth': black_depth.value,
+                      'mode': modes[black_mode.value] },
+             WHITE: { 'heuristic': combined_heuristic,
+                      'algorithm': algorithms[white_algorithm.value],
+                      'depth': white_depth.value,
+                      'mode': modes[white_mode.value] }}
 \end{lstlisting}

@@ -26,15 +26,7 @@ Dictionary gespeicher, sodass mit Spieler als Index auf die
 entsprechende KI oder Heuristik zugegriffen werden kann.
 
 \begin{lstlisting}[language=Python]
-# Settings
-BLACK_PLAYER_AI = random_ai_make_move
-WHITE_PLAYER_AI = probcut_ai_make_move
-
-BLACK_PLAYER_HEURISTIC = combined_heuristic
-WHITE_PLAYER_HEURISTIC = combined_heuristic
-
-PLAYER_AI = {BLACK: BLACK_PLAYER_AI, WHITE: WHITE_PLAYER_AI}
-PLAYER_HEURISTIC = {BLACK: BLACK_PLAYER_HEURISTIC, WHITE: WHITE_PLAYER_HEURISTIC}
+configure_settings()
 \end{lstlisting}
 
 Folgender Code dient zum Starten der interaktiven Applikation. Die
@@ -49,17 +41,17 @@ den nächsten Zug aufgerufen.
 \begin{lstlisting}[language=Python]
 state = GameState()
 display_board(state)
+settings = get_settings()
 
 def next_move(state):
     # Check if/which AI is playing
-    strat = PLAYER_AI[state.turn]
-    if strat is not None:
+    ai = settings[state.turn]['algorithm']
+    if ai is not None:
         time.sleep(0.2)
-        strat(state, PLAYER_HEURISTIC[state.turn])
+        settings[state.turn]['mode'](ai, state, settings[state.turn]['depth'], settings[state.turn]['heuristic'])
         update_output(state)
         if not state.game_over:
             next_move(state)
-
 try:
     next_move(state)
 except KeyboardInterrupt:

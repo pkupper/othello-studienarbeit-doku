@@ -1,0 +1,40 @@
+\begin{lstlisting}[language=Python]
+%%HTML
+<style>
+.container { width:100% }
+</style>
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+%run othello_test_util.ipynb
+\end{lstlisting}
+
+\hypertarget{testing}{%
+\section{Testing}\label{testing}}
+
+Der folgende Code dient zum Test, sowie zum Debuggen des Codes aus
+anderen Notebooks.
+
+\begin{lstlisting}[language=Python]
+test_board = GameState()
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+ai_make_move(alphabeta, test_board, 3, combined_heuristic)
+test_board.board
+\end{lstlisting}
+
+Mit Hilfe des Pakets \passthrough{\lstinline!cProfile!} lassen sich
+Statistiken darüber sammeln, wie viel Zeit in welchen Funktionen
+benötigt wird.
+
+\begin{lstlisting}[language=Python]
+import cProfile
+
+cProfile.run('ai_make_move(alphabeta, test_board, 3, combined_heuristic)')
+test_board.board
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+debug_num_visited_states(test_board, 5)
+\end{lstlisting}

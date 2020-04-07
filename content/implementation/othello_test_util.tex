@@ -10,31 +10,15 @@
 %run othello_ai.ipynb
 \end{lstlisting}
 
-\hypertarget{testing-code}{%
-\subsubsection{Testing code}\label{testing-code}}
-
-Der folgende Code dient zum Test, sowie zum Debuggen der oben
-implementierten Funktionen.
-
 \begin{lstlisting}[language=Python]
-test_board = GameState()
+import time
 \end{lstlisting}
 
-\begin{lstlisting}[language=Python]
-ai_make_move(alphabeta, test_board, 3, combined_heuristic)
-test_board.board
-\end{lstlisting}
+\hypertarget{hilfsfunktionen}{%
+\section{Hilfsfunktionen}\label{hilfsfunktionen}}
 
-Mit Hilfe des Pakets \passthrough{\lstinline!cProfile!} lassen sich
-Statistiken darüber sammeln, wie viel Zeit in welchen Funktionen
-benötigt wird.
-
-\begin{lstlisting}[language=Python]
-import cProfile
-
-cProfile.run('ai_make_move(alphabeta, test_board, 3, combined_heuristic)')
-test_board.board
-\end{lstlisting}
+Der folgende Code beinhaltet Hilfsfunktionen zum Testen und sammeln von
+Statistiken.
 
 Die Funktion \passthrough{\lstinline!debug\_num\_visited\_states!}
 berechnet für einen Spielzustand den nächsten Zug mit verschiedenen
@@ -46,9 +30,6 @@ Zweige durch den Algorithmus ausgeschlossen werden konnten und nicht
 überprüft werden mussten.
 
 \begin{lstlisting}[language=Python]
-import time
-
-
 def debug_num_visited_states(state, depth):
     global transposition_table
     global debug_mm_count
@@ -83,10 +64,6 @@ def debug_num_visited_states(state, depth):
           debug_pc_count, "substates")
 \end{lstlisting}
 
-\begin{lstlisting}[language=Python]
-debug_num_visited_states(test_board, 5)
-\end{lstlisting}
-
 Die Funktion \passthrough{\lstinline!get\_statistics!} ist dazu da,
 mehrere Spiele zu berechnen, in denen zwei KIs gegeneinander spielen und
 Statistiken darüber zu sammeln. \passthrough{\lstinline!num!} ist die
@@ -95,15 +72,29 @@ Parameter legen fest, welche KIs und welche Heuristiken für die Spieler
 verwendet werden sollen. Statistiken werden nach jedem Spiel
 aktualisiert.
 
-Da das Spielfeld nicht gezeichnet werden soll, werden statt
+Da das Spielfeld nicht gezeichnet werden soll, wird statt
 \passthrough{\lstinline!next\_move!} die Funktion
 \passthrough{\lstinline!next\_move\_blind!} verwendet.
+
+\begin{lstlisting}[language=Python]
+def next_move_blind(state, settings):
+    settings[state.turn]['mode'](settings[state.turn]['algorithm'], state, settings[state.turn]['depth'], settings[state.turn]['heuristic'])
+    if not state.game_over:
+        next_move_blind(state, settings)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+def play_game(settings):
+    state = GameState()
+    next_move_blind(state, settings)
+    return count_disks(state, BLACK), count_disks(state, WHITE)
+\end{lstlisting}
 
 \begin{lstlisting}[language=Python]
 import ipywidgets
 
 
-def get_statistics(num, black_ai, black_h, white_ai, white_h):
+def get_statistics(num, settings):
     status = ipywidgets.widgets.Label()
     display(status)
     result = []
@@ -111,7 +102,7 @@ def get_statistics(num, black_ai, black_h, white_ai, white_h):
     status.value = f'0 / {num} games played, b/d/w: {wins[0]}/{wins[1]}/{wins[2]}'
     try:
         for i in range(num):
-            (b, w) = play_game(black_ai, black_h, white_ai, white_h)
+            (b, w) = play_game(settings)
             result.append((b, w))
             if b > w:
                 wins[0] += 1
@@ -122,29 +113,6 @@ def get_statistics(num, black_ai, black_h, white_ai, white_h):
             status.value = f'{i+1} / {num} games played, b/d/w: {wins[0]}/{wins[1]}/{wins[2]}'
     except KeyboardInterrupt:
         status.value = f'Interrupted: {i} / {num} games played, b/d/w: {wins[0]}/{wins[1]}/{wins[2]}'
-    print_statistics(result)
-
-
-def play_game(black_ai, black_h, white_ai, white_h):
-    state = GameState()
-    next_move_blind(state, black_ai, white_ai, {
-                    BLACK: black_h, WHITE: white_h})
-    return count_disks(state, BLACK), count_disks(state, WHITE)
-
-
-def next_move_blind(state, black_ai, white_ai, heuristics):
-    # Check if/which AI is playing
-    strat = black_ai if state.turn == BLACK else white_ai
-    strat(state, heuristics[state.turn])
-    if not state.game_over:
-        next_move_blind(state, black_ai, white_ai, heuristics)
-
-
-def print_statistics(results):
-    print(results)
-\end{lstlisting}
-
-\begin{lstlisting}[language=Python]
-get_statistics(5, random_ai_make_move, cowthello_heuristic,
-               random_ai_make_move, cowthello_heuristic)
+    print(result)
+    return wins
 \end{lstlisting}

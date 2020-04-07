@@ -5,12 +5,12 @@
 </style>
 \end{lstlisting}
 
-\hypertarget{implementation-der-spiellogik}{%
-\section{Implementation der
-Spiellogik}\label{implementation-der-spiellogik}}
+\hypertarget{implementierung-der-spiellogik}{%
+\section{Implementierung der
+Spiellogik}\label{implementierung-der-spiellogik}}
 
 Im Folgenden ist das Spiel Othello implementiert. Ausgangspunkt für
-diese Implementierung ist Das Python Gui für Othello von Kevan Nguyen,
+diese Implementierung ist das Python Gui für Othello von Kevan Nguyen,
 welches unter \url{https://github.com/kevannguyen/Othello} verfügbar
 ist.
 
@@ -18,9 +18,9 @@ ist.
 \subsection{Importieren der externen
 Abhängigkeiten}\label{importieren-der-externen-abhuxe4ngigkeiten}}
 
-Die Implementation stützt sich für bessere Performanz auf die Python,
-Bibliothek \passthrough{\lstinline!numpy!} welche unter anderem homogene
-Felder und Matrizen implementiert.
+Die Implementation stützt sich für bessere Performanz auf die
+Python-Bibliothek \passthrough{\lstinline!numpy!} welche unter anderem
+homogene Felder und Matrizen implementiert.
 
 \begin{lstlisting}[language=Python]
 import numpy
@@ -41,8 +41,8 @@ Identifikation eines Spielers - zur Berechnung der Heuristiken.
 \begin{lstlisting}[language=Python]
 BOARD_SIZE = 8
 
-BLACK = -1 # MINIMIZING PLAYER
-WHITE = 1 # MAXIMIZING PLAYER
+BLACK = -1  # MINIMIZING PLAYER
+WHITE = 1  # MAXIMIZING PLAYER
 NONE = 0
 \end{lstlisting}
 
@@ -53,9 +53,25 @@ Die Klasse GameState repäsentiert den Spielzustand. Dieser besteht aus
 dem Spielfeld \passthrough{\lstinline!board!}, welches durch einen Numpy
 Array repräsentiert wird, sowie dem Spieler
 \passthrough{\lstinline!turn!}, der am Zug ist. Zusätzlich werden
-weitere Informationen wie, mögliche Züge, Frontier und Anzahl an
-Spielsteinen gehalten, um zu vermeiden, dass diese häufig neu berechnet
-werden müssen.
+weitere Informationen im Spielzustand gespeichert welche zur
+Verbesserung der Performanz genutzt werden. Diese sind die im aktuellen
+Spielzustand möglichen Züge, welche in der Variable
+\passthrough{\lstinline!possible\_moves!} gespeichert werden. Außerdem
+in der Variable \passthrough{\lstinline!frontier!} die Menge der freien
+Felder, die horizontal, vertikal oder diagonal an einen Stein angrenzen.
+Beim Ermitteln der möglichen Züge kann dadurch die Performanz gesteigert
+werden, da nur diese Menge und nicht das gesamte Spielfeld überprüft
+werden muss. Weiterhin die Anzahl an Spielsteinen auf dem Spielfeld in
+der Variable \passthrough{\lstinline!num\_pieces!}. In der Variable
+\passthrough{\lstinline!game\_over!}, ob der Zustand ein Endzustand ist.
+Und zuletzt in der Variable \passthrough{\lstinline!last\_move!} die
+Koordinaten des letzten Spielzugs. Diese Variablen werden im Laufe des
+Spielverlaufs immer aktuell gehalten. Die Funktion
+\passthrough{\lstinline!\_\_lt\_\_!} ist implementiert, damit
+\passthrough{\lstinline!GameState!}-Objekte vergleichbar sind. Das ist
+nötig, da später Tupel, die z.B. eine Priorität und einen
+\passthrough{\lstinline!GameState!} enthalten, sortierbar sind.
+Allerdings ist es nicht wichtig, wie die GameStates sortiert werden.
 
 \begin{lstlisting}[language=Python]
 class GameState:
@@ -65,19 +81,25 @@ class GameState:
         self.board[3, 4] = BLACK
         self.board[4, 3] = BLACK
         self.board[4, 4] = WHITE
-        self.frontier = {(2,2),(2,3),(2,4),(2,5),
-                         (3,2),(3,5),(4,2),(4,5),
-                         (5,2),(5,3),(5,4),(5,5)}
         self.turn = BLACK
+        self.possible_moves = [(2, 3), (3, 2), (4, 5), (5, 4)]
+        self.frontier = {(2, 2), (2, 3), (2, 4), (2, 5),
+                         (3, 2), (3, 5), (4, 2), (4, 5),
+                         (5, 2), (5, 3), (5, 4), (5, 5)}
         self.num_pieces = 4
         self.game_over = False
-        self.possible_moves = [(2, 3), (3, 2), (4, 5), (5, 4)]
+        self.last_move = None
+
     def __lt__(self, other):
         return True
 \end{lstlisting}
 
+Die Liste \passthrough{\lstinline!directions!} enthält alle
+horizontalen, vertikalen und diagonalen Richtungen auf dem Spielfeld als
+Paar von Versätzen in Reihen- und Spaltenrichtung.
+
 \begin{lstlisting}[language=Python]
-directions = {(-1,-1),(0,-1),(1,-1),(-1,0),(1,0),(-1,1),(0,1),(1,1)}
+directions = [(-1,-1),(0,-1),(1,-1),(-1,0),(1,0),(-1,1),(0,1),(1,1)]
 \end{lstlisting}
 
 Erhält die Funktion \passthrough{\lstinline!make\_move!} ein ungültigen
@@ -89,55 +111,63 @@ class InvalidMoveException(Exception):
     pass
 \end{lstlisting}
 
-\passthrough{\lstinline!make\_move!} führt im Spielzustand
-\passthrough{\lstinline!state!} falls möglich einen Zug auf die
+Die Funktion \passthrough{\lstinline!make\_move!} führt im Spielzustand
+\passthrough{\lstinline!state!}, falls möglich, einen Zug auf die
 Koordinaten \passthrough{\lstinline!row!} und
 \passthrough{\lstinline!col!} aus.
 
-\begin{lstlisting}[language=Python]
-def make_move(state, row, col):
-    if (row, col) not in state.frontier:
-        print("(", row, ", ", col, ") not in Frontier")
-        raise InvalidMoveException
-    next_turn = state.turn
-        
-    possible_directions = adjacent_opposite_color_directions(state, row, col, state.turn)
-    for (row_dir, col_dir) in possible_directions:
-        if is_valid_directional_move(state, row, col, row_dir, col_dir, state.turn):
-            next_turn = -state.turn
-            convert_adjacent_cells_in_direction(state, row, col, row_dir, col_dir, state.turn)
+Dazu werden zunächst alle gegnerischen Steine umgedreht, die durch den
+Zug eingesperrt wurden. Wenn mindestens ein Stein umgedreht wurde, wird
+\passthrough{\lstinline!disks\_flipped!} auf
+\passthrough{\lstinline!True!}gesetzt. Wenn das nicht der Fall war,
+handelt es sich nicht um einen gültigen Zug und es wird eine Exception
+geworfen. Sonst wird der neue Stein gesetzt und im Zustand die Frontier,
+der aktuelle Spieler, ob das Spiel vorbei ist und die möglichen Züge des
+nächsten Spielers aktualisiert.
 
-    if next_turn != state.turn:
+\begin{lstlisting}[language=Python]
+def make_move(state, pos):
+    if pos not in state.frontier:
+        print(pos, "not in Frontier")
+        raise InvalidMoveException
+    disks_flipped = False
+    
+    (row, col) = pos
+    for (row_dir, col_dir) in directions:
+        if is_valid_directional_move(state, row, col, row_dir, col_dir, state.turn):
+            disks_flipped = True
+            flip_disks_in_direction(state, row, col, row_dir, col_dir, state.turn)
+
+    if disks_flipped:
         state.num_pieces += 1
-        state.board[(row, col)] = state.turn
+        state.board[pos] = state.turn
+        state.last_move = pos
         update_frontier(state, row, col)
-        if can_move(state, next_turn):
-            state.turn = next_turn
-        elif not can_move(state, state.turn):
+        state.turn = -state.turn
+        state.possible_moves = get_possible_moves(state, state.turn)
+        if len(state.possible_moves) == 0:
+            state.turn = -state.turn
+            state.possible_moves = get_possible_moves(state, state.turn)
+            if len(state.possible_moves) == 0:
                 state.game_over = True
                 return state
-        state.possible_moves = get_possible_moves(state, state.turn)
     else:
         raise InvalidMoveException()
     return state
 \end{lstlisting}
 
-Diese Funktion überprüft für einen gegebenen Zustand
-\passthrough{\lstinline!state!} ob ein Zug auf die angegebenen
-Koordinaten \passthrough{\lstinline!row!} und
+Die Funktion \passthrough{\lstinline!is\_move\_valid!} überprüft für
+einen gegebenen Zustand \passthrough{\lstinline!state!}, ob ein Zug auf
+die angegebenen Koordinaten \passthrough{\lstinline!row!} und
 \passthrough{\lstinline!col!} für den Spieler
-\passthrough{\lstinline!turn!} möglich ist. Das Ergebnis wird als
+\passthrough{\lstinline!player!} möglich ist. Das Ergebnis wird als
 Wahrheitswert zurückgegeben.
 
 \begin{lstlisting}[language=Python]
-def is_move_valid(state, row, col, turn):
-    dirs = [(-1,-1),(0,-1),(1,-1),(-1,0),(1,0),(-1,1),(0,1),(1,1)]
-    for rowdelta, coldelta in dirs:
-        try:
-            if state.board[row + rowdelta, col + coldelta] == -turn and is_valid_directional_move(state, row, col, rowdelta, coldelta, turn):
-                return True
-        except IndexError:
-            continue
+def is_move_valid(state, row, col, player):
+    for rowdelta, coldelta in directions:
+        if is_valid_directional_move(state, row, col, rowdelta, coldelta, player):
+            return True
     return False
 \end{lstlisting}
 
@@ -160,75 +190,46 @@ def get_winner(state):
 
 Die Funktion \passthrough{\lstinline!get\_possible\_moves!} bestimmt für
 einen Spielzustand \passthrough{\lstinline!state!} und den Spieler
-\passthrough{\lstinline!player!} die Möglichen Züge, die der Spieler
+\passthrough{\lstinline!player!} die möglichen Züge, die der Spieler
 machen kann. Die Züge werden als Liste von Koordinaten zurückgegeben.
 
 \begin{lstlisting}[language=Python]
 def get_possible_moves(state, player):
     possible_moves = []
     for (row, col) in state.frontier:
-            if is_move_valid(state, row, col, player):
-                possible_moves.append((row, col))
+        if is_move_valid(state, row, col, player):
+            possible_moves.append((row, col))
     return possible_moves
 \end{lstlisting}
 
-\passthrough{\lstinline!can\_move!} überprüft ob der Spieler
-\passthrough{\lstinline!player!} im Spielzustand
-\passthrough{\lstinline!state!} einen Zug machen kann und gibt das
-Resultat als Wahrheitswert zurück.
-
-\begin{lstlisting}[language=Python]
-def can_move(state, player):
-    return len(get_possible_moves(state, player)) != 0
-\end{lstlisting}
-
-\passthrough{\lstinline!adjacent\_opposite\_color\_directions!}
-betrachtet die 8 an die gegebenen Koordinaten angrenzenden Felder. Alle
-Felder die einen für den Spieler \passthrough{\lstinline!turn!}
-gegnerischen Stein enthalten werden als Liste von Koordinaten
-zurückgegeben.
-
-\begin{lstlisting}[language=Python]
-def adjacent_opposite_color_directions(state, row, col, turn):
-    dir_list = []
-    for rowdelta in range(-1, 2):
-        if not 0 <= row+rowdelta < 8:
-            continue
-        for coldelta in range(-1, 2):
-            if not 0 <= col+coldelta < 8:
-                continue
-            if state.board[row + rowdelta, col + coldelta] == -turn:
-                dir_list.append((rowdelta, coldelta))
-    return dir_list
-\end{lstlisting}
-
-Überprüft ob beim setzen eines Steins des Spielers
-\passthrough{\lstinline!turn!} in das durch
-\passthrough{\lstinline!row!} und \passthrough{\lstinline!col!} gegebene
-Feld in die durch \passthrough{\lstinline!rowdelta!} und
-\passthrough{\lstinline!coldelta!} gegebene Richtung, nach den Regeln
-des Spiels Othello gegnerische Steine umgedreht werden Können.
+Die Funktion \passthrough{\lstinline!is\_valid\_directional\_move!}
+überprüft für einen Zustand \passthrough{\lstinline!state!} und den
+Spieler \passthrough{\lstinline!player!}, ob beim Setzen eines Steins
+auf die Position \passthrough{\lstinline!(row, col)!} in die durch
+\passthrough{\lstinline!(rowdelta, coldelta)!} gegebene Richtung Steine
+umgedreht werden können.
 
 \begin{lstlisting}[language=Python]
 def is_valid_directional_move(state, row, col, rowdelta, coldelta, player):
-        current_row = row + rowdelta
-        current_col = col + coldelta
-
-        last_cell_color = -player
-
-        while True:
-            if not (0 <= current_row < 8 and 0 <= current_col < 8):
-                break
-            if state.board[current_row, current_col] == NONE:
-                break           
-            if state.board[current_row, current_col] == player:
-                last_cell_color = player
-                break
-
-            current_row += rowdelta
-            current_col += coldelta
-            
-        return last_cell_color == player
+    current_row = row + rowdelta
+    current_col = col + coldelta
+    if not (0 <= current_row < 8 and 0 <= current_col < 8):
+        return False
+    if not state.board[current_row, current_col] == -player:
+        return False
+    current_row += rowdelta
+    current_col += coldelta
+    
+    while True:
+        if not (0 <= current_row < 8 and 0 <= current_col < 8):
+            return False
+        if state.board[current_row, current_col] == NONE:
+            return False           
+        if state.board[current_row, current_col] == player:
+            return True
+    
+        current_row += rowdelta
+        current_col += coldelta
 \end{lstlisting}
 
 Diese Funktion dreht im Spielzustand \passthrough{\lstinline!state!},
@@ -239,17 +240,14 @@ ausgehend von dem durch \passthrough{\lstinline!row!} und
 \passthrough{\lstinline!coldelta!} gegebene Richtung um.
 
 \begin{lstlisting}[language=Python]
-def convert_adjacent_cells_in_direction(state, row, col, rowdelta, coldelta, player):
-    ''' If it can, converts all the adjacent/contiguous cells on a turn in
-        a given direction until it finally reaches the specified cell's original color '''
-    if is_valid_directional_move(state, row, col, rowdelta, coldelta, player):
-        current_row = row + rowdelta
-        current_col = col + coldelta
-        
-        while state.board[current_row, current_col] == -player:
-            state.board[(current_row, current_col)] = player
-            current_row += rowdelta
-            current_col += coldelta
+def flip_disks_in_direction(state, row, col, rowdelta, coldelta, player):
+    current_row = row + rowdelta
+    current_col = col + coldelta
+    
+    while state.board[current_row, current_col] == -player:
+        state.board[(current_row, current_col)] = player
+        current_row += rowdelta
+        current_col += coldelta
 \end{lstlisting}
 
 \passthrough{\lstinline!update\_frontier!} wird nach jedem Zug
@@ -260,15 +258,15 @@ Feldern hinzugefügt werden.
 
 \begin{lstlisting}[language=Python]
 def update_frontier(state, row, col):
-        for current_row in range(row-1, row+2):
-            if not 0 <= current_row < 8:
+    for current_row in range(row-1, row+2):
+        if not 0 <= current_row < 8:
+            continue
+        for current_col in range(col-1, col+2):
+            if not 0 <= current_col < 8:
                 continue
-            for current_col in range(col-1, col+2):
-                if not 0 <= current_col < 8:
-                    continue
-                if state.board[current_row, current_col] == NONE:
-                    state.frontier.add((current_row, current_col))
-        state.frontier.remove((row, col))
+            if state.board[current_row, current_col] == NONE:
+                state.frontier.add((current_row, current_col))
+    state.frontier.remove((row, col))
 \end{lstlisting}
 
 Die Funktion \passthrough{\lstinline!count\_disks!} zählt die Steine,

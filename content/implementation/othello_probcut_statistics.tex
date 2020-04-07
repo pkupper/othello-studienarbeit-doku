@@ -6,8 +6,8 @@
 \end{lstlisting}
 
 \begin{lstlisting}[language=Python]
-%run othello_ai.ipynb
 %run othello_game.ipynb
+%run othello_ai.ipynb
 \end{lstlisting}
 
 \hypertarget{ermitteln-der-standardabweichung}{%
@@ -23,6 +23,7 @@ erreicht.
 import csv
 import os
 
+
 def sample_probcut_values(num_games, shallow_depth, deep_depth):
     filename = f'probcut_dataset_{PROBCUT_SHALLOW_DEPTH}_{PROBCUT_DEEP_DEPTH}.csv'
     file_exists = os.path.isfile(filename)
@@ -35,11 +36,14 @@ def sample_probcut_values(num_games, shallow_depth, deep_depth):
             for i in range(num_games):
                 state = GameState()
                 while not state.game_over:
-                    random_ai_make_move(state, None)
-                    shallow_value = alphabeta(state, PROBCUT_SHALLOW_DEPTH, -math.inf, math.inf, combined_heuristic)
-                    deep_value = alphabeta(state, PROBCUT_DEEP_DEPTH, -math.inf, math.inf, combined_heuristic)
+                    ai_make_move(random_ai, state, 0, None)
+                    shallow_value = alphabeta(
+                        state, PROBCUT_SHALLOW_DEPTH, combined_heuristic, -math.inf, math.inf)
+                    deep_value = alphabeta(
+                        state, PROBCUT_DEEP_DEPTH, combined_heuristic, -math.inf, math.inf)
                     print(f'shallow: {shallow_value}, deep: {deep_value}')
-                    writer.writerow((state.num_pieces, shallow_value, deep_value))
+                    writer.writerow(
+                        (state.num_pieces, shallow_value, deep_value))
             file.close()
 \end{lstlisting}
 
@@ -82,7 +86,7 @@ for i in range(5, 45):
     explained_variance = skl.explained_variance_score(shallow_c, deep_c)
     x.append(i)
     y.append(math.sqrt(variance))
-    
+
 model = lm.LinearRegression()
 model.fit(np.array(x).reshape(-1, 1), np.array(y))
 
@@ -96,7 +100,9 @@ plt.xlabel('number of disks on the board')
 plt.ylabel('standard deviation')
 plt.title('Standard Deviation')
 plt.show()
+\end{lstlisting}
 
+\begin{lstlisting}[language=Python]
 print('x *', model.coef_[0], '+', model.intercept_)
 \end{lstlisting}
 

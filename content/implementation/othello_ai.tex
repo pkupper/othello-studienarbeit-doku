@@ -20,8 +20,12 @@ Notebook statt. Diese wird deshalb hier zunächst ausgeführt.
 \begin{lstlisting}[language=Python]
 import math
 import copy
-import numpy
+import numpy as np
 import random
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+utilities = {WHITE: '-', BLACK: '-'}
 \end{lstlisting}
 
 \hypertarget{heuristiken}{%
@@ -70,61 +74,45 @@ def mobility_heuristic(state):
 
 Beim Spielen von Othello fällt auf, dass es bestimmte Felder gibt, deren
 Belegung von Vorteil ist, sowie einige, deren Belegung eher nachteilhaft
-ist. Diese Eigenschaft macht sich die Weight-Heuristik zu Nutze. Diese
-weist jedem Feld einen Wert zu der angibt, wie Vorteilhaft der Besitz
-dieses Feldes ist, bzw. wie Nachteilhaft die Belegung des Feldes durch
-den Gegner ist. Diese Gewichte werden dann mit der aktuellen Belegung
-des Spielfelds multipliziert und die Ergebnisse anschließend
+ist. Diese Eigenschaft macht sich die Cowthello-Heuristik zu Nutze.
+Diese weist jedem Feld einen Wert zu der angibt, wie Vorteilhaft der
+Besitz dieses Feldes ist, bzw. wie Nachteilhaft die Belegung des Feldes
+durch den Gegner ist. Diese Gewichte werden dann mit der aktuellen
+Belegung des Spielfelds multipliziert und die Ergebnisse anschließend
 aufsummiert. Der resultierende Wert schätzt dann den Nutzen der
 aktuellen Position ein. Auch bei dieser Heuristik findet eine
 Normalisierung statt.
 
 Aufgrund der Symmetrie des Othello Spielfeldes ist es für die
 Weight-Heuristik nicht nötig, für jedes Feld einzeln dessen Gewicht
-anzugeben, stattdessen wird das Gewicht jeweils für charakteristische
-felder, wie zum Beispiel die Ecken, angegeben. Die Funktion
-\passthrough{\lstinline!gen\_weight\_matrix!} generiert dann die
-Gewichte-Matrix für das gesamte Feld und führt auch die Normalisierung
-durch.
+anzugeben. Stattdessen werden ausschließlich die Gewichte für ein
+Viertel des Spielfelds angegeben und dieses anschließend gespiegelt. Die
+Funktion \passthrough{\lstinline!gen\_cowthello\_matrix!} generiert dann
+die Gewichte-Matrix für das gesamte Feld und führt auch die
+Normalisierung durch. Dabei werden die Gewichte aus dem Online-Othello
+Programm Cowthello verwendet. Cowthello ist unter der URL
+\url{https://www.aurochs.org/games/cowthello/} verfügbar.
 
 \begin{lstlisting}[language=Python]
-def gen_weight_matrix(default=0, corner=0, adj_corner=0, sup_corner=0, edge=0, dia_corner=0, support=0, sup_edge=0):
-    raw_matrix = numpy.array([
-        [corner,      adj_corner,  sup_corner,  edge,      edge,      sup_corner,  adj_corner,  corner],
-        [adj_corner,  dia_corner,  default,     default,   default,   default,     dia_corner,  adj_corner],
-        [sup_corner,  default,     support,     sup_edge,  sup_edge,  support,     default,     sup_corner],
-        [edge,        default,     sup_edge,    default,   default,   sup_edge,    default,     edge],
-        [edge,        default,     sup_edge,    default,   default,   sup_edge,    default,     edge],
-        [sup_corner,  default,     support,     sup_edge,  sup_edge,  support,     default,     sup_corner],
-        [adj_corner,  dia_corner,  default,     default,   default,   default,     dia_corner,  adj_corner],
-        [corner,      adj_corner,  sup_corner,  edge,      edge,      sup_corner,  adj_corner,  corner]
+def gen_cowthello_matrix():
+    quarter = np.array([
+        [100, -25, 25, 10],
+        [-25, -50,  1,  1],
+        [ 25,   1, 50,  5],
+        [ 10,   1,  5,  1]
     ])
-    max_possible = numpy.sum(numpy.absolute(raw_matrix))
-    return numpy.true_divide(raw_matrix, max_possible)
+    top_half = np.hstack((quarter, np.flip(quarter, axis=1)))
+    bottom_half = np.flip(top_half, axis=0)
+    raw_matrix = np.vstack((top_half, bottom_half))
+    max_possible = np.sum(np.absolute(raw_matrix))
+    return np.true_divide(raw_matrix, max_possible)
+
+cowthello_weights = gen_cowthello_matrix()
 \end{lstlisting}
-
-Die Funktion \passthrough{\lstinline!weight\_heuristic!} berechnet die
-Weight-Heuristik allgemein für eine Gewichte-Matrix
-
-\begin{lstlisting}[language=Python]
-def weight_heuristic(state, weights):
-    return numpy.sum(numpy.multiply(state.board, weights))
-\end{lstlisting}
-
-Die Gewichte-Matrix \passthrough{\lstinline!cowthello\_weights!} nutzt
-die Gewichte aus dem Online-Othello Programm Cowthello. Cowthello ist
-unter der URL \url{https://www.aurochs.org/games/cowthello/} verfügbar.
-
-\begin{lstlisting}[language=Python]
-cowthello_weights = gen_weight_matrix(default=1, corner=100, adj_corner=-25, sup_corner=25, edge=10, dia_corner=-50, support=50, sup_edge=5)
-\end{lstlisting}
-
-Die Funktion \passthrough{\lstinline!cowthello\_heuristic!} ist eine
-Weight-Heuristik welche die Gewichte-Matrix von Cowthello verwendet.
 
 \begin{lstlisting}[language=Python]
 def cowthello_heuristic(state):
-    return weight_heuristic(state, cowthello_weights)
+    return np.sum(np.multiply(state.board, cowthello_weights))
 \end{lstlisting}
 
 Die oben implementierten Heuristiken bewerten jeweils nur ein Merkmal
@@ -136,11 +124,11 @@ Disc-Count-Heuristik wichtiger.
 
 \begin{lstlisting}[language=Python]
 def combined_heuristic(state):
-    if(state.num_pieces >= 50):
+    if state.num_pieces >= 50:
         return disc_count_heuristic(state)
     mobility = mobility_heuristic(state)
     cowthello = cowthello_heuristic(state)
-    return (mobility + cowthello) / 2
+    return 0.5 * mobility + 0.5 * cowthello
 \end{lstlisting}
 
 \hypertarget{implementierung-der-strategien}{%
@@ -150,72 +138,50 @@ Strategien}\label{implementierung-der-strategien}}
 \hypertarget{zufuxe4llige-ki}{%
 \subsubsection{Zufällige KI}\label{zufuxe4llige-ki}}
 
-Diese KI wählt aus der Menge der Möglichen Züge einen zufälligen aus und
-spielt diesen.
+Die zufällige KI bewertet den Nutzen aller Züge gleich, gibt also immer
+den Wert \passthrough{\lstinline!0!} zurück.
 
 \begin{lstlisting}[language=Python]
-def random_ai_make_move(state, heuristic):
-    possible_moves = state.possible_moves
-    random_move = random.choice(possible_moves)
-    make_move(state, random_move[0], random_move[1])
+def random_ai(state, depth, heuristic, alpha, beta):
+    return 0
 \end{lstlisting}
 
 \hypertarget{minimax-ki}{%
 \subsubsection{Minimax KI}\label{minimax-ki}}
 
-Diese KI verwendet den Minimax Algorithmus zur Bestimmung der
+Diese KI verwendet den Minimax-Algorithmus zur Bestimmung der
 Nützlichkeit eines Zuges.
 
 \begin{lstlisting}[language=Python]
-MINIMAX_DEPTH_LIMIT = 3
-debug_mm_count= 0
+debug_mm_count = 0
 
-def minimax(state, depth, heuristic):
+
+def minimax(state, depth, heuristic, alpha, beta):
     global debug_mm_count
-    if(state.game_over):
+    if state.game_over:
         return get_winner(state)
-    if(depth <= 0):
+    if depth == 0:
+        debug_mm_count += 1
         return heuristic(state)
-    
+
     if state.turn == WHITE:
         # maximizing
         utility = -math.inf
     else:
         # minimizing
         utility = math.inf
-        
+
     for move in get_possible_moves(state, state.turn):
-        debug_mm_count += 1
         tmp_state = copy.deepcopy(state)
-        make_move(tmp_state, move[0], move[1])
-        tmp_utility = minimax(tmp_state, depth - 1, heuristic)
+        make_move(tmp_state, move)
+        tmp_utility = minimax(tmp_state, depth - 1, heuristic, None, None)
         if state.turn == WHITE:
             # maximizing
             utility = max(utility, tmp_utility)
         else:
             # minimizing
-            utility = min(utility, tmp_utility)          
+            utility = min(utility, tmp_utility)
     return utility
-\end{lstlisting}
-
-Für alle möglichen Züge wird die Nützlichkeit des resultierenden
-Zustands mithilfe von \passthrough{\lstinline!minimax!} bestimmt und aus
-allen Zügen mit einer, für den Spieler optimalen, Nützlichkeit ein
-zufälliger Zug ausgewählt.
-
-\begin{lstlisting}[language=Python]
-def minimax_ai_make_move(state, heuristic):
-    if(state.game_over):
-        return
-    scored_moves = [(minimax(make_move(copy.deepcopy(state), move[0], move[1]), MINIMAX_DEPTH_LIMIT-1, heuristic), move) for move in state.possible_moves]
-    if state.turn == WHITE:
-        # maximizing
-        best_score, _ = max(scored_moves)
-    else:
-        # minimizing
-        best_score, _ = min(scored_moves)
-    best_move = random.choice([move for move in scored_moves if move[0] == best_score])[1]
-    make_move(state, best_move[0], best_move[1])
 \end{lstlisting}
 
 \hypertarget{alpha-beta-ki}{%
@@ -240,37 +206,40 @@ Die Funktion \passthrough{\lstinline!alphabeta!} implementiert den
 Minimax Algorithmus mit Alpha-Beta-Pruning
 
 \begin{lstlisting}[language=Python]
-ALPHABETA_DEPTH_LIMIT = 3
-debug_ab_count= 0
+debug_ab_count = 0
 
-def alphabeta(state, depth, alpha, beta, heuristic):
+
+def alphabeta(state, depth, heuristic, alpha, beta):
     global debug_ab_count
-    if(state.game_over):
+    if state.game_over:
         return get_winner(state)
-    if(depth <= 0):
+    if depth == 0:
+        debug_ab_count += 1
         return heuristic(state)
-    
+
     moves = get_possible_moves(state, state.turn)
-    child_states = [make_move(copy.deepcopy(state), move[0], move[1]) for move in moves]
-    estimated_utilities = [transposition_table[(child_state.board.tobytes(), child_state.turn, heuristic)]
-                           if (child_state.board.tobytes(), child_state.turn, heuristic) in transposition_table
-                           else heuristic(state)
-                           for child_state in child_states]
-    ordered_moves = [(estimated_utilities[i], child_states[i]) for i in range(len(moves))]
+    child_states = [make_move(copy.deepcopy(state), move) for move in moves]
+    ordered_moves = []
+    for child_state in child_states:
+        cached = transposition_table.get((child_state.board.tobytes(), child_state.turn, heuristic), None)
+        if cached != None:
+            ordered_moves.append((cached, child_state))
+        else:
+            ordered_moves.append((heuristic(state), child_state))
     ordered_moves.sort(reverse=(state.turn == WHITE))
-    
+
     if state.turn == WHITE:
         # maximizing
         utility = -math.inf
     else:
         # minimizing
         utility = math.inf
-        
+
     for (_, tmp_state) in ordered_moves:
-        debug_ab_count += 1
-        tmp_utility = alphabeta(tmp_state, depth - 1, alpha, beta, heuristic)
-        transposition_table[(tmp_state.board.tobytes(), tmp_state.turn, heuristic)] = tmp_utility
-        
+        tmp_utility = alphabeta(tmp_state, depth - 1, heuristic, alpha, beta)
+        transposition_table[(tmp_state.board.tobytes(),
+                             tmp_state.turn, heuristic)] = tmp_utility
+
         if state.turn == WHITE:
             # maximizing
             utility = max(utility, tmp_utility)
@@ -279,30 +248,124 @@ def alphabeta(state, depth, alpha, beta, heuristic):
             # minimizing
             utility = min(utility, tmp_utility)
             beta = min(beta, utility)
-        if(alpha >= beta):
-            break # alphabeta pruning
+        if alpha >= beta:
+            break  # alphabeta pruning
     return utility
 \end{lstlisting}
 
-Wie bei der Minimax KI wird auch bei der Alpha-Beta KI für alle
-möglichen Züge wird die Nützlichkeit des resultierenden Zustands
-bestimmt, hier mithilfe von von \passthrough{\lstinline!alphabeta!}, und
-aus allen Zügen mit einer, für den Spieler optimalen, Nützlichkeit ein
-zufälliger Zug ausgewählt.
+\hypertarget{probcut-ki}{%
+\subsubsection{ProbCut KI}\label{probcut-ki}}
+
+An dieser Stelle beginnt die Implementierung der Künstlichen Intelligenz
+mittels des Minimax Algorithmus und ProbCut
 
 \begin{lstlisting}[language=Python]
-def alphabeta_ai_make_move(state, heuristic):
-    if(state.game_over):
+PERCENTILE = 1.5  # 93.3%
+PROBCUT_DEEP_DEPTH = 4
+PROBCUT_SHALLOW_DEPTH = 2
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+debug_pc_count = 0
+
+
+def probcut(state, depth, heuristic, alpha, beta):
+    global debug_pc_count
+    if state.game_over:
+        return get_winner(state)
+    if depth == 0:
+        debug_pc_count += 1
+        return heuristic(state)
+
+    if depth == PROBCUT_DEEP_DEPTH - 1:
+        if state.num_pieces <= 45:  # if there are not more than 45 pieces on the board sigma can be calculated based on statistic values with the combined_heuristic
+            sigma = state.num_pieces * 0.001948723205790693 - 0.001604049443613545
+            # v >= beta with prob. of at least p? yes => cutoff
+            bound = PERCENTILE * sigma + beta
+            if probcut(state, PROBCUT_SHALLOW_DEPTH, heuristic, bound-1, bound) >= bound:
+                return beta
+
+            # v <= alpha with prob. of at least p? yes => cutoff
+            bound = -PERCENTILE * sigma + alpha
+            if probcut(state, PROBCUT_SHALLOW_DEPTH, heuristic, bound, bound+1) <= bound:
+                return alpha
+
+    moves = get_possible_moves(state, state.turn)
+    child_states = [make_move(copy.deepcopy(state), move) for move in moves]
+    ordered_moves = []
+    for child_state in child_states:
+        cached = transposition_table.get((child_state.board.tobytes(), child_state.turn, heuristic), None)
+        if cached != None:
+            ordered_moves.append((cached, child_state))
+        else:
+            ordered_moves.append((heuristic(state), child_state))
+    ordered_moves.sort(reverse=(state.turn == WHITE))
+
+    if state.turn == WHITE:
+        # maximizing
+        utility = -math.inf
+    else:
+        # minimizing
+        utility = math.inf
+
+    for (_, tmp_state) in ordered_moves:
+        tmp_utility = probcut(tmp_state, depth - 1, heuristic, alpha, beta)
+        transposition_table[(tmp_state.board.tobytes(),
+                             tmp_state.turn, heuristic)] = tmp_utility
+
+        if state.turn == WHITE:
+            # maximizing
+            utility = max(utility, tmp_utility)
+            alpha = max(alpha, utility)
+        else:
+            # minimizing
+            utility = min(utility, tmp_utility)
+            beta = min(beta, utility)
+        if alpha >= beta:
+            break  # alphabeta pruning
+    return utility
+\end{lstlisting}
+
+\hypertarget{durchfuxfchren-der-zuxfcge}{%
+\subsubsection{Durchführen der Züge}\label{durchfuxfchren-der-zuxfcge}}
+
+Die folgenden Funktionen berechnen mit einer angegebenen KI den nächsten
+Zug und wenden diesen auf den Zustand an. Der Wert
+\passthrough{\lstinline!SELECTION\_TOLERANCE!} gibt an, wie viel der
+Nutzen eines Zuges vom besten Nutzen abweichen darf, um dennoch
+ausgewählt werden zu können.
+
+\begin{lstlisting}[language=Python]
+SELECTION_TOLERANCE = 0.0025
+\end{lstlisting}
+
+Die Funktion \passthrough{\lstinline!ai\_make\_move!} führt auf dem
+Zustand \passthrough{\lstinline!state!} den besten, durch den
+Algorithmus \passthrough{\lstinline!ai!} bestimmten, Zug aus. Für alle
+möglichen Züge wird die Nützlichkeit des resultierenden Zustands
+mithilfe des Algorithmus \passthrough{\lstinline!ai!} bestimmt. Aus
+allen Zügen wird einer der Züge ausgewählt, der für den Spieler den
+optimaleln Nutzen hat.
+
+\begin{lstlisting}[language=Python]
+def ai_make_move(ai, state, depth, heuristic):
+    global utilities
+    if state.game_over:
         return
-    scored_moves = [(alphabeta(make_move(copy.deepcopy(state), move[0], move[1]), ALPHABETA_DEPTH_LIMIT-1, -math.inf, math.inf, heuristic), move) for move in state.possible_moves]
+    scored_moves = []
+    for move in state.possible_moves:
+        utility = ai(make_move(copy.deepcopy(state), move), depth-1, heuristic, -math.inf, math.inf)
+        scored_moves.append((utility, move))
     if state.turn == WHITE:
         # maximizing
         best_score, _ = max(scored_moves)
     else:
         # minimizing
         best_score, _ = min(scored_moves)
-    best_move = random.choice([move for move in scored_moves if move[0] == best_score])[1]
-    make_move(state, best_move[0], best_move[1])
+    utilities[state.turn] = best_score
+    top_moves = [move for move in scored_moves if abs(move[0] - best_score) <= SELECTION_TOLERANCE]
+    best_move = random.choice(top_moves)[1]
+    make_move(state, best_move)
 \end{lstlisting}
 
 Beim Iterative Deepening wird der Alphabeta-Algorithmus nacheinander mit
@@ -316,20 +379,28 @@ Dadurch kann in einer vorgegebenen Zeit, die in dieser Zeit maximal
 mögliche Suchtiefe erreicht werden.
 
 \begin{lstlisting}[language=Python]
-def alphabeta_id_make_move(state, heuristic):
+def ai_make_move_id(ai, state, depth, heuristic):
+    global utilities
+    if state.game_over:
+        return
     best_move = None
-    depth = 1
-    while depth <= ALPHABETA_DEPTH_LIMIT:
-        scored_moves = [(alphabeta(make_move(copy.deepcopy(state), move[0], move[1]), depth-1, -math.inf, math.inf, heuristic), move) for move in state.possible_moves]
+    current_depth = 1
+    while current_depth <= depth:
+        scored_moves = []
+        for move in state.possible_moves:
+            utility = ai(make_move(copy.deepcopy(state), move), current_depth-1, heuristic, -math.inf, math.inf)
+            scored_moves.append((utility, move))
         if state.turn == WHITE:
             # maximizing
             best_score, _ = max(scored_moves)
         else:
             # minimizing
             best_score, _ = min(scored_moves)
-        best_move = random.choice([move for move in scored_moves if move[0] == best_score])[1]
-        depth += 1
-    make_move(state, best_move[0], best_move[1])
+        utilities[state.turn] = best_score
+        top_moves = [move for move in scored_moves if abs(move[0] - best_score) <= SELECTION_TOLERANCE]
+        best_move = random.choice(top_moves)[1]
+        current_depth += 1
+    make_move(state, best_move)
 \end{lstlisting}
 
 Beim Iterative Deepening ist jederzeit der beste Zug der letzten
@@ -342,110 +413,38 @@ Berechnungen verwendet und die letzte Suche muss nicht abgebrochen
 werden.
 
 \begin{lstlisting}[language=Python]
-MAX_SECS_PER_MOVE = 30
+SECS_PER_MOVE = 30
 
-def alphabeta_id_make_move_timelimited(state, heuristic):
+
+def ai_make_move_id_timelimited(ai, state, depth, heuristic):
+    global utilities
+    if state.game_over:
+        return
     best_move = None
     depth = 1
+    last_time = 1
+    second_last_time = 1
+    factor = 0
     start = time.time()
-    last_time = 0
-    while MAX_SECS_PER_MOVE - (time.time() - start) >= 4 * last_time:
+    while depth <= 64 - state.num_pieces and SECS_PER_MOVE - (time.time() - start) >= factor * last_time:
         last_time_start = time.time()
-        scored_moves = [(alphabeta(make_move(copy.deepcopy(state), move[0], move[1]), depth-1, -math.inf, math.inf, heuristic), move) for move in state.possible_moves]
+        scored_moves = []
+        for move in state.possible_moves:
+            utility = ai(make_move(copy.deepcopy(state), move), depth-1, heuristic, -math.inf, math.inf)
+            scored_moves.append((utility, move))
         if state.turn == WHITE:
             # maximizing
             best_score, _ = max(scored_moves)
         else:
             # minimizing
             best_score, _ = min(scored_moves)
-        best_move = random.choice([move for move in scored_moves if move[0] == best_score])[1]
+        utilities[state.turn] = best_score
+        top_moves = [move for move in scored_moves if abs(move[0] - best_score) <= SELECTION_TOLERANCE]
+        best_move = random.choice(top_moves)[1]
+        second_last_time = last_time
         last_time = time.time() - last_time_start
+        factor = min(last_time / second_last_time, 3)
         depth += 1
-    print("Reached depth: ", depth-1)
-    make_move(state, best_move[0], best_move[1])
-\end{lstlisting}
-
-\hypertarget{probcut-ki}{%
-\subsubsection{ProbCut KI}\label{probcut-ki}}
-
-An dieser Stelle beginnt die Implementierung der Künstlichen Intelligenz
-mittels des Minimax Algorithmus und ProbCut
-
-\begin{lstlisting}[language=Python]
-PERCENTILE = 1.5 # 93.3%
-PROBCUT_DEPTH_LIMIT = 5
-PROBCUT_DEEP_DEPTH = 4
-PROBCUT_SHALLOW_DEPTH = 2
-\end{lstlisting}
-
-\begin{lstlisting}[language=Python]
-debug_pc_count= 0
-
-def probcut(state, depth, alpha, beta, heuristic):
-    global debug_pc_count
-    if(state.game_over):
-        return get_winner(state)
-    if(depth <= 0):
-        return heuristic(state)
-    
-    if depth == PROBCUT_DEEP_DEPTH - 1:
-        if state.num_pieces <= 45: # if there are not more than 45 pieces on the board sigma can be calculated based on statistic values with the combined_heuristic
-            sigma = state.num_pieces * 0.001948723205790693 - 0.001604049443613545
-            # v >= beta with prob. of at least p? yes => cutoff
-            bound = PERCENTILE * sigma + beta
-            if probcut(state, PROBCUT_SHALLOW_DEPTH, bound-1, bound, heuristic) >= bound:
-                return beta
-
-            # v <= alpha with prob. of at least p? yes => cutoff
-            bound = -PERCENTILE * sigma + alpha
-            if probcut(state, PROBCUT_SHALLOW_DEPTH, bound, bound+1, heuristic) <= bound:
-                return alpha
-    
-    moves = get_possible_moves(state, state.turn)
-    child_states = [make_move(copy.deepcopy(state), move[0], move[1]) for move in moves]
-    estimated_utilities = [transposition_table[(child_state.board.tobytes(), child_state.turn, heuristic)]
-                           if (child_state.board.tobytes(), child_state.turn, heuristic) in transposition_table
-                           else heuristic(state)
-                           for child_state in child_states]
-    ordered_moves = [(estimated_utilities[i], child_states[i]) for i in range(len(moves))]
-    ordered_moves.sort(reverse=(state.turn == WHITE))
-    
-    if state.turn == WHITE:
-        # maximizing
-        utility = -math.inf
-    else:
-        # minimizing
-        utility = math.inf
-        
-    for (_, tmp_state) in ordered_moves:
-        debug_pc_count += 1
-        tmp_utility = probcut(tmp_state, depth - 1, alpha, beta, heuristic)
-        transposition_table[(tmp_state.board.tobytes(), tmp_state.turn, heuristic)] = tmp_utility
-        
-        if state.turn == WHITE:
-            # maximizing
-            utility = max(utility, tmp_utility)
-            alpha = max(alpha, utility)
-        else:
-            # minimizing
-            utility = min(utility, tmp_utility)
-            beta = min(beta, utility)
-        if(alpha >= beta):
-            break # alphabeta pruning
-    return utility
-\end{lstlisting}
-
-\begin{lstlisting}[language=Python]
-def probcut_ai_make_move(state, heuristic):
-    if(state.game_over):
-        return
-    scored_moves = [(probcut(make_move(copy.deepcopy(state), move[0], move[1]), PROBCUT_DEPTH_LIMIT-1, -math.inf, math.inf, heuristic), move) for move in state.possible_moves]
-    if state.turn == WHITE:
-        # maximizing
-        best_score, _ = max(scored_moves)
-    else:
-        # minimizing
-        best_score, _ = min(scored_moves)
-    best_move = random.choice([move for move in scored_moves if move[0] == best_score])[1]
-    make_move(state, best_move[0], best_move[1])
+    print("Reached depth", depth-1, "in", time.time() - start, "seconds")
+    make_move(state, best_move)
 \end{lstlisting}
