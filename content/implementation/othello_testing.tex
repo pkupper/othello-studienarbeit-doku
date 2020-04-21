@@ -38,3 +38,110 @@ test_board.board
 \begin{lstlisting}[language=Python]
 debug_num_visited_states(test_board, 5)
 \end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+settings = { BLACK: { 'heuristic': combined_heuristic,
+                      'algorithm': alphabeta,
+                      'depth': 4,
+                      'mode': ai_make_move },
+             WHITE: { 'heuristic': combined_heuristic,
+                      'algorithm': alphabeta,
+                      'depth': 5,
+                      'mode': ai_make_move }}
+
+get_statistics(20, settings)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+import numpy as np
+
+board = np.array([
+    [NONE , WHITE , NONE , WHITE , NONE , NONE , NONE , BLACK],
+    [NONE , NONE , WHITE , WHITE , NONE , NONE , NONE , NONE],
+    [NONE , WHITE , NONE , WHITE , NONE , NONE , NONE , NONE],
+    [WHITE , NONE , NONE , WHITE, NONE, NONE , NONE , NONE],
+    [NONE , NONE , NONE , WHITE, BLACK, NONE , NONE , NONE],
+    [NONE , NONE , NONE , WHITE , NONE , NONE , NONE , NONE],
+    [NONE , NONE , NONE , WHITE , NONE , NONE , NONE , NONE],
+    [BLACK , NONE , NONE , WHITE , NONE , NONE , NONE , NONE]
+])
+state = make_state(board, BLACK)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+np.sum(board,axis=0)
+\end{lstlisting}
+
+Heuristik aus Othellomaster, die Zeilen, Spalten und Diagonalen
+berücksichtigt
+
+\begin{lstlisting}[language=Python]
+line_weights = np.array([5,3,2,2,2,2,3,5])
+diag_weights = np.array([1,2,3,4,5,4,3,2,1])
+
+def line_heuristic(state):
+    board = state.board
+    # lines
+    lines = 0
+    # complete lines
+    rows = np.trunc(np.sum(board, axis=1) / 8)
+    cols = np.trunc(np.sum(board, axis=0) / 8)
+    lines += np.sum(cols * line_weights) * 12
+    lines += np.sum(rows * line_weights) * 12
+    # incomplete lines (only one edge piece missing)
+    incomplete_boards = [
+        board[1:,:],
+        board[:7,:],
+        board[:,1:],
+        board[:,:7]
+    ]
+    for b in incomplete_boards:
+        rows = np.trunc(np.sum(board, axis=1) / 7)
+        cols = np.trunc(np.sum(board, axis=0) / 7)
+        lines += np.sum(cols * line_weights) * 5
+        lines += np.sum(rows * line_weights) * 5
+    lines *= 5 # Gewichtung für horizontale und vertikale Reihen
+    # diagonals
+    diagonals = 0
+    # complete diagonals
+    boards = [
+        board,
+        np.flip(board, axis=1)
+    ]
+    for b in boards:
+        comp_diags = []
+        part_diags = []
+        for i in range(-4,5):
+            diag = np.diag(b, k=i)
+            s = np.sum(diag)
+            # comlete diagonals
+            comp_diags.append(np.trunc(s / (8 - abs(i))))
+            # partial diagonals
+            if abs(s) == 7 and diag[0] != diag[-1]:
+                part_diags.append(diag[1])
+            else:
+                part_diags.append(0)
+        diagonals += np.sum(comp_diags * diag_weights) * 10 * 1.8
+        diagonals += np.sum(part_diags * diag_weights) * 4
+    diagonals *= 4 # Gewichtung für Diagonalen
+    
+    return (lines + diagonals) / 11280
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+board2 = np.array([
+    [WHITE, WHITE, WHITE , WHITE , WHITE , WHITE, WHITE, WHITE],
+    [WHITE, WHITE, WHITE , WHITE , WHITE , WHITE, WHITE, WHITE],
+    [WHITE, WHITE, WHITE , WHITE , WHITE , WHITE, WHITE, WHITE],
+    [WHITE, WHITE, WHITE , WHITE , WHITE , WHITE, WHITE, WHITE],
+    [WHITE, WHITE, WHITE , WHITE , WHITE , WHITE, WHITE, WHITE],
+    [WHITE, WHITE, WHITE , WHITE , WHITE , WHITE, WHITE, WHITE],
+    [WHITE, WHITE, WHITE , WHITE , WHITE , WHITE, WHITE, WHITE],
+    [WHITE, WHITE, WHITE , WHITE , WHITE , WHITE, WHITE, WHITE]
+])
+state = make_state(board2, BLACK)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+line_heuristic(state)
+\end{lstlisting}

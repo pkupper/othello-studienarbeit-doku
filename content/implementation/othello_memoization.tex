@@ -1,0 +1,186 @@
+\begin{lstlisting}[language=Python]
+%run othello_game.ipynb
+%run othello_ai.ipynb
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+import time
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+cache_hits = 0
+
+def memoize(f):
+    Cache = {}
+    def f_memoized(*args):
+        if (f, args) in Cache:
+            global cache_hits
+            cache_hits += 1
+            return Cache[(f, args)]
+        result = f(*args)
+        Cache[(f, args)] = result
+        return result
+    
+    return f_memoized
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+times = {BLACK: 0, WHITE: 0}
+
+def next_move_blind(state, settings):
+    global times
+    start = time.time()
+    make_move = settings[state.turn]['mode']
+    algorithm = settings[state.turn]['algorithm']
+    depth = settings[state.turn]['depth']
+    heuristic = settings[state.turn]['heuristic']
+    make_move(algorithm, state, depth, heuristic)
+    times[state.turn] += time.time() - start
+    if not state.game_over:
+        next_move_blind(state, settings)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+def play_game(settings):
+    state = GameState()
+    next_move_blind(state, settings)
+    return count_disks(state, BLACK), count_disks(state, WHITE)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+settings = { BLACK: { 'heuristic': combined_heuristic,
+                      'algorithm': alphabeta,
+                      'depth': 4,
+                      'mode': ai_make_move_id },
+             WHITE: { 'heuristic': combined_heuristic,
+                      'algorithm': memoize(alphabeta),
+                      'depth': 4,
+                      'mode': ai_make_move_id }}
+
+play_game(settings)
+times
+\end{lstlisting}
+
+\^{} keine cache hits
+
+\begin{lstlisting}[language=Python]
+Cache = {}
+hits = [0, 0, 0]
+
+def value(State, limit, heuristic, alpha=-1, beta=1):
+    global Cache
+    global hits
+    if (State.board.tobytes(), State.turn, limit) in Cache:
+        val, a, b = Cache[(State.board.tobytes(), State.turn, limit)]
+        if a <= alpha and beta <= b:
+            hits[0] += 1
+            return val
+        else:
+            alp = min(alpha, a)
+            bet = max(beta , b)
+            if alp != alpha or bet != beta:
+                hits[1] += 1
+            else:
+                hits[2] += 1
+            val = alphabetac(State, limit, heuristic, alp, bet)
+            Cache[(State.board.tobytes(), State.turn, limit)] = val, alp, bet
+            return val
+    else:
+        hits[2] += 1
+        val = alphabetac(State, limit, heuristic, alpha, beta)
+        Cache[(State.board.tobytes(), State.turn, limit)] = val, alpha, beta
+        return val
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+debug_abc_count = 0
+
+
+def alphabetac(state, depth, heuristic, alpha, beta):
+    global debug_abc_count
+    if state.game_over:
+        return get_winner(state)
+    if depth == 0:
+        debug_abc_count += 1
+        return heuristic(state)
+
+    moves = state.possible_moves
+    child_states = [make_move(copy.deepcopy(state), move) for move in moves]
+    ordered_moves = []
+    for child_state in child_states:
+        cached = transposition_table.get(
+            (child_state.board.tobytes(), child_state.turn, heuristic),
+            None
+        )
+        if cached != None:
+            ordered_moves.append((cached, child_state))
+        else:
+            ordered_moves.append((heuristic(state), child_state))
+    ordered_moves.sort(reverse=(state.turn == WHITE))
+
+    if state.turn == WHITE:
+        # maximizing
+        utility = -math.inf
+    else:
+        # minimizing
+        utility = math.inf
+
+    for (_, tmp_state) in ordered_moves:
+        tmp_utility = value(tmp_state, depth - 1, heuristic, alpha, beta)
+        transposition_table[(tmp_state.board.tobytes(),
+                             tmp_state.turn, heuristic)] = tmp_utility
+
+        if state.turn == WHITE:
+            # maximizing
+            utility = max(utility, tmp_utility)
+            alpha = max(alpha, utility)
+        else:
+            # minimizing
+            utility = min(utility, tmp_utility)
+            beta = min(beta, utility)
+        if alpha >= beta:
+            break  # alphabeta pruning
+    return utility
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+Cache = {}
+hits = [0, 0, 0]
+
+settings = { BLACK: { 'heuristic': combined_heuristic,
+                      'algorithm': alphabeta,
+                      'depth': 4,
+                      'mode': ai_make_move },
+             WHITE: { 'heuristic': combined_heuristic,
+                      'algorithm': alphabetac,
+                      'depth': 4,
+                      'mode': ai_make_move }}
+
+play_game(settings)
+times
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+hits # answered from cache, called ab with reduced interval, called ab normal
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+Cache = {}
+hits = [0, 0, 0]
+
+settings = { BLACK: { 'heuristic': combined_heuristic,
+                      'algorithm': alphabeta,
+                      'depth': 4,
+                      'mode': ai_make_move_id },
+             WHITE: { 'heuristic': combined_heuristic,
+                      'algorithm': alphabetac,
+                      'depth': 4,
+                      'mode': ai_make_move_id }}
+
+play_game(settings)
+times
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+hits
+\end{lstlisting}

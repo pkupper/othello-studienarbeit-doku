@@ -106,6 +106,7 @@ und dann zusammen mit den Status-Widgets angezeigt wird.
 
 \begin{lstlisting}[language=Python]
 def display_board(state):
+    output.clear_output()
     update_output(state)
     display(canvas)
     display(score_lbl)
@@ -153,8 +154,12 @@ def update_output(state):
                 canvas[1].fill_arc((x + 0.5) * CELL_SIZE, (y + 0.5)
                                    * CELL_SIZE, CELL_SIZE / 6, 0, 2 * math.pi)
 
-    score_lbl.value = f'Black Player : {count_disks(state, BLACK)} White Player : {count_disks(state, WHITE)}'
-    utility_lbl.value = f'Utility: Black: {utilities[BLACK]} / White: {utilities[WHITE]}'
+    b_score = count_disks(state, BLACK)
+    w_score = count_disks(state, WHITE)
+    score_lbl.value = f'Black Player : {b_score} White Player : {w_score}'
+    b_util = utilities[BLACK]
+    w_util = utilities[WHITE]
+    utility_lbl.value = f'Utility: Black: {b_util} / White: {w_util}'
     if state.game_over:
         turn_lbl.value = f'{get_player_string(get_winner(state))} wins'
     else:
@@ -194,50 +199,64 @@ canvas[1].on_mouse_down(mouse_down)
 \subsection{Spieleinstellungen}\label{spieleinstellungen}}
 
 \begin{lstlisting}[language=Python]
+algorithms = { 'Menschlicher Spieler': None,
+               'ProbCut': probcut,
+               'AlphaBeta': alphabeta,
+               'Minimax': minimax,
+               'Zufällig': random_ai }
+modes = { 'Feste Tiefe': ai_make_move,
+          'Iterative Vertiefung': ai_make_move_id,
+          'Zeitbegrenzte Vertiefung': ai_make_move_id_timelimited }
+heuristics = { 'Cowthello': cowthello_heuristic,
+               'Cowthello+': cowthello_safe_heuristic,
+               'Mobilität': mobility_heuristic,
+               'Kombiniert': combined_heuristic }
+black_algorithm = RadioButtons(
+    options=algorithms.keys(),
+    value='Menschlicher Spieler',
+    description='Schwarz:'
+)
+black_heuristic = RadioButtons(
+    options=heuristics.keys(),
+    value='Kombiniert'
+)
+black_mode = RadioButtons(
+    options=modes.keys(),
+    value='Zeitbegrenzte Vertiefung'
+)
+black_depth = IntSlider(value = 5, min=1, max=10, description='Suchtiefe:')
+black_config = HBox([black_algorithm, black_mode, black_heuristic, black_depth])
+
+white_algorithm = RadioButtons(
+    options=algorithms.keys(),
+    value='ProbCut',
+    description='Weiß:'
+)
+white_heuristic = RadioButtons(
+    options=heuristics.keys(),
+    value='Kombiniert'
+)
+white_mode = RadioButtons(
+    options=modes.keys(),
+    value='Zeitbegrenzte Vertiefung'
+)
+white_depth = IntSlider(value = 5, min=1, max=10, description='Suchtiefe:')
+white_config = HBox([white_algorithm, white_mode, white_heuristic, white_depth])
+settings = ipywidgets.VBox([black_config, white_config])
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
 def configure_settings():
-    global algorithms, modes
-    global black_algorithm, black_mode, black_depth
-    global white_algorithm, white_mode, white_depth
-    algorithms = { 'Menschlicher Spieler': None,
-                   'ProbCut': probcut,
-                   'AlphaBeta': alphabeta,
-                   'Minimax': minimax,
-                   'Zufällig': random_ai }
-    modes = { 'Feste Tiefe': ai_make_move,
-              'Iterative Vertiefung': ai_make_move_id,
-              'Zeitbegrenzte Vertiefung': ai_make_move_id_timelimited }
-    black_algorithm = RadioButtons(
-        options=algorithms.keys(),
-        value='Menschlicher Spieler',
-        description='Schwarz:'
-    )
-    black_mode = RadioButtons(
-        options=modes.keys(),
-        value='Zeitbegrenzte Vertiefung'
-    )
-    black_depth = IntSlider(value = 5, min=1, max=10, description='Suchtiefe:')
-    black_settings = HBox([black_algorithm, black_mode, black_depth])
-    white_algorithm = RadioButtons(
-        options=algorithms.keys(),
-        value='ProbCut',
-        description='Weiß:'
-    )
-    white_mode = RadioButtons(
-        options=modes.keys(),
-        value='Zeitbegrenzte Vertiefung'
-    )
-    white_depth = IntSlider(value = 5, min=1, max=10, description='Suchtiefe:')
-    white_settings = HBox([white_algorithm, white_mode, white_depth])
-    display(ipywidgets.VBox([black_settings, white_settings]))
+    display(settings)
 \end{lstlisting}
 
 \begin{lstlisting}[language=Python]
 def get_settings():
-    return { BLACK: { 'heuristic': combined_heuristic,
+    return { BLACK: { 'heuristic': heuristics[black_heuristic.value],
                       'algorithm': algorithms[black_algorithm.value],
                       'depth': black_depth.value,
                       'mode': modes[black_mode.value] },
-             WHITE: { 'heuristic': combined_heuristic,
+             WHITE: { 'heuristic': heuristics[white_heuristic.value],
                       'algorithm': algorithms[white_algorithm.value],
                       'depth': white_depth.value,
                       'mode': modes[white_mode.value] }}

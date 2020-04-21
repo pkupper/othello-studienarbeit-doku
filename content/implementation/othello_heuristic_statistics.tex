@@ -18,15 +18,21 @@ Zügen in der Spielphase verwendet wird.
 def mobility_heuristic_avg(state):
     x = state.num_pieces
     if state.turn == WHITE:
-        return (len(state.possible_moves) - (-0.0113 * x*x + 0.7178 * x + 0.5166)) / 64
+        w_mobility = len(state.possible_moves)
+        return (w_mobility - (-0.0113 * x*x + 0.7178 * x + 0.5166)) / 64
     else:
-        return ((-0.0113 * x * x + 0.7178 * x + 0.5166) - len(state.possible_moves)) / 64
+        b_mobility = len(state.possible_moves)
+        return ((-0.0113 * x * x + 0.7178 * x + 0.5166) - b_mobility) / 64
     
 def mobility_heuristic_both(state):
     if state.turn == WHITE:
-        return (len(state.possible_moves) - len(get_possible_moves(state, BLACK))) / 64
+        w_mobility = len(state.possible_moves)
+        b_mobility = len(get_possible_moves(state, BLACK))
+        return (w_mobility - b_mobility) / 64
     else:
-        return (len(get_possible_moves(state, WHITE)) - len(state.possible_moves)) / 64
+        w_mobility = len(get_possible_moves(state, WHITE))
+        b_mobility = len(state.possible_moves)
+        return (w_mobility - b_mobility) / 64
 
 def test_combined_heuristic_both(state):
     if state.num_pieces >= 50:
@@ -62,14 +68,14 @@ der kombinierten Heuristik zu bestimmen.
 
 \begin{lstlisting}[language=Python]
 def heuristic_weighting_interval(num, settings, lower, upper):
-    global MOBILITY_PROPORTION
-    global MOBILITY_PROPORTION2
-    MOBILITY_PROPORTION = (lower + upper) / 2
-    MOBILITY_PROPORTION2 = lower
-    print("Black mobility:", MOBILITY_PROPORTION, "/ White mobility:", MOBILITY_PROPORTION2)
+    global MOB_PROP
+    global MOB_PROP2
+    MOB_PROP = (lower + upper) / 2
+    MOB_PROP2 = lower
+    print("Black mobility:", MOB_PROP, "/ White mobility:", MOB_PROP2)
     [b1,d1,w1] = get_statistics(num, settings)
     MOBILITY_PROPORTION2 = upper
-    print("Black mobility:", MOBILITY_PROPORTION, "/ White mobility:", MOBILITY_PROPORTION2)
+    print("Black mobility:", MOB_PROP, "/ White mobility:", MOB_PROP2)
     [b2,d2,w2] = get_statistics(num, settings)
     
 MOBILITY_PROPORTION = 0.5
@@ -79,7 +85,7 @@ def test_combined_heuristic_1(state):
         return disc_count_heuristic(state)
     mobility = mobility_heuristic(state)
     cowthello = cowthello_heuristic(state)
-    return MOBILITY_PROPORTION * mobility + (1 - MOBILITY_PROPORTION) * cowthello
+    return MOB_PROP * mobility + (1 - MOB_PROP) * cowthello
 
 MOBILITY_PROPORTION2 = 0.5
 
@@ -88,7 +94,7 @@ def test_combined_heuristic_2(state):
         return disc_count_heuristic(state)
     mobility = mobility_heuristic(state)
     cowthello = cowthello_heuristic(state)
-    return MOBILITY_PROPORTION2 * mobility + (1 - MOBILITY_PROPORTION2) * cowthello
+    return MOB_PROP2 * mobility + (1 - MOB_PROP2) * cowthello
 \end{lstlisting}
 
 \begin{lstlisting}[language=Python]
@@ -102,4 +108,183 @@ settings = { BLACK: { 'heuristic': test_combined_heuristic_1,
                       'mode': ai_make_move }}
 
 heuristic_weighting_interval(20, settings, 0, 1)
+\end{lstlisting}
+
+Der folgende Code dient zum Testen, ob der Aufwand, die
+durchschnittliche Anzahl der möglichen Züge für alle Folgezüge zu
+berechnen, sich lohnt.
+
+\begin{lstlisting}[language=Python]
+def get_avg_possible_moves(state):
+    moves = []
+    for move in state.possible_moves:
+        moves.append(len(make_move(copy.deepcopy(state), move).possible_moves))
+    return sum(moves) / len(moves)
+
+def mobility_heuristic_exact(state):
+    if state.turn == WHITE:
+        return (len(state.possible_moves) - get_avg_possible_moves(state)) / 64
+    else:
+        return (get_avg_possible_moves(state) - len(state.possible_moves)) / 64
+    
+def mobility_heuristic_approx(state):
+    if state.turn == WHITE:
+        w_mobility = len(state.possible_moves)
+        b_mobility = len(get_possible_moves(state, BLACK))
+        return (w_mobility - b_mobility) / 64
+    else:
+        w_mobility = len(get_possible_moves(state, WHITE))
+        b_mobility = len(state.possible_moves)
+        return (w_mobility - b_mobility) / 64
+
+def test_combined_heuristic_exact(state):
+    if state.num_pieces >= 50:
+        return disc_count_heuristic(state)
+    mobility = mobility_heuristic_exact(state)
+    cowthello = cowthello_heuristic(state)
+    return 0.5 * mobility + 0.5 * cowthello
+
+def test_combined_heuristic_approx(state):
+    if state.num_pieces >= 50:
+        return disc_count_heuristic(state)
+    mobility = mobility_heuristic_approx(state)
+    cowthello = cowthello_heuristic(state)
+    return 0.5 * mobility + 0.5 * cowthello
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+settings = { BLACK: { 'heuristic': test_combined_heuristic_exact,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move },
+             WHITE: { 'heuristic': test_combined_heuristic_approx,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move }}
+
+get_statistics(20, settings)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+def test_combined_heuristic_pattern(state):
+    if state.num_pieces >= 50:
+        return disc_count_heuristic(state)
+    mobility = mobility_heuristic(state)
+    cowthello = cowthello_safe_heuristic(state)
+    patterns = pattern_heuristic(state)
+    return 0.45 * mobility + 0.45 * cowthello + 0.1 * patterns
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+settings = { BLACK: { 'heuristic': combined_heuristic,
+                      'algorithm': alphabeta,
+                      'depth': 4,
+                      'mode': ai_make_move },
+             WHITE: { 'heuristic': test_combined_heuristic_pattern,
+                      'algorithm': alphabeta,
+                      'depth': 4,
+                      'mode': ai_make_move }}
+
+get_statistics(50, settings)
+\end{lstlisting}
+
+Potential mobility
+
+\begin{lstlisting}[language=Python]
+def test_combined_heuristic(state):
+    if state.num_pieces >= 50:
+        return disc_count_heuristic(state)
+    mobility = mobility_heuristic(state)
+    cowthello = cowthello_heuristic(state)
+    return 0.5 * mobility + 0.5 * cowthello
+
+def test_combined_heuristic_pot(state):
+    if state.num_pieces >= 50:
+        return disc_count_heuristic(state)
+    mobility = pot_mob_heuristic(state) if state.num_pieces <= 36 else mobility_heuristic(state)
+    cowthello = cowthello_heuristic(state)
+    return 0.5 * mobility + 0.5 * cowthello
+
+def test_combined_heuristic_pot2(state):
+    if state.num_pieces >= 50:
+        return disc_count_heuristic(state)
+    mobility = (1 - state.num_pieces / 50) * pot_mob_heuristic(state) + (state.num_pieces / 50) *  mobility_heuristic(state)
+    cowthello = cowthello_heuristic(state)
+    return 0.5 * mobility + 0.5 * cowthello
+
+# Berücksichtigung, dass laut Buro bei 36 Steinen aktuelle und potentielle Mobilität gleich gut sind, vorrausgesetzt die Mobilitäten haben die gleiche Größenordnung
+def test_combined_heuristic_pot3(state):
+    if state.num_pieces >= 50:
+        return disc_count_heuristic(state)
+    mobility = (1 - state.num_pieces / 50 + 0.22) * pot_mob_heuristic(state) + (state.num_pieces / 50 - 0.22) *  mobility_heuristic(state)
+    cowthello = cowthello_heuristic(state)
+    return 0.5 * mobility + 0.5 * cowthello
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+settings = { BLACK: { 'heuristic': test_combined_heuristic,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move },
+             WHITE: { 'heuristic': test_combined_heuristic_pot2,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move }}
+
+get_statistics(20, settings)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+def gen_othellomaster_matrix():
+    quarter = np.array([
+        [10000, -3000, 1000, 800],
+        [-3000, -5000,  -450,  -500],
+        [ 1000, -450, 30,  10],
+        [ 800,   -500,  10,  50]
+    ])
+    top_half = np.hstack((quarter, np.flip(quarter, axis=1)))
+    bottom_half = np.flip(top_half, axis=0)
+    raw_matrix = np.vstack((top_half, bottom_half))
+    max_possible = np.sum(np.absolute(raw_matrix))
+    return np.true_divide(raw_matrix, max_possible)
+
+othellomaster_weights = gen_othellomaster_matrix()
+
+def othellomaster_weight_heuristic(state):
+    return np.sum(np.multiply(state.board, othellomaster_weights))
+
+def othellomaster_safe_heuristic(state):
+    black_safe = safe_pieces(state, BLACK)
+    white_safe = safe_pieces(state, WHITE)
+    weights = numpy.copy(othellomaster_weights)
+    weights[black_safe] = abs(weights[black_safe])
+    weights[white_safe] = abs(weights[white_safe])
+    return np.sum(np.multiply(state.board, weights))
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+def test_combined_heuristic_cow(state):
+    if state.num_pieces >= 50:
+        return disc_count_heuristic(state)
+    mobility = combined_mobility_heuristic(state)
+    weights = cowthello_heuristic(state)
+    return 0.5 * mobility + 0.5 * weights
+
+def test_combined_heuristic_om(state):
+    if state.num_pieces >= 50:
+        return disc_count_heuristic(state)
+    mobility = combined_mobility_heuristic(state)
+    weights = othellomaster_weight_heuristic(state)
+    return 0.33 * mobility + 0.33 * weights #+ 0.33 * line_heuristic(state)
+
+settings = { BLACK: { 'heuristic': test_combined_heuristic_cow,
+                      'algorithm': alphabeta,
+                      'depth': 4,
+                      'mode': ai_make_move },
+             WHITE: { 'heuristic': test_combined_heuristic_om,
+                      'algorithm': alphabeta,
+                      'depth': 4,
+                      'mode': ai_make_move }}
+
+get_statistics(20, settings)
 \end{lstlisting}

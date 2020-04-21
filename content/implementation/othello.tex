@@ -6,7 +6,6 @@
 \end{lstlisting}
 
 \begin{lstlisting}[language=Python]
-%run othello_game.ipynb
 %run othello_ai.ipynb
 %run othello_gui.ipynb
 \end{lstlisting}
@@ -48,7 +47,10 @@ def next_move(state):
     ai = settings[state.turn]['algorithm']
     if ai is not None:
         time.sleep(0.2)
-        settings[state.turn]['mode'](ai, state, settings[state.turn]['depth'], settings[state.turn]['heuristic'])
+        make_move = settings[state.turn]['mode']
+        depth = settings[state.turn]['depth']
+        heuristic = settings[state.turn]['heuristic']
+        make_move(ai, state, depth, heuristic)
         update_output(state)
         if not state.game_over:
             next_move(state)

@@ -25,12 +25,12 @@ import os
 
 
 def sample_probcut_values(num_games, shallow_depth, deep_depth):
-    filename = f'probcut_dataset_{PROBCUT_SHALLOW_DEPTH}_{PROBCUT_DEEP_DEPTH}.csv'
-    file_exists = os.path.isfile(filename)
+    fname = f'probcut_dataset_{PROBCUT_SHALLOW_DEPTH}_{PROBCUT_DEEP_DEPTH}.csv'
+    file_exists = os.path.isfile(fname)
     if file_exists:
         print('using existing dataset')
     else:
-        with open(filename, 'w', newline='') as file:
+        with open(fname, 'w', newline='') as file:
             writer = csv.writer(file, delimiter=',')
             writer.writerow(('moves', 'shallow', 'deep'))
             for i in range(num_games):
@@ -38,9 +38,13 @@ def sample_probcut_values(num_games, shallow_depth, deep_depth):
                 while not state.game_over:
                     ai_make_move(random_ai, state, 0, None)
                     shallow_value = alphabeta(
-                        state, PROBCUT_SHALLOW_DEPTH, combined_heuristic, -math.inf, math.inf)
+                        state, PROBCUT_SHALLOW_DEPTH,
+                        combined_heuristic, -math.inf, math.inf
+                    )
                     deep_value = alphabeta(
-                        state, PROBCUT_DEEP_DEPTH, combined_heuristic, -math.inf, math.inf)
+                        state, PROBCUT_DEEP_DEPTH,
+                        combined_heuristic, -math.inf, math.inf
+                    )
                     print(f'shallow: {shallow_value}, deep: {deep_value}')
                     writer.writerow(
                         (state.num_pieces, shallow_value, deep_value))
@@ -48,7 +52,7 @@ def sample_probcut_values(num_games, shallow_depth, deep_depth):
 \end{lstlisting}
 
 \begin{lstlisting}[language=Python]
-sample_probcut_values(20, PROBCUT_SHALLOW_DEPTH, PROBCUT_DEEP_DEPTH)
+sample_probcut_values(100, PROBCUT_SHALLOW_DEPTH, PROBCUT_DEEP_DEPTH)
 \end{lstlisting}
 
 Daten Laden

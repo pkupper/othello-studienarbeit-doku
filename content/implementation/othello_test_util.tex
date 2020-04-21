@@ -12,6 +12,7 @@
 
 \begin{lstlisting}[language=Python]
 import time
+import ipywidgets
 \end{lstlisting}
 
 \hypertarget{hilfsfunktionen}{%
@@ -41,27 +42,37 @@ def debug_num_visited_states(state, depth):
     start = time.time()
     ai_make_move(minimax, copy.deepcopy(state), depth, combined_heuristic)
     secs = time.time() - start
-    print("Minimax takes", secs, "seconds and checks", debug_mm_count, "substates")
+    print("Minimax takes", secs, "s and evaluates the heuristic",
+          debug_mm_count, "times")
     debug_ab_count= 0
     transposition_table = {}
     start = time.time()
     ai_make_move(alphabeta, copy.deepcopy(state), depth, combined_heuristic)
     secs = time.time() - start
-    print("AlphaBeta takes", secs, "seconds and checks", debug_ab_count, "substates")
+    print("AlphaBeta takes", secs, "s and evaluates the heuristic",
+          debug_ab_count, "times")
     debug_ab_count = 0
     transposition_table = {}
     start = time.time()
     ai_make_move_id(alphabeta, copy.deepcopy(state), depth, combined_heuristic)
     secs = time.time() - start
-    print("AlphaBeta with iterative deepening takes", secs,
-          "seconds and checks", debug_ab_count, "substates")
+    print("AlphaBeta + ID takes", secs,
+          "s and evaluates the heuristic", debug_ab_count, "times")
     debug_pc_count = 0
     transposition_table = {}
     start = time.time()
     ai_make_move(probcut, copy.deepcopy(state), depth, combined_heuristic)
     secs = time.time() - start
-    print("ProbCut takes", secs, "seconds and checks",
-          debug_pc_count, "substates")
+    print("ProbCut takes", secs, "s and evaluates the heuristic",
+          debug_pc_count, "times")
+    
+    debug_pc_count = 0
+    transposition_table = {}
+    start = time.time()
+    ai_make_move_id(probcut, copy.deepcopy(state), depth, combined_heuristic)
+    secs = time.time() - start
+    print("ProbCut + ID takes", secs, "s and evaluates the heuristic",
+          debug_pc_count, "times")
 \end{lstlisting}
 
 Die Funktion \passthrough{\lstinline!get\_statistics!} ist dazu da,
@@ -78,7 +89,11 @@ Da das Spielfeld nicht gezeichnet werden soll, wird statt
 
 \begin{lstlisting}[language=Python]
 def next_move_blind(state, settings):
-    settings[state.turn]['mode'](settings[state.turn]['algorithm'], state, settings[state.turn]['depth'], settings[state.turn]['heuristic'])
+    make_move = settings[state.turn]['mode']
+    algorithm = settings[state.turn]['algorithm']
+    depth = settings[state.turn]['depth']
+    heuristic = settings[state.turn]['heuristic']
+    make_move(algorithm, state, depth, heuristic)
     if not state.game_over:
         next_move_blind(state, settings)
 \end{lstlisting}
@@ -91,9 +106,6 @@ def play_game(settings):
 \end{lstlisting}
 
 \begin{lstlisting}[language=Python]
-import ipywidgets
-
-
 def get_statistics(num, settings):
     status = ipywidgets.widgets.Label()
     display(status)

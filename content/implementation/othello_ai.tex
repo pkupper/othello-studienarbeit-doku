@@ -14,15 +14,21 @@ Othello}\label{implementierung-einer-kuxfcnstlichen-intelligenz-fuxfcr-das-spiel
 
 Importieren von Abhängigkeiten und Konfiguration
 
-Die Implementierung der Spielelogik findet in einem separaten Jupyter
-Notebook statt. Diese wird deshalb hier zunächst ausgeführt.
-
 \begin{lstlisting}[language=Python]
 import math
 import copy
 import numpy as np
 import random
 \end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+%run othello_game.ipynb
+\end{lstlisting}
+
+Die aktuellen Nutzen-Werte der beiden Spieler werden in einer globalen
+Variable gespeichert, sodass diese in der GUI angezeigt werden können.
+Die Werte werden in den entsprechenden Funktionen der Strategien
+aktualisiert.
 
 \begin{lstlisting}[language=Python]
 utilities = {WHITE: '-', BLACK: '-'}
@@ -67,9 +73,52 @@ normalisiert, um die Grenzen von -1 und 1 einzuhalten.
 \begin{lstlisting}[language=Python]
 def mobility_heuristic(state):
     if state.turn == WHITE:
-        return (len(state.possible_moves) - len(get_possible_moves(state, BLACK))) / 64
+        return (len(state.possible_moves) -
+                len(get_possible_moves(state, BLACK))) / 64
     else:
-        return (len(get_possible_moves(state, WHITE)) - len(state.possible_moves)) / 64
+        return (len(get_possible_moves(state, WHITE)) -
+                len(state.possible_moves)) / 64
+\end{lstlisting}
+
+Nicht nur die aktuelle, sondern auch die potentielle Mobilität kann vor
+allem in frühen Phasen des Spiels wichtig für die Bewertung einer
+Position sein. Die Funktion
+\passthrough{\lstinline!pot\_mob\_heuristic!} berechnet für einen
+Zustand \passthrough{\lstinline!state!} die Differenz der potentiellen
+Mobilität beider Spieler. Die potentielle Mobilität eines Spielers ist
+die Summe aller freien Felder um gegnerische Spielsteine, da Michael
+Buro dieses Merkmal als in seiner Dissertation als bestes ausgemacht
+hat. Das Ergebnis wird durch 3.5 geteilt, da es im Durchschnitt 3.5 Mal
+so viele potentielle Züge wie tatsächliche Züge gibt.
+
+\begin{lstlisting}[language=Python]
+def pot_mob_heuristic(state):
+    board = list(state.board)
+    fields = 0
+    for (x,y) in state.frontier:
+        for dx, dy in directions:
+            xi = x + dx
+            yi = y + dy
+            if 0 <= xi < 8 and 0 <= yi < 8 and board[xi][yi] != 0:
+                fields -= board[xi][yi]
+    # Im Durchschnitt gibt es 3.5 Mal mehr potentielle wie tatsächliche Züge
+    fields /= 3.5 
+    return fields / 64
+\end{lstlisting}
+
+Die Funktion \passthrough{\lstinline!combined\_mobility\_heuristic!}
+kombiniert die aktuelle und potentielle Mobilität, wobei zu Beginn des
+Spiels die potentielle Mobilität stärker gewichtet wird und gegen Ende
+die aktuelle Mobilität. Michael Buro beschreibt in seiner Dissertation,
+dass die potentielle Mobilität bis 36 Spielsteine auf dem Feld liegen
+wichtiger für die Bewertung ist, als die aktuelle Mobilität. Dieser
+Sachverhalt soll durch eine lineare Kombination modelliert werden.
+
+\begin{lstlisting}[language=Python]
+def combined_mobility_heuristic(state):
+    act = mobility_heuristic(state)
+    pot = pot_mob_heuristic(state)
+    return (1 - state.num_pieces / 50) * pot + (state.num_pieces / 50) *  act
 \end{lstlisting}
 
 Beim Spielen von Othello fällt auf, dass es bestimmte Felder gibt, deren
@@ -115,6 +164,47 @@ def cowthello_heuristic(state):
     return np.sum(np.multiply(state.board, cowthello_weights))
 \end{lstlisting}
 
+\begin{lstlisting}[language=Python]
+def safe_in_corner(board, safe, player, rdir, cdir):
+    safe_in_row = 9
+    rows = range(8) if rdir == 1 else reversed(range(8))
+    for row in rows:
+        i = np.argmax(board[row,::cdir] != player)
+        safe_in_row = min(i, safe_in_row - 1)
+        if safe_in_row == 0:
+            break
+        safe[row,::cdir][:safe_in_row] = True
+    safe_in_col = 9
+    cols = range(8) if cdir == 1 else reversed(range(8))
+    for col in cols:
+        i = np.argmax(board[::rdir,col] != player)
+        safe_in_col = min(i, safe_in_col - 1)
+        if safe_in_col == 0:
+            break
+        safe[::rdir,col][:safe_in_col] = True
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+def safe_pieces(state, player):
+    board = state.board
+    safe = numpy.zeros((8, 8), dtype=np.bool)
+    safe_in_corner(board, safe, player, 1, 1)
+    safe_in_corner(board, safe, player, 1,-1)
+    safe_in_corner(board, safe, player,-1, 1)
+    safe_in_corner(board, safe, player,-1,-1)
+    return safe
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+def cowthello_safe_heuristic(state):
+    black_safe = safe_pieces(state, BLACK)
+    white_safe = safe_pieces(state, WHITE)
+    weights = numpy.copy(cowthello_weights)
+    weights[black_safe] = abs(weights[black_safe])
+    weights[white_safe] = abs(weights[white_safe])
+    return np.sum(np.multiply(state.board, weights))
+\end{lstlisting}
+
 Die oben implementierten Heuristiken bewerten jeweils nur ein Merkmal
 der aktuellen Spielsitation. Durch eine Kombination mehrerer dieser
 Heuristiken können mehrere Merkmale gleichzeitig betrachtet werden. Die
@@ -126,8 +216,8 @@ Disc-Count-Heuristik wichtiger.
 def combined_heuristic(state):
     if state.num_pieces >= 50:
         return disc_count_heuristic(state)
-    mobility = mobility_heuristic(state)
-    cowthello = cowthello_heuristic(state)
+    mobility = combined_mobility_heuristic(state)
+    cowthello = cowthello_safe_heuristic(state)
     return 0.5 * mobility + 0.5 * cowthello
 \end{lstlisting}
 
@@ -171,7 +261,7 @@ def minimax(state, depth, heuristic, alpha, beta):
         # minimizing
         utility = math.inf
 
-    for move in get_possible_moves(state, state.turn):
+    for move in state.possible_moves:
         tmp_state = copy.deepcopy(state)
         make_move(tmp_state, move)
         tmp_utility = minimax(tmp_state, depth - 1, heuristic, None, None)
@@ -217,11 +307,14 @@ def alphabeta(state, depth, heuristic, alpha, beta):
         debug_ab_count += 1
         return heuristic(state)
 
-    moves = get_possible_moves(state, state.turn)
+    moves = state.possible_moves
     child_states = [make_move(copy.deepcopy(state), move) for move in moves]
     ordered_moves = []
     for child_state in child_states:
-        cached = transposition_table.get((child_state.board.tobytes(), child_state.turn, heuristic), None)
+        cached = transposition_table.get(
+            (child_state.board.tobytes(), child_state.turn, heuristic),
+            None
+        )
         if cached != None:
             ordered_moves.append((cached, child_state))
         else:
@@ -278,23 +371,27 @@ def probcut(state, depth, heuristic, alpha, beta):
         return heuristic(state)
 
     if depth == PROBCUT_DEEP_DEPTH - 1:
-        if state.num_pieces <= 45:  # if there are not more than 45 pieces on the board sigma can be calculated based on statistic values with the combined_heuristic
-            sigma = state.num_pieces * 0.001948723205790693 - 0.001604049443613545
+        if state.num_pieces <= 45:
+            sigma = state.num_pieces * 0.00160610675723707 + 0.03369559303029926
             # v >= beta with prob. of at least p? yes => cutoff
             bound = PERCENTILE * sigma + beta
-            if probcut(state, PROBCUT_SHALLOW_DEPTH, heuristic, bound-1, bound) >= bound:
+            if probcut(state, PROBCUT_SHALLOW_DEPTH,
+                       heuristic, bound-1, bound) >= bound:
                 return beta
 
             # v <= alpha with prob. of at least p? yes => cutoff
             bound = -PERCENTILE * sigma + alpha
-            if probcut(state, PROBCUT_SHALLOW_DEPTH, heuristic, bound, bound+1) <= bound:
+            if probcut(state, PROBCUT_SHALLOW_DEPTH,
+                       heuristic, bound, bound+1) <= bound:
                 return alpha
 
-    moves = get_possible_moves(state, state.turn)
+    moves = state.possible_moves
     child_states = [make_move(copy.deepcopy(state), move) for move in moves]
     ordered_moves = []
     for child_state in child_states:
-        cached = transposition_table.get((child_state.board.tobytes(), child_state.turn, heuristic), None)
+        cached = transposition_table.get(
+            (child_state.board.tobytes(), child_state.turn, heuristic), None
+        )
         if cached != None:
             ordered_moves.append((cached, child_state))
         else:
@@ -353,14 +450,23 @@ def ai_make_move(ai, state, depth, heuristic):
     if state.game_over:
         return
     scored_moves = []
-    for move in state.possible_moves:
-        utility = ai(make_move(copy.deepcopy(state), move), depth-1, heuristic, -math.inf, math.inf)
-        scored_moves.append((utility, move))
     if state.turn == WHITE:
         # maximizing
+        alpha = -math.inf
+        for move in state.possible_moves:
+            new_state = make_move(copy.deepcopy(state), move)
+            utility = ai(new_state, depth-1, heuristic, alpha, math.inf)
+            scored_moves.append((utility, move))
+            alpha = max(alpha, utility)
         best_score, _ = max(scored_moves)
     else:
         # minimizing
+        beta = math.inf
+        for move in state.possible_moves:
+            new_state = make_move(copy.deepcopy(state), move)
+            utility = ai(new_state, depth-1, heuristic, -math.inf, beta)
+            scored_moves.append((utility, move))
+            beta = min(beta, utility)
         best_score, _ = min(scored_moves)
     utilities[state.turn] = best_score
     top_moves = [move for move in scored_moves if abs(move[0] - best_score) <= SELECTION_TOLERANCE]
@@ -384,22 +490,32 @@ def ai_make_move_id(ai, state, depth, heuristic):
     if state.game_over:
         return
     best_move = None
-    current_depth = 1
-    while current_depth <= depth:
+    cur_depth = 1
+    while cur_depth <= depth:
         scored_moves = []
-        for move in state.possible_moves:
-            utility = ai(make_move(copy.deepcopy(state), move), current_depth-1, heuristic, -math.inf, math.inf)
-            scored_moves.append((utility, move))
         if state.turn == WHITE:
             # maximizing
+            alpha = -math.inf
+            for move in state.possible_moves:
+                new_state = make_move(copy.deepcopy(state), move)
+                utility = ai(new_state, cur_depth-1, heuristic, alpha, math.inf)
+                scored_moves.append((utility, move))
+                alpha = max(alpha, utility)
             best_score, _ = max(scored_moves)
         else:
             # minimizing
+            beta = math.inf
+            for move in state.possible_moves:
+                new_state = make_move(copy.deepcopy(state), move)
+                utility = ai(new_state, cur_depth-1, heuristic, -math.inf, beta)
+                scored_moves.append((utility, move))
+                beta = min(beta, utility)
             best_score, _ = min(scored_moves)
         utilities[state.turn] = best_score
-        top_moves = [move for move in scored_moves if abs(move[0] - best_score) <= SELECTION_TOLERANCE]
+        top_moves = [move for move in scored_moves
+                     if abs(move[0] - best_score) <= SELECTION_TOLERANCE]
         best_move = random.choice(top_moves)[1]
-        current_depth += 1
+        cur_depth += 1
     make_move(state, best_move)
 \end{lstlisting}
 
@@ -426,20 +542,33 @@ def ai_make_move_id_timelimited(ai, state, depth, heuristic):
     second_last_time = 1
     factor = 0
     start = time.time()
-    while depth <= 64 - state.num_pieces and SECS_PER_MOVE - (time.time() - start) >= factor * last_time:
+    while (
+        depth <= 64 - state.num_pieces and
+        SECS_PER_MOVE - (time.time() - start) >= factor * last_time
+    ):
         last_time_start = time.time()
         scored_moves = []
-        for move in state.possible_moves:
-            utility = ai(make_move(copy.deepcopy(state), move), depth-1, heuristic, -math.inf, math.inf)
-            scored_moves.append((utility, move))
         if state.turn == WHITE:
             # maximizing
+            alpha = -math.inf
+            for move in state.possible_moves:
+                new_state = make_move(copy.deepcopy(state), move)
+                utility = ai(new_state, depth-1, heuristic, alpha, math.inf)
+                scored_moves.append((utility, move))
+                alpha = max(alpha, utility)
             best_score, _ = max(scored_moves)
         else:
             # minimizing
+            beta = math.inf
+            for move in state.possible_moves:
+                new_state = make_move(copy.deepcopy(state), move)
+                utility = ai(new_state, depth-1, heuristic, -math.inf, beta)
+                scored_moves.append((utility, move))
+                beta = min(beta, utility)
             best_score, _ = min(scored_moves)
         utilities[state.turn] = best_score
-        top_moves = [move for move in scored_moves if abs(move[0] - best_score) <= SELECTION_TOLERANCE]
+        top_moves = [move for move in scored_moves
+                     if abs(move[0] - best_score) <= SELECTION_TOLERANCE]
         best_move = random.choice(top_moves)[1]
         second_last_time = last_time
         last_time = time.time() - last_time_start

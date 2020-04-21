@@ -1,0 +1,29 @@
+\begin{lstlisting}[language=Python]
+%run othello_test_util.ipynb
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+test_board = GameState()
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+for i in range(4):
+    ai_make_move(alphabeta, test_board, 1, combined_heuristic)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+for i in range(3, 8):
+    print(i, ':')
+    debug_num_visited_states(test_board, i)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+for i in range(4):
+    ai_make_move(alphabeta, test_board, 1, combined_heuristic)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+for i in range(3, 8):
+    print(i, ':')
+    debug_num_visited_states(test_board, i)
+\end{lstlisting}

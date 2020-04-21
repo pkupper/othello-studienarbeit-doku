@@ -25,8 +25,15 @@ def play_game(settings):
 
 def next_move_blind(state, settings):
     global num_poss_moves
-    num_poss_moves.append((state.num_pieces, len(state.possible_moves), len(get_possible_moves(state, -state.turn))))
-    settings[state.turn]['mode'](settings[state.turn]['algorithm'], state, settings[state.turn]['depth'], settings[state.turn]['heuristic'])
+    num_poss_moves.append((
+        state.num_pieces, len(state.possible_moves),
+         len(get_possible_moves(state, -state.turn))
+    ))
+    make_move = settings[state.turn]['mode']
+    algorithm = settings[state.turn]['algorithm']
+    depth = settings[state.turn]['depth']
+    heuristic = settings[state.turn]['heuristic']
+    make_move(algorithm, state, depth, heuristic)
     if not state.game_over:
         next_move_blind(state, settings)
 \end{lstlisting}
@@ -52,7 +59,6 @@ import seaborn as sns
 import math
 import sklearn.linear_model as lm
 from sklearn.preprocessing import PolynomialFeatures
-from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 
 x = []
@@ -66,8 +72,6 @@ for (pieces, a, b) in num_poss_moves:
 
 X = np.reshape(x, (len(x), 1))
 y = np.reshape(y, (len(y), 1))
-
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
 poly_reg = PolynomialFeatures(degree=2)
 X_poly = poly_reg.fit_transform(X)
@@ -85,19 +89,8 @@ def print_graph():
     plt.show()
 
 print_graph()
-print(pol_reg.coef_[0][2],"*x**2 +",pol_reg.coef_[0][1],"* x +",pol_reg.coef_[0][0],"+",pol_reg.intercept_[0])
-\end{lstlisting}
-
-\begin{lstlisting}
-['1', 'x1', 'x1^2']
-\end{lstlisting}
-
-\begin{figure}
-\centering
-\includegraphics{../content/implementation/othello_avg_num_moves_files/../content/implementation/othello_avg_num_moves_4_1.png}
-\caption{png}
-\end{figure}
-
-\begin{lstlisting}
--0.011336470827524314 *x**2 + 0.7178166377823245 * x + 0.0 + 0.5165750863536918
+print(pol_reg.coef_[0][2],"*x**2 +",
+      pol_reg.coef_[0][1],"* x +",
+      pol_reg.coef_[0][0],"+",
+      pol_reg.intercept_[0])
 \end{lstlisting}

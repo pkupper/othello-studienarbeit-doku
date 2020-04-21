@@ -31,7 +31,7 @@ report:
 ####direct without latexmk
 
 # Build the LaTeX document.
-all-legacy: outputdir-legacy report-legacy
+all-legacy: implementation outputdir-legacy report-legacy
 #cleanup-legacy
 
 # cleanup tempfiles
