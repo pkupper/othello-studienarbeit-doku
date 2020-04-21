@@ -24,3 +24,25 @@ Bei begrenzter Rechenzeit kann eine höhere Performanz zu einer stärkeren KI f�
     \caption{Anteil gewonnener Spiele bei unterschiedlicher Suchtiefe}
     \label{table:search-depth}
 \end{table}
+
+\subsection{Heuristik}
+In der Heuristik werden verschiedene Merkmale berücksichtigt. Diese müssen so gewichtet werden, dass die KI möglichst
+stark ist. Dabei kann es auch sein, dass ein Merkmal gar nicht mit in die Heuristik aufgenommen wird, da andere Merkmale
+besser sind.
+
+\subsubsection{Mobilität}
+Die aktuelle Mobilität und die potenzielle Mobilität zielen darauf ab, die Anzahl der möglichen Züge des Spielers zu
+erhöhen. Michael Buro ist in seiner Dissertation zu dem Ergebniss gekommen, dass der Nutzen der aktuellen Mobilität
+annähernd linear zunimmt, wohingegen die potenzielle Mobilität annähernd linear zunimmt. Gegen Ende des Spiels verlieren
+beide Merkmale an Bedeutung. Bis 36 Steine auf dem Spielfeld liegen, hat die potenzielle Mobilität einen größeren
+Nutzen, danach die aktuelle Mobilität. \cite[S.~20]{evaluationfunctions}
+
+Der erste Ansatz, die aktuelle und die potenzielle Mobilität zu kombinieren, besteht darin, bis zu einer bestimmten
+Anzahl an Steinen auf dem Feld die potenzielle Mobilität zu verwenden, und danach die aktuelle Mobilität. Das hat den
+Vorteil, dass der Rechnenaufwand geringer ist, da immer nur ein Merkmal berechnet werden muss. Tests, in denen die KI
+gegen sich selbst mit unterschiedlichen Parametern spielen gelassen wurde, haben ergeben, dass die KI am häufigsten
+gewinnt, wenn die Grenze bei den von Buro bestimmten 36 Steinen auf dem Spielfeld liegt.
+
+Eine Verbesserung konnte erzielt werden, indem die aktuelle und die potenzielle Mobilität linear kombiniert wurden.
+D.\,h., die Gewichtung der potenziellen Mobilität entspricht dem Anteil der belegten Felder und die aktuelle Mobilität
+dem Anteil der freien Felder.
