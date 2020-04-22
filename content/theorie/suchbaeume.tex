@@ -27,9 +27,15 @@ viele Wiederholungen eine unendliche Menge an Pfaden entsteht.
 In dem Spiel Othello kann allerdings kein Zustand mehrfach auftreten, da nach jedem Spielzug genau ein Spielstein mehr
 auf dem Feld liegt und Spielsteine nicht wieder weggenommen werden können.
 
-Der Baum eines gesamten Spiels kann je nach Spiel sehr groß sein. Für das Spiel Othello besteht der Baum aus
-schätzungsweise $10^{54}$ Knoten. %TODO: Quelle (https://en.wikipedia.org/wiki/Computer_Othello)
-Der Spielbaum muss in diesem Fall also als theoretisches Konstrukt betrachtet werden, da er nicht komplett dargestellt
-werden kann. Ein Suchbaum ist ein Teil des Spielbaums, der jedoch nur die für eine Entscheidung relevanten Knoten
-beinhaltet.
+Der Baum eines gesamten Spiels kann je nach Spiel sehr groß sein. Für das Spiel Othello besteht der Baum bei der Annahme
+von einer durchschnittlichen Spiellänge von 58 Zügen und zehn Möglichkeiten pro Spielzug aus $10^{58}$ Knoten. Bei drei
+verschiedenen Zuständen, die jedes Feld annehmen kann (frei, belegt von schwarz oder belegt von weiß), liegt die
+Speicherkomplexität bei $3^{64}\approx10^{30}$ möglichen Spielzuständen. Diese Zahl lässt sich durch Ausschließen
+offensichtlich ungültiger Zustände, in denen beispielsweise die mittleren vier Felder nicht belegt sind oder gesetzte
+Steine nicht verbunden sind, auf ca. $10^{28}$ reduzieren.
+\cite[S.~167]{searchingforsolutions}
+Bei einer Repräsentation von 2 Bit pro Spielfeld, also 16 Byte pro Zustand, würden diese Zustände ca. $10^{20}$\,GB
+Speicher benötigen. Der Spielbaum muss in diesem Fall also als theoretisches Konstrukt betrachtet werden, da er nicht
+komplett dargestellt werden kann. Ein Suchbaum ist ein Teil des Spielbaums, der jedoch nur die für eine Entscheidung
+relevanten Knoten beinhaltet.
 \cite[S.~162f.]{ai2010russel}
