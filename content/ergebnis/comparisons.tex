@@ -32,7 +32,7 @@ besser sind.
 
 \subsubsection{Mobilität}
 Die aktuelle Mobilität und die potenzielle Mobilität zielen darauf ab, die Anzahl der möglichen Züge des Spielers zu
-erhöhen. Michael Buro ist in seiner Dissertation zu dem Ergebniss gekommen, dass der Nutzen der aktuellen Mobilität
+erhöhen. Michael Buro ist in seiner Dissertation zu dem Ergebnis gekommen, dass der Nutzen der aktuellen Mobilität
 annähernd linear zunimmt, wohingegen die potenzielle Mobilität annähernd linear zunimmt. Gegen Ende des Spiels verlieren
 beide Merkmale an Bedeutung. Bis 36 Steine auf dem Spielfeld liegen, hat die potenzielle Mobilität einen größeren
 Nutzen, danach die aktuelle Mobilität. \cite[S.~20]{evaluationfunctions}
@@ -44,5 +44,9 @@ gegen sich selbst mit unterschiedlichen Parametern spielen gelassen wurde, haben
 gewinnt, wenn die Grenze bei den von Buro bestimmten 36 Steinen auf dem Spielfeld liegt.
 
 Eine Verbesserung konnte erzielt werden, indem die aktuelle und die potenzielle Mobilität linear kombiniert wurden.
-D.\,h., die Gewichtung der potenziellen Mobilität entspricht dem Anteil der belegten Felder und die aktuelle Mobilität
+Das heißt, die Gewichtung der potenziellen Mobilität entspricht dem Anteil der belegten Felder und die aktuelle Mobilität
 dem Anteil der freien Felder.
+
+Um zu bestimmen, welche Kombination der Mobilität zur stärksten KI führt, wurden verschiedene Kombinationen jeweils 50
+Mal mit einer Suchtiefe von drei gegeneinander spielen gelassen. Es hat sich gezeigt, dass ein Wechsel von der potenziellen zur aktuellen Mobilität bei 36 Steinen auf dem Spielfeld keinen messbaren Unterschied zur aktuellen oder potenziellen Mobilität alleine bewirkt. Eine lineare Kombination von aktueller und potenzieller Mobilität konnte allerdings mit 56 – 60\,\% Siegen einen leichten Vorteil gegenüber den anderen Möglichkeiten erzielen.
+Tabelle \ref{table:mobility} im Anhang zeigt den Anteil der Siege und Niederlagen der verschiedenen Kombinationen.

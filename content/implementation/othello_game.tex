@@ -259,13 +259,13 @@ def is_move_valid(board, row, col, player):
     return False
 \end{lstlisting}
 
-\passthrough{\lstinline!get\_winner!} bestimmt für einen Endzustand den
+\passthrough{\lstinline!get\_utility!} bestimmt für einen Endzustand den
 Gewinner des Spiels. Gewinnt Weiß, so wird der Wert 1 zurückgegeben.
 Gewinnt Schwarz, wird der Wert -1 zurückgegeben. Bei einem Unentschieden
 wird der Wert 0 zurückgegeben.
 
 \begin{lstlisting}[language=Python]
-def get_winner(state):
+def get_utility(state):
     black_disks = count_disks(state, BLACK)
     white_disks = count_disks(state, WHITE)
     if black_disks > white_disks:

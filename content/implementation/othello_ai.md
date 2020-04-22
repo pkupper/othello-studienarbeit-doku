@@ -1,76 +1,52 @@
-\begin{lstlisting}[language=Python]
+```python
 %%HTML
 <style>
 .container { width:100% }
 </style>
-\end{lstlisting}
+```
 
-\hypertarget{implementierung-einer-kuxfcnstlichen-intelligenz-fuxfcr-das-spiel-othello}{%
-\section{Implementierung einer Künstlichen Intelligenz für das Spiel
-Othello}\label{implementierung-einer-kuxfcnstlichen-intelligenz-fuxfcr-das-spiel-othello}}
+# Implementierung einer Künstlichen Intelligenz für das Spiel Othello
 
-\hypertarget{initiale-konfiguration}{%
-\subsection{Initiale Konfiguration}\label{initiale-konfiguration}}
+## Initiale Konfiguration
 
 Importieren von Abhängigkeiten und Konfiguration
 
-\begin{lstlisting}[language=Python]
+
+```python
 import math
 import copy
 import numpy as np
 import random
-\end{lstlisting}
+```
 
-\begin{lstlisting}[language=Python]
+
+```python
 %run othello_game.ipynb
-\end{lstlisting}
+```
 
-Die aktuellen Nutzen-Werte der beiden Spieler werden in einer globalen
-Variable gespeichert, sodass diese in der GUI angezeigt werden können.
-Die Werte werden in den entsprechenden Funktionen der Strategien
-aktualisiert.
+Die aktuellen Nutzen-Werte der beiden Spieler werden in einer globalen Variable gespeichert, sodass diese in der GUI angezeigt werden können. Die Werte werden in den entsprechenden Funktionen der Strategien aktualisiert.
 
-\begin{lstlisting}[language=Python]
+
+```python
 utilities = {WHITE: '-', BLACK: '-'}
-\end{lstlisting}
+```
 
-\hypertarget{heuristiken}{%
-\subsection{Heuristiken}\label{heuristiken}}
+## Heuristiken
 
-Zum Abschätzen der Nützlichkeit eines Spielzustands wird eine Heuristik
-benötigt. Im folgenden sind einige solcher Heuristiken implementiert. Da
-Weiß der maximierende Spieler, und Schwarz der minimierende Spieler ist
-repräsentiert ein höherer Wert der Heuristik einen für Weiß
-vorteilhaften Zug, während ein niedriger Wert einen Vorteil für Schwarz
-repräsentiert. Die Werte der Heuristik liegen zwischen -1 und 1, wobei
-die Randwerte einen garantierten Sieg für den jeweiligen Spieler
-darstellen. Der Wert 0 steht für einen für beide Spieler gleich guten
-Spielzustand.
+Zum Abschätzen der Nützlichkeit eines Spielzustands wird eine Heuristik benötigt. Im folgenden sind einige solcher Heuristiken implementiert. Da Weiß der maximierende Spieler, und Schwarz der minimierende Spieler ist repräsentiert ein höherer Wert der Heuristik einen für Weiß vorteilhaften Zug, während ein niedriger Wert einen Vorteil für Schwarz repräsentiert. Die Werte der Heuristik liegen zwischen -1 und 1, wobei die Randwerte einen garantierten Sieg für den jeweiligen Spieler darstellen. Der Wert 0 steht für einen für beide Spieler gleich guten Spielzustand.
 
-Da das Ziel des Spiels Othello ist, zum Ende des Spiels mehr Steine als
-der Gegner auf dem Spielfeld zu haben, ist es naheliegend, die Differez
-der Anzahlen von Steinen beider Spieler zur Abschätzung eines Zuges zu
-verwenden. Genau das macht die Disk-Count-Heuristik indem sie die
-Differenz der Steine, beider Spieler berechnet und den resultierenden
-Wert zur Normalisierung durch die maximale Anzahl an Steinen teilt. Bei
-genauerer Betrachtung ist es jedoch, gerade zu Beginn des Spiels nicht
-immer vorteilhaft, den Vorsprung an Steinen zu maximieren.
+Da das Ziel des Spiels Othello ist, zum Ende des Spiels mehr Steine als der Gegner auf dem Spielfeld zu haben, ist es naheliegend, die Differez der Anzahlen von Steinen beider Spieler zur Abschätzung eines Zuges zu verwenden. Genau das macht die Disk-Count-Heuristik indem sie die Differenz der Steine, beider Spieler berechnet und den resultierenden Wert zur Normalisierung durch die maximale Anzahl an Steinen teilt. Bei genauerer Betrachtung ist es jedoch, gerade zu Beginn des Spiels nicht immer vorteilhaft, den Vorsprung an Steinen zu maximieren.
 
-\begin{lstlisting}[language=Python]
+
+```python
 def disc_count_heuristic(state):
     return (count_disks(state, WHITE) - count_disks(state, BLACK)) / 64
-\end{lstlisting}
+```
 
-Eine weitere Heuristik ist die Mobilität der Spieler. Diese gibt an wie
-viele mögliche Züge ein Spieler gegenüber dessen Gegner machen kann. Die
-Idee bei dieser Heuristik ist, dass ein Spieler dadurch seine Freiheit
-maximiert, während die Freiheit des Gegners durch eine geringe Anzahl an
-Zügen eingeschränkt wird. Die Mobilitäts-Heuristik gibt an wie viele
-möglicher Züge mehr Weiß gegenüber Schwarz im Aktuellen Spielzustand
-hat. Auch dieser Wert wird durch Division durch die Anzahl an Feldern
-normalisiert, um die Grenzen von -1 und 1 einzuhalten.
+Eine weitere Heuristik ist die Mobilität der Spieler. Diese gibt an wie viele mögliche Züge ein Spieler gegenüber dessen Gegner machen kann. Die Idee bei dieser Heuristik ist, dass ein Spieler dadurch seine Freiheit maximiert, während die Freiheit des Gegners durch eine geringe Anzahl an Zügen eingeschränkt wird. Die Mobilitäts-Heuristik gibt an wie viele möglicher Züge mehr Weiß gegenüber Schwarz im Aktuellen Spielzustand hat. Auch dieser Wert wird durch Division durch die Anzahl an Feldern normalisiert, um die Grenzen von -1 und 1 einzuhalten.
 
-\begin{lstlisting}[language=Python]
+
+```python
 def mobility_heuristic(state):
     if state.turn == WHITE:
         return (len(state.possible_moves) -
@@ -78,20 +54,12 @@ def mobility_heuristic(state):
     else:
         return (len(get_possible_moves(state, WHITE)) -
                 len(state.possible_moves)) / 64
-\end{lstlisting}
+```
 
-Nicht nur die aktuelle, sondern auch die potentielle Mobilität kann vor
-allem in frühen Phasen des Spiels wichtig für die Bewertung einer
-Position sein. Die Funktion
-\passthrough{\lstinline!pot\_mob\_heuristic!} berechnet für einen
-Zustand \passthrough{\lstinline!state!} die Differenz der potentiellen
-Mobilität beider Spieler. Die potentielle Mobilität eines Spielers ist
-die Summe aller freien Felder um gegnerische Spielsteine, da Michael
-Buro dieses Merkmal als in seiner Dissertation als bestes ausgemacht
-hat. Das Ergebnis wird durch 3.5 geteilt, da es im Durchschnitt 3.5 Mal
-so viele potentielle Züge wie tatsächliche Züge gibt.
+Nicht nur die aktuelle, sondern auch die potentielle Mobilität kann vor allem in frühen Phasen des Spiels wichtig für die Bewertung einer Position sein. Die Funktion `pot_mob_heuristic` berechnet für einen Zustand `state` die Differenz der potentiellen Mobilität beider Spieler. Die potentielle Mobilität eines Spielers ist die Summe aller freien Felder um gegnerische Spielsteine, da Michael Buro dieses Merkmal als in seiner Dissertation als bestes ausgemacht hat. Das Ergebnis wird durch 3.5 geteilt, da es im Durchschnitt 3.5 Mal so viele potentielle Züge wie tatsächliche Züge gibt.
 
-\begin{lstlisting}[language=Python]
+
+```python
 def pot_mob_heuristic(state):
     board = list(state.board)
     fields = 0
@@ -104,45 +72,24 @@ def pot_mob_heuristic(state):
     # Im Durchschnitt gibt es 3.5 Mal mehr potentielle wie tatsächliche Züge
     fields /= 3.5 
     return fields / 64
-\end{lstlisting}
+```
 
-Die Funktion \passthrough{\lstinline!combined\_mobility\_heuristic!}
-kombiniert die aktuelle und potentielle Mobilität, wobei zu Beginn des
-Spiels die potentielle Mobilität stärker gewichtet wird und gegen Ende
-die aktuelle Mobilität. Michael Buro beschreibt in seiner Dissertation,
-dass die potentielle Mobilität bis 36 Spielsteine auf dem Feld liegen
-wichtiger für die Bewertung ist, als die aktuelle Mobilität. Dieser
-Sachverhalt soll durch eine lineare Kombination modelliert werden.
+Die Funktion `combined_mobility_heuristic` kombiniert die aktuelle und potentielle Mobilität, wobei zu Beginn des Spiels die potentielle Mobilität stärker gewichtet wird und gegen Ende die aktuelle Mobilität. Michael Buro beschreibt in seiner Dissertation, dass die potentielle Mobilität bis 36 Spielsteine auf dem Feld liegen wichtiger für die Bewertung ist, als die aktuelle Mobilität. Dieser Sachverhalt soll durch eine lineare Kombination modelliert werden.
 
-\begin{lstlisting}[language=Python]
+
+```python
 def combined_mobility_heuristic(state):
     act = mobility_heuristic(state)
     pot = pot_mob_heuristic(state)
     return (1 - state.num_pieces / 50) * pot + (state.num_pieces / 50) *  act
-\end{lstlisting}
+```
 
-Beim Spielen von Othello fällt auf, dass es bestimmte Felder gibt, deren
-Belegung von Vorteil ist, sowie einige, deren Belegung eher nachteilhaft
-ist. Diese Eigenschaft macht sich die Cowthello-Heuristik zu Nutze.
-Diese weist jedem Feld einen Wert zu der angibt, wie Vorteilhaft der
-Besitz dieses Feldes ist, bzw. wie Nachteilhaft die Belegung des Feldes
-durch den Gegner ist. Diese Gewichte werden dann mit der aktuellen
-Belegung des Spielfelds multipliziert und die Ergebnisse anschließend
-aufsummiert. Der resultierende Wert schätzt dann den Nutzen der
-aktuellen Position ein. Auch bei dieser Heuristik findet eine
-Normalisierung statt.
+Beim Spielen von Othello fällt auf, dass es bestimmte Felder gibt, deren Belegung von Vorteil ist, sowie einige, deren Belegung eher nachteilhaft ist. Diese Eigenschaft macht sich die Cowthello-Heuristik zu Nutze. Diese weist jedem Feld einen Wert zu der angibt, wie Vorteilhaft der Besitz dieses Feldes ist, bzw. wie Nachteilhaft die Belegung des Feldes durch den Gegner ist. Diese Gewichte werden dann mit der aktuellen Belegung des Spielfelds multipliziert und die Ergebnisse anschließend aufsummiert. Der resultierende Wert schätzt dann den Nutzen der aktuellen Position ein. Auch bei dieser Heuristik findet eine Normalisierung statt.
 
-Aufgrund der Symmetrie des Othello Spielfeldes ist es für die
-Weight-Heuristik nicht nötig, für jedes Feld einzeln dessen Gewicht
-anzugeben. Stattdessen werden ausschließlich die Gewichte für ein
-Viertel des Spielfelds angegeben und dieses anschließend gespiegelt. Die
-Funktion \passthrough{\lstinline!gen\_cowthello\_matrix!} generiert dann
-die Gewichte-Matrix für das gesamte Feld und führt auch die
-Normalisierung durch. Dabei werden die Gewichte aus dem Online-Othello
-Programm Cowthello verwendet. Cowthello ist unter der URL
-\url{https://www.aurochs.org/games/cowthello/} verfügbar.
+Aufgrund der Symmetrie des Othello Spielfeldes ist es für die Weight-Heuristik nicht nötig, für jedes Feld einzeln dessen Gewicht anzugeben. Stattdessen werden ausschließlich die Gewichte für ein Viertel des Spielfelds angegeben und dieses anschließend gespiegelt. Die Funktion `gen_cowthello_matrix` generiert dann die Gewichte-Matrix für das gesamte Feld und führt auch die Normalisierung durch. Dabei werden die Gewichte aus dem Online-Othello Programm Cowthello verwendet. Cowthello ist unter der URL <https://www.aurochs.org/games/cowthello/> verfügbar.
 
-\begin{lstlisting}[language=Python]
+
+```python
 def gen_cowthello_matrix():
     quarter = np.array([
         [100, -25, 25, 10],
@@ -157,14 +104,16 @@ def gen_cowthello_matrix():
     return np.true_divide(raw_matrix, max_possible)
 
 cowthello_weights = gen_cowthello_matrix()
-\end{lstlisting}
+```
 
-\begin{lstlisting}[language=Python]
+
+```python
 def cowthello_heuristic(state):
     return np.sum(np.multiply(state.board, cowthello_weights))
-\end{lstlisting}
+```
 
-\begin{lstlisting}[language=Python]
+
+```python
 def safe_in_corner(board, safe, player, rdir, cdir):
     safe_in_row = 9
     rows = range(8) if rdir == 1 else reversed(range(8))
@@ -182,9 +131,10 @@ def safe_in_corner(board, safe, player, rdir, cdir):
         if safe_in_col == 0:
             break
         safe[::rdir,col][:safe_in_col] = True
-\end{lstlisting}
+```
 
-\begin{lstlisting}[language=Python]
+
+```python
 def safe_pieces(state, player):
     board = state.board
     safe = numpy.zeros((8, 8), dtype=np.bool)
@@ -193,9 +143,10 @@ def safe_pieces(state, player):
     safe_in_corner(board, safe, player,-1, 1)
     safe_in_corner(board, safe, player,-1,-1)
     return safe
-\end{lstlisting}
+```
 
-\begin{lstlisting}[language=Python]
+
+```python
 def cowthello_safe_heuristic(state):
     black_safe = safe_pieces(state, BLACK)
     white_safe = safe_pieces(state, WHITE)
@@ -203,46 +154,36 @@ def cowthello_safe_heuristic(state):
     weights[black_safe] = abs(weights[black_safe])
     weights[white_safe] = abs(weights[white_safe])
     return np.sum(np.multiply(state.board, weights))
-\end{lstlisting}
+```
 
-Die oben implementierten Heuristiken bewerten jeweils nur ein Merkmal
-der aktuellen Spielsitation. Durch eine Kombination mehrerer dieser
-Heuristiken können mehrere Merkmale gleichzeitig betrachtet werden. Die
-Kombination der Heuristiken kann in Abhängigkeit der aktuellen
-Spielphase geschehen. Beispielsweise wird zu Ende des Spiels die
-Disc-Count-Heuristik wichtiger.
+Die oben implementierten Heuristiken bewerten jeweils nur ein Merkmal der aktuellen Spielsitation. Durch eine Kombination mehrerer dieser Heuristiken können mehrere Merkmale gleichzeitig betrachtet werden. Die Kombination der Heuristiken kann in Abhängigkeit der aktuellen Spielphase geschehen. Beispielsweise wird zu Ende des Spiels die Disc-Count-Heuristik wichtiger.
 
-\begin{lstlisting}[language=Python]
+
+```python
 def combined_heuristic(state):
     if state.num_pieces >= 50:
         return disc_count_heuristic(state)
     mobility = combined_mobility_heuristic(state)
     cowthello = cowthello_safe_heuristic(state)
     return 0.5 * mobility + 0.5 * cowthello
-\end{lstlisting}
+```
 
-\hypertarget{implementierung-der-strategien}{%
-\subsection{Implementierung der
-Strategien}\label{implementierung-der-strategien}}
+## Implementierung der Strategien
 
-\hypertarget{zufuxe4llige-ki}{%
-\subsubsection{Zufällige KI}\label{zufuxe4llige-ki}}
+### Zufällige KI
+Die zufällige KI bewertet den Nutzen aller Züge gleich, gibt also immer den Wert `0` zurück.
 
-Die zufällige KI bewertet den Nutzen aller Züge gleich, gibt also immer
-den Wert \passthrough{\lstinline!0!} zurück.
 
-\begin{lstlisting}[language=Python]
+```python
 def random_ai(state, depth, heuristic, alpha, beta):
     return 0
-\end{lstlisting}
+```
 
-\hypertarget{minimax-ki}{%
-\subsubsection{Minimax KI}\label{minimax-ki}}
+### Minimax KI
+Diese KI verwendet den Minimax-Algorithmus zur Bestimmung der Nützlichkeit eines Zuges.
 
-Diese KI verwendet den Minimax-Algorithmus zur Bestimmung der
-Nützlichkeit eines Zuges.
 
-\begin{lstlisting}[language=Python]
+```python
 debug_mm_count = 0
 
 
@@ -272,30 +213,22 @@ def minimax(state, depth, heuristic, alpha, beta):
             # minimizing
             utility = min(utility, tmp_utility)
     return utility
-\end{lstlisting}
+```
 
-\hypertarget{alpha-beta-ki}{%
-\subsubsection{Alpha-Beta KI}\label{alpha-beta-ki}}
+### Alpha-Beta KI
+Diese KI verwended den Minimax Algorithmus mit der Optimierung Alpha-Beta Pruning, um die Nützlichkeit eines Spielzustands zu bestimmen.
 
-Diese KI verwended den Minimax Algorithmus mit der Optimierung
-Alpha-Beta Pruning, um die Nützlichkeit eines Spielzustands zu
-bestimmen.
+Zum Merken vorheriger Ausführungen von wird das Dictionary `transposition_table` verwendet. Dies ist gerade bei der Verwendung von Iterative Deepening für das Move-Ordering vorteilhaft. Der Schlüssel des Dictionaries besteht aus dem Zustand des Spielbretts, dem Spieler, der an der Reihe ist und der verwendeten Heuristik.
 
-Zum Merken vorheriger Ausführungen von wird das Dictionary
-\passthrough{\lstinline!transposition\_table!} verwendet. Dies ist
-gerade bei der Verwendung von Iterative Deepening für das Move-Ordering
-vorteilhaft. Der Schlüssel des Dictionaries besteht aus dem Zustand des
-Spielbretts, dem Spieler, der an der Reihe ist und der verwendeten
-Heuristik.
 
-\begin{lstlisting}[language=Python]
+```python
 transposition_table = {}
-\end{lstlisting}
+```
 
-Die Funktion \passthrough{\lstinline!alphabeta!} implementiert den
-Minimax Algorithmus mit Alpha-Beta-Pruning
+Die Funktion `alphabeta` implementiert den Minimax Algorithmus mit Alpha-Beta-Pruning
 
-\begin{lstlisting}[language=Python]
+
+```python
 debug_ab_count = 0
 
 
@@ -344,21 +277,20 @@ def alphabeta(state, depth, heuristic, alpha, beta):
         if alpha >= beta:
             break  # alphabeta pruning
     return utility
-\end{lstlisting}
+```
 
-\hypertarget{probcut-ki}{%
-\subsubsection{ProbCut KI}\label{probcut-ki}}
+### ProbCut KI
+An dieser Stelle beginnt die Implementierung der Künstlichen Intelligenz mittels des Minimax Algorithmus und ProbCut
 
-An dieser Stelle beginnt die Implementierung der Künstlichen Intelligenz
-mittels des Minimax Algorithmus und ProbCut
 
-\begin{lstlisting}[language=Python]
+```python
 PERCENTILE = 1.5  # 93.3%
 PROBCUT_DEEP_DEPTH = 4
 PROBCUT_SHALLOW_DEPTH = 2
-\end{lstlisting}
+```
 
-\begin{lstlisting}[language=Python]
+
+```python
 debug_pc_count = 0
 
 
@@ -421,30 +353,21 @@ def probcut(state, depth, heuristic, alpha, beta):
         if alpha >= beta:
             break  # alphabeta pruning
     return utility
-\end{lstlisting}
+```
 
-\hypertarget{durchfuxfchren-der-zuxfcge}{%
-\subsubsection{Durchführen der Züge}\label{durchfuxfchren-der-zuxfcge}}
+### Durchführen der Züge
+Die folgenden Funktionen berechnen mit einer angegebenen KI den nächsten Zug und wenden diesen auf den Zustand an. Der Wert `SELECTION_TOLERANCE` gibt an, wie viel der Nutzen eines Zuges vom besten Nutzen abweichen darf, um dennoch ausgewählt werden zu können.
 
-Die folgenden Funktionen berechnen mit einer angegebenen KI den nächsten
-Zug und wenden diesen auf den Zustand an. Der Wert
-\passthrough{\lstinline!SELECTION\_TOLERANCE!} gibt an, wie viel der
-Nutzen eines Zuges vom besten Nutzen abweichen darf, um dennoch
-ausgewählt werden zu können.
 
-\begin{lstlisting}[language=Python]
+```python
 SELECTION_TOLERANCE = 0.0025
-\end{lstlisting}
+```
 
-Die Funktion \passthrough{\lstinline!ai\_make\_move!} führt auf dem
-Zustand \passthrough{\lstinline!state!} den besten, durch den
-Algorithmus \passthrough{\lstinline!ai!} bestimmten, Zug aus. Für alle
-möglichen Züge wird die Nützlichkeit des resultierenden Zustands
-mithilfe des Algorithmus \passthrough{\lstinline!ai!} bestimmt. Aus
-allen Zügen wird einer der Züge ausgewählt, der für den Spieler den
-optimaleln Nutzen hat.
+Die Funktion `ai_make_move` führt auf dem Zustand `state` den besten, durch den Algorithmus `ai` bestimmten, Zug aus.
+Für alle möglichen Züge wird die Nützlichkeit des resultierenden Zustands mithilfe des Algorithmus `ai` bestimmt. Aus allen Zügen wird einer der Züge ausgewählt, der für den Spieler den optimaleln Nutzen hat.
 
-\begin{lstlisting}[language=Python]
+
+```python
 def ai_make_move(ai, state, depth, heuristic):
     global utilities
     if state.game_over:
@@ -472,19 +395,12 @@ def ai_make_move(ai, state, depth, heuristic):
     top_moves = [move for move in scored_moves if abs(move[0] - best_score) <= SELECTION_TOLERANCE]
     best_move = random.choice(top_moves)[1]
     make_move(state, best_move)
-\end{lstlisting}
+```
 
-Beim Iterative Deepening wird der Alphabeta-Algorithmus nacheinander mit
-steigender Tiefe ausgeführt. Die Werte aus der vorherigen Ausführung
-werden dann für das Move-Ordering verwendet. Dadurch das bessere
-Move-Ordering können beim Alpha-Beta-Pruning mehr Zweige abgeschnitten
-werden. Dadurch kann trotz der mehrfachen Ausführung eine höhere
-Performanz bei gleichem Ergebnis erreicht werden. Ein weiterer Vorteil
-ist, dass das Iterative Deepening jederzeit abgebrochen werden kann.
-Dadurch kann in einer vorgegebenen Zeit, die in dieser Zeit maximal
-mögliche Suchtiefe erreicht werden.
+Beim Iterative Deepening wird der Alphabeta-Algorithmus nacheinander mit steigender Tiefe ausgeführt. Die Werte aus der vorherigen Ausführung werden dann für das Move-Ordering verwendet. Dadurch das bessere Move-Ordering können beim Alpha-Beta-Pruning mehr Zweige abgeschnitten werden. Dadurch kann trotz der mehrfachen Ausführung eine höhere Performanz bei gleichem Ergebnis erreicht werden. Ein weiterer Vorteil ist, dass das Iterative Deepening jederzeit abgebrochen werden kann. Dadurch kann in einer vorgegebenen Zeit, die in dieser Zeit maximal mögliche Suchtiefe erreicht werden.
 
-\begin{lstlisting}[language=Python]
+
+```python
 def ai_make_move_id(ai, state, depth, heuristic):
     global utilities
     if state.game_over:
@@ -517,18 +433,12 @@ def ai_make_move_id(ai, state, depth, heuristic):
         best_move = random.choice(top_moves)[1]
         cur_depth += 1
     make_move(state, best_move)
-\end{lstlisting}
+```
 
-Beim Iterative Deepening ist jederzeit der beste Zug der letzten
-Suchtiefe bekannt. Daher kann der Algorithmus verwendet werden, um in
-einer vorgegebenen Zeit mit größtmöglicher Suchtiefe zu suchen. Dazu
-wird die Dauer des nächsten Zugs anhand der Dauer des letzten Zugs
-geschätzt. Somit kann es vorkommen, dass die Berechnung etwas länger
-oder kürzer als die gegebene Zeit dauert. Dafür wird das Ergebnis aller
-Berechnungen verwendet und die letzte Suche muss nicht abgebrochen
-werden.
+Beim Iterative Deepening ist jederzeit der beste Zug der letzten Suchtiefe bekannt. Daher kann der Algorithmus verwendet werden, um in einer vorgegebenen Zeit mit größtmöglicher Suchtiefe zu suchen. Dazu wird die Dauer des nächsten Zugs anhand der Dauer des letzten Zugs geschätzt. Somit kann es vorkommen, dass die Berechnung etwas länger oder kürzer als die gegebene Zeit dauert. Dafür wird das Ergebnis aller Berechnungen verwendet und die letzte Suche muss nicht abgebrochen werden.
 
-\begin{lstlisting}[language=Python]
+
+```python
 SECS_PER_MOVE = 30
 
 
@@ -576,4 +486,4 @@ def ai_make_move_id_timelimited(ai, state, depth, heuristic):
         depth += 1
     print("Reached depth", depth-1, "in", time.time() - start, "seconds")
     make_move(state, best_move)
-\end{lstlisting}
+```

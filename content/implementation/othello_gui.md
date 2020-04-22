@@ -1,57 +1,45 @@
-\begin{lstlisting}[language=Python]
+```python
 %%HTML
 <style>
 .container { width:100% }
 </style>
-\end{lstlisting}
+```
 
-\hypertarget{implementation-der-grafischen-benutzeroberfluxe4che}{%
-\section{Implementation der Grafischen
-Benutzeroberfläche}\label{implementation-der-grafischen-benutzeroberfluxe4che}}
+# Implementation der Grafischen Benutzeroberfläche
 
-Im folgenden Abschnitt wird eine Benutzeroberfläche für das Spiel
-Othello implementiert.
+Im folgenden Abschnitt wird eine Benutzeroberfläche für das Spiel Othello implementiert.
 
-\hypertarget{importieren-der-externen-abhuxe4ngigkeiten}{%
-\subsection{Importieren der externen
-Abhängigkeiten}\label{importieren-der-externen-abhuxe4ngigkeiten}}
+## Importieren der externen Abhängigkeiten
 
-Die Grafische Benutzeroberfläche verwendet zur Darstellung des
-Spielzustandes, zum Anzeigen weiterer Informationen sowie für die
-Benutzerinteraktion die Bibliotheken \passthrough{\lstinline!ipycanvas!}
-und \passthrough{\lstinline!ipywidgets!}. Diese Lassen sich direkt im
-Jupyter Notebook verwenden.
+Die Grafische Benutzeroberfläche verwendet zur Darstellung des Spielzustandes, zum Anzeigen weiterer Informationen sowie für die Benutzerinteraktion die Bibliotheken `ipycanvas` und `ipywidgets`. Diese Lassen sich direkt im Jupyter Notebook verwenden.
 
-Zusätzlich werden aus dem Paket \passthrough{\lstinline!math!} der
-Python Standardbibliothek die Variable \passthrough{\lstinline!pi!}
-sowie die Funktion \passthrough{\lstinline!floor!} benötigt.
+Zusätzlich werden aus dem Paket `math` der Python Standardbibliothek die Variable `pi` sowie die Funktion `floor` benötigt.
 
-\begin{lstlisting}[language=Python]
+
+```python
 import ipycanvas
 import ipywidgets
 import math
 from ipywidgets import RadioButtons, HBox, VBox, IntSlider, Label
-\end{lstlisting}
+```
 
-\hypertarget{globale-konstanten}{%
-\subsection{Globale Konstanten}\label{globale-konstanten}}
+## Globale Konstanten
 
-\hypertarget{canvas-initialisieren}{%
-\subsection{Canvas Initialisieren}\label{canvas-initialisieren}}
+## Canvas Initialisieren
 
-\passthrough{\lstinline!SHOW\_FRONTIER!} gibt an ob in der
-Visualisierung leere Felder, die an bereits gesetzte Spielsteine
-angrenzen hervorgehoben werden sollen.
+`SHOW_FRONTIER` gibt an ob in der Visualisierung leere Felder, die an bereits gesetzte Spielsteine angrenzen hervorgehoben werden sollen.
 
-\passthrough{\lstinline!SHOW\_POSSIBLE\_MOVES!} gibt ob für den aktuell
-ziehenden Spieler mögliche Züge visualisiert werden sollen.
 
-\begin{lstlisting}[language=Python]
+`SHOW_POSSIBLE_MOVES` gibt ob für den aktuell ziehenden Spieler mögliche Züge visualisiert werden sollen.
+
+
+```python
 SHOW_FRONTIER = False
 SHOW_POSSIBLE_MOVES = True
-\end{lstlisting}
+```
 
-\begin{lstlisting}[language=Python]
+
+```python
 CELL_SIZE = 60
 
 CANVAS_SIZE = BOARD_SIZE * CELL_SIZE
@@ -68,43 +56,40 @@ for i in range(BOARD_SIZE+1):
     canvas[0].move_to(0, pos)
     canvas[0].line_to(CANVAS_SIZE, pos)
 canvas[0].stroke()
-\end{lstlisting}
+```
 
-\hypertarget{widgets-initialisieren}{%
-\subsection{Widgets Initialisieren}\label{widgets-initialisieren}}
+## Widgets Initialisieren
 
-Das \passthrough{\lstinline!score\_lbl!} Widget enthält die Steinzahl
-beider Spieler im aktuellen Spielzustand
+Das `score_lbl` Widget enthält die Steinzahl beider Spieler im aktuellen Spielzustand
 
-\begin{lstlisting}[language=Python]
+
+```python
 score_lbl = ipywidgets.widgets.Label()
-\end{lstlisting}
+```
 
-Das \passthrough{\lstinline!turn\_lbl!} Widget nennt den Spieler, der
-gerade am Zug ist
+Das `turn_lbl` Widget nennt den Spieler, der gerade am Zug ist
 
-\begin{lstlisting}[language=Python]
+
+```python
 turn_lbl = ipywidgets.widgets.Label()
-\end{lstlisting}
+```
 
-Das \passthrough{\lstinline!output!} Widget macht die Ausgabe mithilfe
-von \passthrough{\lstinline!print()!}, sowie die Ausgabe von
-Fehlermeldungen trotz der Verwendung von IPyWidgets und IPyCanvas
-möglich.
+Das `output` Widget macht die Ausgabe mithilfe von `print()`, sowie die Ausgabe von Fehlermeldungen trotz der Verwendung von IPyWidgets und IPyCanvas möglich.
 
-\begin{lstlisting}[language=Python]
+
+```python
 output = ipywidgets.widgets.Output()
-\end{lstlisting}
+```
 
-\begin{lstlisting}[language=Python]
+
+```python
 utility_lbl = ipywidgets.widgets.Label()
-\end{lstlisting}
+```
 
-Die Funktion \passthrough{\lstinline!display\_board!} stellt den
-angegebenen Spielzustand dar, indem zunächst der Canvas aktualisiert,
-und dann zusammen mit den Status-Widgets angezeigt wird.
+Die Funktion `display_board` stellt den angegebenen Spielzustand dar, indem zunächst der Canvas aktualisiert, und dann zusammen mit den Status-Widgets angezeigt wird.
 
-\begin{lstlisting}[language=Python]
+
+```python
 def display_board(state):
     output.clear_output()
     update_output(state)
@@ -113,12 +98,12 @@ def display_board(state):
     display(turn_lbl)
     display(utility_lbl)
     display(output)
-\end{lstlisting}
+```
 
-In der Funktion \passthrough{\lstinline!update\_output!} wird der
-Spielzustand \passthrough{\lstinline!state!} auf den Canvas gezeichnet.
+In der Funktion `update_output` wird der Spielzustand `state` auf den Canvas gezeichnet.
 
-\begin{lstlisting}[language=Python]
+
+```python
 def update_output(state):
     with ipycanvas.hold_canvas(canvas):
         canvas[1].clear()
@@ -164,18 +149,12 @@ def update_output(state):
         turn_lbl.value = f'{get_player_string(get_utility(state))} wins'
     else:
         turn_lbl.value = f'{get_player_string(state.turn)}s Move'
-\end{lstlisting}
+```
 
-Für den menschlichen Spieler ist es nötig festzustellen, ob dieser auf
-das Spielfeld geklickt hat, dies geschieht in der callback funktion
-\passthrough{\lstinline!mouse\_down!} welche die x und y Koordinaten des
-Mausklicks relativ zum Canvas erhält. Auf Basis dieser Position wird,
-falls möglich, ein Zug auf das angeklickte Feld gemacht. Die Funktion
-wird durch den aufruf von
-\passthrough{\lstinline!Canvas.on\_mouse\_down!} bei IPyCanvas als
-Callback Funktion registriert.
+Für den menschlichen Spieler ist es nötig festzustellen, ob dieser auf das Spielfeld geklickt hat, dies geschieht in der callback funktion `mouse_down` welche die x und y Koordinaten des Mausklicks relativ zum Canvas erhält. Auf Basis dieser Position wird, falls möglich, ein Zug auf das angeklickte Feld gemacht. Die Funktion wird durch den aufruf von `Canvas.on_mouse_down` bei IPyCanvas als Callback Funktion registriert.
 
-\begin{lstlisting}[language=Python]
+
+```python
 def mouse_down(x_px, y_px):
     if not state.game_over:
         with output:
@@ -193,12 +172,12 @@ def mouse_down(x_px, y_px):
 
 
 canvas[1].on_mouse_down(mouse_down)
-\end{lstlisting}
+```
 
-\hypertarget{spieleinstellungen}{%
-\subsection{Spieleinstellungen}\label{spieleinstellungen}}
+## Spieleinstellungen
 
-\begin{lstlisting}[language=Python]
+
+```python
 algorithms = { 'Menschlicher Spieler': None,
                'ProbCut': probcut,
                'AlphaBeta': alphabeta,
@@ -243,14 +222,16 @@ white_mode = RadioButtons(
 white_depth = IntSlider(value = 5, min=1, max=10, description='Suchtiefe:')
 white_config = HBox([white_algorithm, white_mode, white_heuristic, white_depth])
 settings = ipywidgets.VBox([black_config, white_config])
-\end{lstlisting}
+```
 
-\begin{lstlisting}[language=Python]
+
+```python
 def configure_settings():
     display(settings)
-\end{lstlisting}
+```
 
-\begin{lstlisting}[language=Python]
+
+```python
 def get_settings():
     return { BLACK: { 'heuristic': heuristics[black_heuristic.value],
                       'algorithm': algorithms[black_algorithm.value],
@@ -260,4 +241,4 @@ def get_settings():
                       'algorithm': algorithms[white_algorithm.value],
                       'depth': white_depth.value,
                       'mode': modes[white_mode.value] }}
-\end{lstlisting}
+```
