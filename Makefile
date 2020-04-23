@@ -18,6 +18,7 @@ clean:
 	rm -rf $(OUTPUT_DIR)
 	rm -f $(DOCUMENT_NAME).pdf
 	rm -f $(DOCUMENT_NAME).synctex.gz
+	rm -rf content/implementation/*
 
 # cleanup tempfiles
 cleanup:

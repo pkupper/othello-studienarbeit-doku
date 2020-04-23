@@ -47,23 +47,35 @@ ob gegebene Koordinaten innerhalb des Spielfeldes liegen.
 Die Konstanten \passthrough{\lstinline!BLACK!},
 \passthrough{\lstinline!WHITE!} und \passthrough{\lstinline!NONE!}
 werden auf die Zahlenwerte -1 , 1 und 0 abgebildet und werden für
-mehrere Zwecke genutzt: 1. Repräsentation des Spielfeldes: Das Othello
-Spielbrett wird als \(8\times 8\) Matrix von Ganzzahlen definiert,
-welche jeweils einen der drei Werte annehmen können. Hierbei stehen die
-Werte \passthrough{\lstinline!BLACK!} und
-\passthrough{\lstinline!WHITE!} jeweils für einen Stein des jeweiligen
-Spielers, während \passthrough{\lstinline!NONE!} ein leeres Feld
-repräsentiert. 2. Repräsentation der Spieler:
-\passthrough{\lstinline!BLACK!} und \passthrough{\lstinline!WHITE!}
-werden zur Repäsentation eines Spielers genutzt. Beispielsweise enthält
-der Spielzustand eine Variable \passthrough{\lstinline!turn!} die
-angibt, welcher Spieler am Zug ist. 3. Berechnung der Heuristiken: Die
-Werte \passthrough{\lstinline!BLACK!}, \passthrough{\lstinline!WHITE!}
-und \passthrough{\lstinline!NONE!} sind so gewählt, dass sie sich für
-die Berechnung der Heuristiken eignen. Der in der Künstlichen
-Intelligenz maximierende Spieler hat den positiven Wert 1, während der
-minimierende Spieler durch den negativen Wert -1 repräsentiert wird.
-Kein Spieler, wird durch den Wert 0 dargestellt.
+mehrere Zwecke genutzt:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Repräsentation des Spielfeldes: Das Othello Spielbrett wird als
+  \(8\times 8\) Matrix von Ganzzahlen definiert, welche jeweils einen
+  der drei Werte annehmen können. Hierbei stehen die Werte
+  \passthrough{\lstinline!BLACK!} und \passthrough{\lstinline!WHITE!}
+  jeweils für einen Stein des jeweiligen Spielers, während
+  \passthrough{\lstinline!NONE!} ein leeres Feld repräsentiert.
+\item
+  Repräsentation der Spieler: \passthrough{\lstinline!BLACK!} und
+  \passthrough{\lstinline!WHITE!} werden zur Repäsentation eines
+  Spielers genutzt. Beispielsweise enthält der Spielzustand eine
+  Variable \passthrough{\lstinline!turn!} die angibt, welcher Spieler am
+  Zug ist.
+\item
+  Berechnung der Heuristiken: Die Werte \passthrough{\lstinline!BLACK!},
+  \passthrough{\lstinline!WHITE!} und \passthrough{\lstinline!NONE!}
+  sind so gewählt, dass sie sich für die Berechnung der Heuristiken
+  eignen. Der in der Künstlichen Intelligenz maximierende Spieler hat
+  den positiven Wert 1, während der minimierende Spieler durch den
+  negativen Wert -1 repräsentiert wird. Kein Spieler, wird durch den
+  Wert 0 dargestellt.
+\end{enumerate}
+
+\%\%latex
 
 \begin{lstlisting}[language=Python]
 BOARD_SIZE = 8
@@ -78,32 +90,46 @@ NONE = 0 # NO PLAYER
 
 Die Klasse \passthrough{\lstinline!GameState!} repäsentiert einen
 Spielzustand von Othello. Dieser wird durch die im Folgenden genannten
-Attribute beschrieben - Das Spielfeld \passthrough{\lstinline!board!},
-welches durch eine zweidimensionale Numpy Matrix repräsentiert wird, bei
-der jede Zelle die die Werte \passthrough{\lstinline!BLACK!},
-\passthrough{\lstinline!WHITE!} und \passthrough{\lstinline!NONE!}
-annehmen kann. - Den Spieler \passthrough{\lstinline!turn!}, der im
-Spielzustand am Zug ist. Zusätzlich enthält der Spielzustand weitere
-Informationen welche zur Verbesserung der Performanz genutzt werden. -
-Die im aktuellen Spielzustand möglichen Züge, werden als Paare von
-Koordinaten in der Variable \passthrough{\lstinline!possible\_moves!}
-gespeichert werden. Ein Koordinatenpaar steht hierbei für das Setzen
-eines Spielsteins auf die entsprechende Stelle auf dem Spielfeld unter
-Anwendung der Othello Regeln. Diese Variable ist Teil von
-\passthrough{\lstinline!GameState!} damit pro Spielzustand, die
-möglichen Züge nicht mehrfach berechnet werden müssen. - Die Menge der
-freien Felder, die horizontal, vertikal oder diagonal an einen Stein
-angrenzen werden in der Variable \passthrough{\lstinline!frontier!}
-gespeichert. Beim Ermitteln der möglichen Züge kann dadurch die
-Performanz wesentlich gesteigert werden, da nur diese Menge und nicht
-das gesamte Spielfeld überprüft werden muss. - Die Anzahl an
-Spielsteinen auf dem Spielfeld wird in der Variable
-\passthrough{\lstinline!num\_pieces!} gehalten. - Ob der Spielzustand
-ein Endzustand ist, wird in der Variable
-\passthrough{\lstinline!game\_over!} gespeichert. - Die Koordinaten des
-letzten Spielzugs werden zur späteren Visualisierung in der Grafischen
-Benutzeroberfläche in der Variable \passthrough{\lstinline!last\_move!}
-gespeichert.
+Attribute beschrieben
+
+\begin{itemize}
+\tightlist
+\item
+  Das Spielfeld \passthrough{\lstinline!board!}, welches durch eine
+  zweidimensionale Numpy Matrix repräsentiert wird, bei der jede Zelle
+  die die Werte \passthrough{\lstinline!BLACK!},
+  \passthrough{\lstinline!WHITE!} und \passthrough{\lstinline!NONE!}
+  annehmen kann.
+\item
+  Den Spieler \passthrough{\lstinline!turn!}, der im Spielzustand am Zug
+  ist. Zusätzlich enthält der Spielzustand weitere Informationen welche
+  zur Verbesserung der Performanz genutzt werden.
+\item
+  Die im aktuellen Spielzustand möglichen Züge, werden als Paare von
+  Koordinaten in der Variable \passthrough{\lstinline!possible\_moves!}
+  gespeichert werden. Ein Koordinatenpaar steht hierbei für das Setzen
+  eines Spielsteins auf die entsprechende Stelle auf dem Spielfeld unter
+  Anwendung der Othello Regeln. Diese Variable ist Teil von
+  \passthrough{\lstinline!GameState!} damit pro Spielzustand, die
+  möglichen Züge nicht mehrfach berechnet werden müssen.
+\item
+  Die Menge der freien Felder, die horizontal, vertikal oder diagonal an
+  einen Stein angrenzen werden in der Variable
+  \passthrough{\lstinline!frontier!} gespeichert. Beim Ermitteln der
+  möglichen Züge kann dadurch die Performanz wesentlich gesteigert
+  werden, da nur diese Menge und nicht das gesamte Spielfeld überprüft
+  werden muss.
+\item
+  Die Anzahl an Spielsteinen auf dem Spielfeld wird in der Variable
+  \passthrough{\lstinline!num\_pieces!} gehalten.
+\item
+  Ob der Spielzustand ein Endzustand ist, wird in der Variable
+  \passthrough{\lstinline!game\_over!} gespeichert.
+\item
+  Die Koordinaten des letzten Spielzugs werden zur späteren
+  Visualisierung in der Grafischen Benutzeroberfläche in der Variable
+  \passthrough{\lstinline!last\_move!} gespeichert.
+\end{itemize}
 
 Die zur Performance-Verbesserung genutzen Variablen werden im Laufe des
 Spielverlaufs immer aktuell gehalten.

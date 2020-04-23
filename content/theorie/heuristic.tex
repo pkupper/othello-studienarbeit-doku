@@ -10,14 +10,13 @@ Optimalerweise würde die Evaluations-Funktion den tatsächlichen Nutzen einer S
 Evaluations-Funktion ist durch den Minimax Algorithmus gegeben. Aus offensichtlichen Gründen, kann diese jedoch nicht
 zum Einsatz kommen, da der Rechenaufwand hierbei identisch zu einer vollständigen Suche wäre.
 
-Um den Nutzen verschiedener Spielzüge miteinander zu vergleichen wird also eine weniger rechenaufwändige
-Evaluations-Funktion benötigt, die statt den tatsächlichen Nutzen zu bestimmen, diesen nur ausreichend gut annähert.
+Um den Nutzen verschiedener Spielzüge miteinander zu vergleichen, wird also eine weniger rechenaufwändige
+Evaluations-Funktion benötigt, die diesen nur ausreichend gut annähert, statt den tatsächlichen Nutzen zu bestimmen.
 
 Durch die Anwendung einer approximierten Evaluations-Funktion verliert der Minimax Algorithmus seine Optimalität. Es
 wird also nichtmehr garantiert der Zug mit dem größten Nutzen gewählt. Mit einer passend gewählten Evaluations-Funkion
 können dennoch gute Ergebnisse erzielt werden, die in vielen Spielen die Fähigkeiten eines menschlichen Gegenspielers
 übertreffen. Die Spielstärke der KI wächst mit zunehmender Suchtiefe.
-
 
 Ein primitiver Ansatz für eine Evaluations-Funktion bei dem Spiel Othello ist die Differenz der Anzahlen von eigenen
 Steinen und gegnerischen Steinen auf dem Spielfeld, da diese am Ende über den Sieg entscheidet. Gegen Ende eines Spiels
