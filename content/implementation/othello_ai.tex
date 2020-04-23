@@ -14,12 +14,7 @@ Othello}\label{implementierung-einer-kuxfcnstlichen-intelligenz-fuxfcr-das-spiel
 
 Importieren von Abhängigkeiten und Konfiguration
 
-\begin{lstlisting}[language=Python]
-import math
-import copy
-import numpy as np
-import random
-\end{lstlisting}
+import math import numpy as np import random
 
 \begin{lstlisting}[language=Python]
 %run othello_game.ipynb
@@ -39,7 +34,7 @@ utilities = {WHITE: '-', BLACK: '-'}
 
 Zum Abschätzen der Nützlichkeit eines Spielzustands wird eine Heuristik
 benötigt. Im folgenden sind einige solcher Heuristiken implementiert. Da
-Weiß der maximierende Spieler, und Schwarz der minimierende Spieler ist
+Weiß der maximierende Spieler, und Schwarz der minimierende Spieler ist,
 repräsentiert ein höherer Wert der Heuristik einen für Weiß
 vorteilhaften Zug, während ein niedriger Wert einen Vorteil für Schwarz
 repräsentiert. Die Werte der Heuristik liegen zwischen -1 und 1, wobei
@@ -48,7 +43,7 @@ darstellen. Der Wert 0 steht für einen für beide Spieler gleich guten
 Spielzustand.
 
 Da das Ziel des Spiels Othello ist, zum Ende des Spiels mehr Steine als
-der Gegner auf dem Spielfeld zu haben, ist es naheliegend, die Differez
+der Gegner auf dem Spielfeld zu haben, ist es naheliegend, die Differenz
 der Anzahlen von Steinen beider Spieler zur Abschätzung eines Zuges zu
 verwenden. Genau das macht die Disk-Count-Heuristik indem sie die
 Differenz der Steine, beider Spieler berechnet und den resultierenden
@@ -61,9 +56,9 @@ def disc_count_heuristic(state):
     return (count_disks(state, WHITE) - count_disks(state, BLACK)) / 64
 \end{lstlisting}
 
-Eine weitere Heuristik ist die Mobilität der Spieler. Diese gibt an wie
-viele mögliche Züge ein Spieler gegenüber dessen Gegner machen kann. Die
-Idee bei dieser Heuristik ist, dass ein Spieler dadurch seine Freiheit
+Eine weitere Heuristik ist die Mobilität der Spieler. Diese gibt an, wie
+viele mögliche Züge ein Spieler im Vergleich zum Gegner hat. Die Idee
+bei dieser Heuristik ist, dass ein Spieler dadurch seine Freiheit
 maximiert, während die Freiheit des Gegners durch eine geringe Anzahl an
 Zügen eingeschränkt wird. Die Mobilitäts-Heuristik gibt an wie viele
 möglicher Züge mehr Weiß gegenüber Schwarz im Aktuellen Spielzustand
@@ -126,8 +121,8 @@ Belegung von Vorteil ist, sowie einige, deren Belegung eher nachteilhaft
 ist. Diese Eigenschaft macht sich die Cowthello-Heuristik zu Nutze.
 Diese weist jedem Feld einen Wert zu der angibt, wie Vorteilhaft der
 Besitz dieses Feldes ist, bzw. wie Nachteilhaft die Belegung des Feldes
-durch den Gegner ist. Diese Gewichte werden dann mit der aktuellen
-Belegung des Spielfelds multipliziert und die Ergebnisse anschließend
+durch den Gegner ist. Diese Gewichte werden mit der aktuellen Belegung
+des Spielfelds multipliziert und die Ergebnisse anschließend
 aufsummiert. Der resultierende Wert schätzt dann den Nutzen der
 aktuellen Position ein. Auch bei dieser Heuristik findet eine
 Normalisierung statt.
@@ -208,7 +203,7 @@ def cowthello_safe_heuristic(state):
 Die oben implementierten Heuristiken bewerten jeweils nur ein Merkmal
 der aktuellen Spielsitation. Durch eine Kombination mehrerer dieser
 Heuristiken können mehrere Merkmale gleichzeitig betrachtet werden. Die
-Kombination der Heuristiken kann in Abhängigkeit der aktuellen
+Kombination der Heuristiken kann in Abhängigkeit von der aktuellen
 Spielphase geschehen. Beispielsweise wird zu Ende des Spiels die
 Disc-Count-Heuristik wichtiger.
 
@@ -262,8 +257,7 @@ def minimax(state, depth, heuristic, alpha, beta):
         utility = math.inf
 
     for move in state.possible_moves:
-        tmp_state = copy.deepcopy(state)
-        make_move(tmp_state, move)
+        tmp_state = make_move(state, move)
         tmp_utility = minimax(tmp_state, depth - 1, heuristic, None, None)
         if state.turn == WHITE:
             # maximizing
@@ -281,7 +275,7 @@ Diese KI verwended den Minimax Algorithmus mit der Optimierung
 Alpha-Beta Pruning, um die Nützlichkeit eines Spielzustands zu
 bestimmen.
 
-Zum Merken vorheriger Ausführungen von wird das Dictionary
+Zum Merken vorheriger Ausführungen wird das Dictionary
 \passthrough{\lstinline!transposition\_table!} verwendet. Dies ist
 gerade bei der Verwendung von Iterative Deepening für das Move-Ordering
 vorteilhaft. Der Schlüssel des Dictionaries besteht aus dem Zustand des
@@ -293,7 +287,7 @@ transposition_table = {}
 \end{lstlisting}
 
 Die Funktion \passthrough{\lstinline!alphabeta!} implementiert den
-Minimax Algorithmus mit Alpha-Beta-Pruning
+Minimax Algorithmus mit Alpha-Beta-Pruning.
 
 \begin{lstlisting}[language=Python]
 debug_ab_count = 0
@@ -308,7 +302,7 @@ def alphabeta(state, depth, heuristic, alpha, beta):
         return heuristic(state)
 
     moves = state.possible_moves
-    child_states = [make_move(copy.deepcopy(state), move) for move in moves]
+    child_states = [make_move(state, move) for move in moves]
     ordered_moves = []
     for child_state in child_states:
         cached = transposition_table.get(
@@ -386,7 +380,7 @@ def probcut(state, depth, heuristic, alpha, beta):
                 return alpha
 
     moves = state.possible_moves
-    child_states = [make_move(copy.deepcopy(state), move) for move in moves]
+    child_states = [make_move(state, move) for move in moves]
     ordered_moves = []
     for child_state in child_states:
         cached = transposition_table.get(
@@ -454,7 +448,7 @@ def ai_make_move(ai, state, depth, heuristic):
         # maximizing
         alpha = -math.inf
         for move in state.possible_moves:
-            new_state = make_move(copy.deepcopy(state), move)
+            new_state = make_move(state, move)
             utility = ai(new_state, depth-1, heuristic, alpha, math.inf)
             scored_moves.append((utility, move))
             alpha = max(alpha, utility)
@@ -463,7 +457,7 @@ def ai_make_move(ai, state, depth, heuristic):
         # minimizing
         beta = math.inf
         for move in state.possible_moves:
-            new_state = make_move(copy.deepcopy(state), move)
+            new_state = make_move(state, move)
             utility = ai(new_state, depth-1, heuristic, -math.inf, beta)
             scored_moves.append((utility, move))
             beta = min(beta, utility)
@@ -471,12 +465,12 @@ def ai_make_move(ai, state, depth, heuristic):
     utilities[state.turn] = best_score
     top_moves = [move for move in scored_moves if abs(move[0] - best_score) <= SELECTION_TOLERANCE]
     best_move = random.choice(top_moves)[1]
-    make_move(state, best_move)
+    return make_move(state, best_move)
 \end{lstlisting}
 
 Beim Iterative Deepening wird der Alphabeta-Algorithmus nacheinander mit
 steigender Tiefe ausgeführt. Die Werte aus der vorherigen Ausführung
-werden dann für das Move-Ordering verwendet. Dadurch das bessere
+werden dann für das Move-Ordering verwendet. Durch das bessere
 Move-Ordering können beim Alpha-Beta-Pruning mehr Zweige abgeschnitten
 werden. Dadurch kann trotz der mehrfachen Ausführung eine höhere
 Performanz bei gleichem Ergebnis erreicht werden. Ein weiterer Vorteil
@@ -497,7 +491,7 @@ def ai_make_move_id(ai, state, depth, heuristic):
             # maximizing
             alpha = -math.inf
             for move in state.possible_moves:
-                new_state = make_move(copy.deepcopy(state), move)
+                new_state = make_move(state, move)
                 utility = ai(new_state, cur_depth-1, heuristic, alpha, math.inf)
                 scored_moves.append((utility, move))
                 alpha = max(alpha, utility)
@@ -506,7 +500,7 @@ def ai_make_move_id(ai, state, depth, heuristic):
             # minimizing
             beta = math.inf
             for move in state.possible_moves:
-                new_state = make_move(copy.deepcopy(state), move)
+                new_state = make_move(state, move)
                 utility = ai(new_state, cur_depth-1, heuristic, -math.inf, beta)
                 scored_moves.append((utility, move))
                 beta = min(beta, utility)
@@ -516,7 +510,7 @@ def ai_make_move_id(ai, state, depth, heuristic):
                      if abs(move[0] - best_score) <= SELECTION_TOLERANCE]
         best_move = random.choice(top_moves)[1]
         cur_depth += 1
-    make_move(state, best_move)
+    return make_move(state, best_move)
 \end{lstlisting}
 
 Beim Iterative Deepening ist jederzeit der beste Zug der letzten
@@ -552,7 +546,7 @@ def ai_make_move_id_timelimited(ai, state, depth, heuristic):
             # maximizing
             alpha = -math.inf
             for move in state.possible_moves:
-                new_state = make_move(copy.deepcopy(state), move)
+                new_state = make_move(state, move)
                 utility = ai(new_state, depth-1, heuristic, alpha, math.inf)
                 scored_moves.append((utility, move))
                 alpha = max(alpha, utility)
@@ -561,7 +555,7 @@ def ai_make_move_id_timelimited(ai, state, depth, heuristic):
             # minimizing
             beta = math.inf
             for move in state.possible_moves:
-                new_state = make_move(copy.deepcopy(state), move)
+                new_state = make_move(state, move)
                 utility = ai(new_state, depth-1, heuristic, -math.inf, beta)
                 scored_moves.append((utility, move))
                 beta = min(beta, utility)
@@ -575,5 +569,5 @@ def ai_make_move_id_timelimited(ai, state, depth, heuristic):
         factor = min(last_time / second_last_time, 3)
         depth += 1
     print("Reached depth", depth-1, "in", time.time() - start, "seconds")
-    make_move(state, best_move)
+    return make_move(state, best_move)
 \end{lstlisting}

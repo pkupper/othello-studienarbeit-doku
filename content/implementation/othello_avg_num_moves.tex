@@ -33,7 +33,7 @@ def next_move_blind(state, settings):
     algorithm = settings[state.turn]['algorithm']
     depth = settings[state.turn]['depth']
     heuristic = settings[state.turn]['heuristic']
-    make_move(algorithm, state, depth, heuristic)
+    state = make_move(algorithm, state, depth, heuristic)
     if not state.game_over:
         next_move_blind(state, settings)
 \end{lstlisting}

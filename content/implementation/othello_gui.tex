@@ -182,7 +182,7 @@ def mouse_down(x_px, y_px):
             x = math.floor(x_px / CELL_SIZE)
             y = math.floor(y_px / CELL_SIZE)
             try:
-                make_move(state, (x, y))
+                state = make_move(state, (x, y))
             except InvalidMoveException:
                 print('Invalid Move')
             update_output(state)

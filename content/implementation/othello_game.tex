@@ -28,8 +28,13 @@ interne Repräsentation des Othello Spielfeldes genutzt. Insbesondere
 Operationen, die auf einen größeren Teil des Spielfeldes zugreifen
 müssen werden, können dadurch beschleunigt werden.
 
+Für das Kopieren der Spielzustände wird das Modul
+\passthrough{\lstinline!copy!} aus der Python Standardbibliothek
+verwendet.
+
 \begin{lstlisting}[language=Python]
-import numpy
+import numpy as np
+import copy
 \end{lstlisting}
 
 \hypertarget{globale-konstanten}{%
@@ -74,8 +79,6 @@ mehrere Zwecke genutzt:
   negativen Wert -1 repräsentiert wird. Kein Spieler, wird durch den
   Wert 0 dargestellt.
 \end{enumerate}
-
-\%\%latex
 
 \begin{lstlisting}[language=Python]
 BOARD_SIZE = 8
@@ -152,7 +155,7 @@ Einfachkeit wegen, immer True zurückgegeben.
 \begin{lstlisting}[language=Python]
 class GameState:
     def __init__(self):
-        self.board = numpy.zeros((BOARD_SIZE, BOARD_SIZE), dtype=numpy.int8)
+        self.board = np.zeros((BOARD_SIZE, BOARD_SIZE), dtype=np.int8)
         self.board[3, 3] = WHITE
         self.board[3, 4] = BLACK
         self.board[4, 3] = BLACK
@@ -190,60 +193,14 @@ class InvalidMoveException(Exception):
     pass
 \end{lstlisting}
 
-Die Funktion \passthrough{\lstinline!make\_move!} führt im Spielzustand
-\passthrough{\lstinline!state!}, falls möglich, einen Zug auf die
-Koordinaten \passthrough{\lstinline!row!} und
-\passthrough{\lstinline!col!} aus.
-
-Dazu werden zunächst alle gegnerischen Steine umgedreht, die durch den
-Zug eingesperrt wurden. Wenn mindestens ein Stein umgedreht wurde, wird
-\passthrough{\lstinline!disks\_flipped!} auf
-\passthrough{\lstinline!True!}gesetzt. Wenn das nicht der Fall war,
-handelt es sich nicht um einen gültigen Zug und es wird eine Exception
-geworfen. Sonst wird der neue Stein gesetzt und im Zustand die Frontier,
-der aktuelle Spieler, ob das Spiel vorbei ist und die möglichen Züge des
-nächsten Spielers aktualisiert.
-
-\begin{lstlisting}[language=Python]
-def make_move(state, pos):
-    if pos not in state.frontier:
-        print(pos, "not in Frontier")
-        raise InvalidMoveException
-    disks_flipped = False
-    
-    (row, col) = pos
-    board = state.board.tolist()
-    for (row_dir, col_dir) in directions:
-        if can_flip_in_dir(board, row, col, row_dir, col_dir, state.turn):
-            disks_flipped = True
-            flip_in_dir(state, row, col, row_dir, col_dir, state.turn)
-
-    if disks_flipped:
-        state.num_pieces += 1
-        state.board[pos] = state.turn
-        state.last_move = pos
-        update_frontier(state, row, col)
-        state.turn = -state.turn
-        state.possible_moves = get_possible_moves(state, state.turn)
-        if len(state.possible_moves) == 0:
-            state.turn = -state.turn
-            state.possible_moves = get_possible_moves(state, state.turn)
-            if len(state.possible_moves) == 0:
-                state.game_over = True
-                return state
-    else:
-        raise InvalidMoveException()
-    return state
-\end{lstlisting}
-
 Die Funktion \passthrough{\lstinline!can\_flip\_in\_dir!} überprüft für
 ein Spielfeld \passthrough{\lstinline!board!} und den Spieler
 \passthrough{\lstinline!player!}, ob beim Setzen eines Steins auf die
 Position \passthrough{\lstinline!(row, col)!} in die durch
 \passthrough{\lstinline!(rowdelta, coldelta)!} gegebene Richtung Steine
-umgedreht werden können. \passthrough{\lstinline!board!} ist ein
-Spielfeld als Python-Liste, da der Zugriff deutlich schneller ist, als
-auf eine numpy array.
+umgedreht werden können. Die Variable \passthrough{\lstinline!board!}
+enthält das Spielfeld als Python-Liste, da einzelne Zugriffe so deutlich
+schneller sind, als auf ein numpy array.
 
 \begin{lstlisting}[language=Python]
 def can_flip_in_dir(board, row, col, rowdelta, coldelta, player):
@@ -360,7 +317,7 @@ die der Spieler \passthrough{\lstinline!player!} im Spielzustand
 
 \begin{lstlisting}[language=Python]
 def count_disks(state, player):
-    return numpy.count_nonzero(state.board == player)
+    return np.count_nonzero(state.board == player)
 \end{lstlisting}
 
 \passthrough{\lstinline!get\_player\_string!} konvertiert die ID des
@@ -370,6 +327,71 @@ Spielers \passthrough{\lstinline!player!} in dessen Name. Ist
 \begin{lstlisting}[language=Python]
 def get_player_string(player):
     return {BLACK: 'Black', WHITE: 'White', NONE: 'Nobody'}[player]
+\end{lstlisting}
+
+Die Funktion \passthrough{\lstinline!make\_move!} versucht auf einem
+Spielzustand \passthrough{\lstinline!state!} einen Spielzug entsprechend
+den Othello Regeln auszuführen. Der auszuführende Zug wird hierbei durch
+den Parameter \passthrough{\lstinline!pos!} bestimmt, welcher die
+Spielfeldkoordinaten des zu setzenden Steins als Zwei-Tupel angibt.
+
+Zunächst wird überprüft, ob die Koordinaten
+\passthrough{\lstinline!pos!} bereits in der Variable
+\passthrough{\lstinline!frontier!} enthalten ist. Ist dies nicht der
+Fall, so kann die Funktion mit einer
+\passthrough{\lstinline!InvalidMoveException!} abgebrochen werden, da
+ein Spielstein nur auf ein leeres Feld gesetzt werden kann, welches an
+einen Spielstein angrenzt. Hierbei handelt es sich um eine Maßnahme zur
+Performanceoptimierung.
+
+Ist \passthrough{\lstinline!pos!} in \passthrough{\lstinline!frontier!},
+so wird der Spielzustand kopiert, um den ursprünglich übergebenen
+Spielzustand nicht zu verändern.
+
+Anschließend werden alle gegnerischen Steine, welche vom neu gesetzten
+Stein eingeschlossen werden umgedreht. Wenn mindestens ein Stein
+umgedreht wurde, wird \passthrough{\lstinline!disks\_flipped!} auf
+\passthrough{\lstinline!True!}gesetzt. Wenn das nicht der Fall war,
+handelt es sich nicht um einen gültigen Zug und es wird eine
+\passthrough{\lstinline!InvalidMoveException!} geworfen. Andernfalls
+wird der neue Stein gesetzt und im resultierenden Zustand die Variablen
+\passthrough{\lstinline!frontier!}, \passthrough{\lstinline!turn!},
+\passthrough{\lstinline!game\_over!} und
+\passthrough{\lstinline!possible\_moves!} aktualisiert.
+
+Der Rückgabewert der Funktion ist der neue Spielzustand.
+
+\begin{lstlisting}[language=Python]
+def make_move(state, pos):
+    if pos not in state.frontier:
+        print(pos, "not in Frontier")
+        raise InvalidMoveException
+    
+    state = copy.deepcopy(state)
+    disks_flipped = False
+    (row, col) = pos
+    board = state.board.tolist()
+    for (row_dir, col_dir) in directions:
+        if can_flip_in_dir(board, row, col, row_dir, col_dir, state.turn):
+            disks_flipped = True
+            flip_in_dir(state, row, col, row_dir, col_dir, state.turn)
+
+    if disks_flipped:
+        state.num_pieces += 1
+        state.board[pos] = state.turn
+        state.last_move = pos
+        update_frontier(state, row, col)
+        state.turn = -state.turn
+        state.possible_moves = get_possible_moves(state, state.turn)
+        if len(state.possible_moves) == 0:
+            state.turn = -state.turn
+            state.possible_moves = get_possible_moves(state, state.turn)
+            if len(state.possible_moves) == 0:
+                state.game_over = True
+                return state
+    else:
+        raise InvalidMoveException()
+    return state
 \end{lstlisting}
 
 \passthrough{\lstinline!make\_state!} erzeugt einen Spielzustand aus dem

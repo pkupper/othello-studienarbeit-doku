@@ -58,8 +58,7 @@ def alphabeta_negamax(state, depth, alpha, beta):
             return BLACK_PLAYER_STRAT_HEURISTIC(state) * state.turn
     utility = -math.inf
     for move in get_possible_moves(state, state.turn):
-        tmp_state = copy.deepcopy(state)
-        make_move(tmp_state, move[0], move[1])
+        tmp_state = make_move(state, move[0], move[1])
         tmp_utility = -alphabeta_negamax(tmp_state, depth - 1, -beta, -alpha)
         if(tmp_utility > utility):
             utility = tmp_utility
@@ -72,5 +71,5 @@ def alphabeta_negamax(state, depth, alpha, beta):
 
 def alphabeta_ai_make_move(state):
     alphabeta_negamax(state, ALPHABETA_DEPTH_LIMIT, -math.inf, math.inf)
-    make_move(state, alphabeta_best_move[0], alphabeta_best_move[1])
+    state = make_move(state, alphabeta_best_move[0], alphabeta_best_move[1])
 \end{lstlisting}

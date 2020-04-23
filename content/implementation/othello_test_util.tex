@@ -40,28 +40,28 @@ def debug_num_visited_states(state, depth):
     # calculate next move with each algorithm and measure time
     debug_mm_count= 0
     start = time.time()
-    ai_make_move(minimax, copy.deepcopy(state), depth, combined_heuristic)
+    ai_make_move(minimax, state, depth, combined_heuristic)
     secs = time.time() - start
     print("Minimax takes", secs, "s and evaluates the heuristic",
           debug_mm_count, "times")
     debug_ab_count= 0
     transposition_table = {}
     start = time.time()
-    ai_make_move(alphabeta, copy.deepcopy(state), depth, combined_heuristic)
+    ai_make_move(alphabeta, state, depth, combined_heuristic)
     secs = time.time() - start
     print("AlphaBeta takes", secs, "s and evaluates the heuristic",
           debug_ab_count, "times")
     debug_ab_count = 0
     transposition_table = {}
     start = time.time()
-    ai_make_move_id(alphabeta, copy.deepcopy(state), depth, combined_heuristic)
+    ai_make_move_id(alphabeta, state, depth, combined_heuristic)
     secs = time.time() - start
     print("AlphaBeta + ID takes", secs,
           "s and evaluates the heuristic", debug_ab_count, "times")
     debug_pc_count = 0
     transposition_table = {}
     start = time.time()
-    ai_make_move(probcut, copy.deepcopy(state), depth, combined_heuristic)
+    ai_make_move(probcut, state, depth, combined_heuristic)
     secs = time.time() - start
     print("ProbCut takes", secs, "s and evaluates the heuristic",
           debug_pc_count, "times")
@@ -69,7 +69,7 @@ def debug_num_visited_states(state, depth):
     debug_pc_count = 0
     transposition_table = {}
     start = time.time()
-    ai_make_move_id(probcut, copy.deepcopy(state), depth, combined_heuristic)
+    ai_make_move_id(probcut, state, depth, combined_heuristic)
     secs = time.time() - start
     print("ProbCut + ID takes", secs, "s and evaluates the heuristic",
           debug_pc_count, "times")
@@ -93,7 +93,7 @@ def next_move_blind(state, settings):
     algorithm = settings[state.turn]['algorithm']
     depth = settings[state.turn]['depth']
     heuristic = settings[state.turn]['heuristic']
-    make_move(algorithm, state, depth, heuristic)
+    state = make_move(algorithm, state, depth, heuristic)
     if not state.game_over:
         next_move_blind(state, settings)
 \end{lstlisting}

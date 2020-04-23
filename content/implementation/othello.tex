@@ -50,7 +50,7 @@ def next_move(state):
         make_move = settings[state.turn]['mode']
         depth = settings[state.turn]['depth']
         heuristic = settings[state.turn]['heuristic']
-        make_move(ai, state, depth, heuristic)
+        state = make_move(ai, state, depth, heuristic)
         update_output(state)
         if not state.game_over:
             next_move(state)

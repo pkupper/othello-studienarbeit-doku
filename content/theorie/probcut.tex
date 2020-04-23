@@ -24,16 +24,40 @@ der Suche der Tiefe \(d'\) weicht also von dem Minimax-Wert der Suche der Tiefe 
 Diese wird als normalverteilt mit der Standardarbeichung \(\sigma^2\) modelliert, welche anhand von tatsächlichen
 Spielsituationen ermittelt wird.
 
-Daraus lässt sich herleiten, dass mit einer Wahrscheinlichkeit von mindestens \(p\) gilt:
-%TODO: herleitung
+Ob $v\geq\beta$ mit einer festgelegten Wahrscheinlichkeit stimmt, kann wie folgt bestimmt werden:
+
+Einsetzen des statistischen Modells $v=v'+e$:
+
+\hspace*{1.3cm}
+$v\geq\beta\iff v'+e\geq\beta$
+
+\hspace*{1.3cm}
+$v\geq\beta\iff v'-\beta\geq -e$
+
+\hspace*{1.3cm}
+$v\geq\beta\iff \frac{v'-\beta}{\sigma}\geq \frac{-e}{\sigma}$
+
+$\frac{-e}{\sigma}$ ist standardnormalverteilt mit Verteilungsfunktion $\Phi$, da der Mittelwert $\mu_1=0$ und die Standardarbeichung $\sigma_1=\frac{\sigma}{\sigma}=1$ ist.
+
+Dabei ist $\Phi(x)=\frac{1}{2\pi}\int_{-\infty}^xe^{-\frac{1}{2}t^2}$ Verteilungsfunktion der Standardnormalverteilung.
+Es gilt also mit einer Wahrscheinlichkeit von mindestens $p$:
+
+\hspace*{1.3cm}
+$\frac{(v'-\beta}{\sigma})\geq\Phi^{-1}(p)$
+
+\hspace*{1.3cm}
+$\iff v'\geq\Phi^{-1}(p)*\sigma+\beta$
+
+Somit gilt auch:
+
+\hspace*{1.3cm}
+\(v\geq\beta \iff v'\geq\beta+\Phi^{-1}(p)*\sigma\)
+
+Analog kann gezeigt werden, dass folgende Formel gilt:
 
 \hspace*{1.3cm}
 \(v\leq\alpha \iff v'\leq\alpha-\Phi^{-1}(p)*\sigma\)
 
-und
-
-\hspace*{1.3cm}
-\(v\geq\beta \iff v'\geq\beta+\Phi^{-1}(p)*\sigma\)
 
 Tritt nach einer Suche der Tiefe \(d'\) einer der beiden Fälle auf der rechten Seite ein, so wird keine Suche der Tiefe
 \(d\) mehr durchgeführt, da \(v\) bereits mit einer Wahrscheinlichkeit von \(p\) außerhalb des Alpha-Beta Fensters liegt

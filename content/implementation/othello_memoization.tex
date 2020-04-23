@@ -34,7 +34,7 @@ def next_move_blind(state, settings):
     algorithm = settings[state.turn]['algorithm']
     depth = settings[state.turn]['depth']
     heuristic = settings[state.turn]['heuristic']
-    make_move(algorithm, state, depth, heuristic)
+    state = make_move(algorithm, state, depth, heuristic)
     times[state.turn] += time.time() - start
     if not state.game_over:
         next_move_blind(state, settings)
@@ -105,7 +105,7 @@ def alphabetac(state, depth, heuristic, alpha, beta):
         return heuristic(state)
 
     moves = state.possible_moves
-    child_states = [make_move(copy.deepcopy(state), move) for move in moves]
+    child_states = [make_move(state, move) for move in moves]
     ordered_moves = []
     for child_state in child_states:
         cached = transposition_table.get(

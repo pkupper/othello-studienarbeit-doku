@@ -15,9 +15,9 @@
 Standardabweichung}\label{ermitteln-der-standardabweichung}}
 
 Im Folgenden werden zunächst einige Datenpunkte gesammelt, indem in
-verschiedenen Spielzuständen jeweils eine tiefe, und eine flache Suche
+verschiedenen Spielzuständen jeweils eine tiefe und eine flache Suche
 durchgeführt wird. Die Spielzustände werden durch zufälliges Ziehen
-erreicht.
+erreicht. Die Daten werden in einer CSV-Datei gespeichert.
 
 \begin{lstlisting}[language=Python]
 import csv
@@ -36,7 +36,7 @@ def sample_probcut_values(num_games, shallow_depth, deep_depth):
             for i in range(num_games):
                 state = GameState()
                 while not state.game_over:
-                    ai_make_move(random_ai, state, 0, None)
+                    state = ai_make_move(random_ai, state, 0, None)
                     shallow_value = alphabeta(
                         state, PROBCUT_SHALLOW_DEPTH,
                         combined_heuristic, -math.inf, math.inf
@@ -55,18 +55,43 @@ def sample_probcut_values(num_games, shallow_depth, deep_depth):
 sample_probcut_values(100, PROBCUT_SHALLOW_DEPTH, PROBCUT_DEEP_DEPTH)
 \end{lstlisting}
 
-Daten Laden
+Laden der Daten aus der CSV-Datei mithilfe von Pandas
 
 \begin{lstlisting}[language=Python]
 import pandas
-filename = 'probcut_dataset_2_4.csv'
+filename = f'probcut_dataset_{PROBCUT_SHALLOW_DEPTH}_{PROBCUT_DEEP_DEPTH}.csv'
 df = pandas.read_csv(filename)
-shallow = df['shallow']
-deep = df['deep']
+shallow = np.array(df['shallow'])
+deep = np.array(df['deep'])
+moves = np.array(df['moves'])
 \end{lstlisting}
 
-Berechnung der Standardabweichung nach Anzahl der Steine auf dem
-Spielfeld
+Daten Visualisieren
+
+\begin{lstlisting}[language=Python]
+import matplotlib.pyplot as plt
+import sklearn.linear_model as lm
+import seaborn as sns
+model = lm.LinearRegression()
+model.fit(shallow.reshape(len(shallow), 1), deep)
+plt.figure(figsize=(15, 10))
+sns.set(style='whitegrid')
+plt.scatter(shallow, deep)
+plt.axvline(x=0.0, c='k')
+plt.axhline(y=0.0, c='k')
+plt.plot(shallow, shallow * model.coef_ + model.intercept_)
+plt.xlabel('shallow search')
+plt.ylabel('deep search')
+plt.title('Probcut Values')
+plt.show()
+\end{lstlisting}
+
+Folgender Code berechnet die Standardabweichung pro Anzahl Steine auf
+dem Spielfeld. Dazu werden zunächst für jede Anzahl an Steinen aus den
+Daten die passenden Werte extrahiert. Für diese Teilmengen wird jeweils
+die Varianz mit \(numpy\) berechnet. Die Standardabweichung ist die
+positive Wurzel aus der Varianz. Die Anzahl an Steinen und die
+Standardabweichung werden an entsprechende Felder angehängt.
 
 \begin{lstlisting}[language=Python]
 import numpy as np
@@ -75,10 +100,6 @@ import sklearn.linear_model as lm
 import matplotlib.pyplot as plt
 import seaborn as sns
 import math
-
-shallow_np = np.array(shallow)
-deep_np = np.array(deep)
-moves = np.array(df['moves'])
 
 x = []
 y = []
@@ -90,13 +111,63 @@ for i in range(5, 45):
     explained_variance = skl.explained_variance_score(shallow_c, deep_c)
     x.append(i)
     y.append(math.sqrt(variance))
+    #print(f'{i}: Var={round(variance, 5)}, explained: {round(explained_variance, 3)}')
+\end{lstlisting}
 
+\begin{lstlisting}
+5: Var=0.00019, explained: 0.938
+6: Var=0.00039, explained: 0.786
+7: Var=0.00154, explained: 0.932
+8: Var=0.0009, explained: 0.693
+9: Var=0.0021, explained: 0.877
+10: Var=0.00206, explained: 0.864
+11: Var=0.00296, explained: 0.924
+12: Var=0.00352, explained: 0.936
+13: Var=0.0034, explained: 0.948
+14: Var=0.00436, explained: 0.953
+15: Var=0.00478, explained: 0.959
+16: Var=0.00424, explained: 0.961
+17: Var=0.00519, explained: 0.955
+18: Var=0.00515, explained: 0.967
+19: Var=0.00545, explained: 0.957
+20: Var=0.00547, explained: 0.969
+21: Var=0.00569, explained: 0.967
+22: Var=0.00601, explained: 0.968
+23: Var=0.00549, explained: 0.949
+24: Var=0.00601, explained: 0.96
+25: Var=0.00643, explained: 0.96
+26: Var=0.00679, explained: 0.961
+27: Var=0.00693, explained: 0.968
+28: Var=0.00661, explained: 0.964
+29: Var=0.00653, explained: 0.964
+30: Var=0.00735, explained: 0.967
+31: Var=0.0075, explained: 0.954
+32: Var=0.00847, explained: 0.959
+33: Var=0.00733, explained: 0.943
+34: Var=0.00769, explained: 0.956
+35: Var=0.00722, explained: 0.934
+36: Var=0.00794, explained: 0.962
+37: Var=0.00686, explained: 0.921
+38: Var=0.00781, explained: 0.954
+39: Var=0.00775, explained: 0.947
+40: Var=0.00863, explained: 0.956
+41: Var=0.00883, explained: 0.92
+42: Var=0.0096, explained: 0.953
+43: Var=0.00909, explained: 0.932
+44: Var=0.01003, explained: 0.939
+\end{lstlisting}
+
+Folgender Code berechnet die Regressionsgerade der Standardabweichung in
+Abhängigkeit von der Anzahl der Steine auf dem Spielfeld mit \(sklearn\)
+und stellt diese grafisch dar.
+
+\begin{lstlisting}[language=Python]
 model = lm.LinearRegression()
 model.fit(np.array(x).reshape(-1, 1), np.array(y))
 
 plt.figure(figsize=(15, 10))
 sns.set(style='whitegrid')
-plt.scatter(x, y)
+plt.scatter(X, y)
 plt.axvline(x=0.0, c='k')
 plt.axhline(y=0.0, c='k')
 plt.plot(x, x * model.coef_ + model.intercept_)
@@ -106,29 +177,12 @@ plt.title('Standard Deviation')
 plt.show()
 \end{lstlisting}
 
+Ausgeben der Funktion der Regressionsgerade, welche die
+Standardabweichung in Abhängigkeit von der Anzahl an Spielsteinen auf
+dem Spielfeld berechnet
+
 \begin{lstlisting}[language=Python]
 print('x *', model.coef_[0], '+', model.intercept_)
-\end{lstlisting}
-
-\hypertarget{daten-visualisieren}{%
-\paragraph{Daten Visualisieren}\label{daten-visualisieren}}
-
-\begin{lstlisting}[language=Python]
-import matplotlib.pyplot as plt
-import sklearn.linear_model as lm
-import seaborn as sns
-model = lm.LinearRegression()
-model.fit(shallow.values.reshape(len(shallow), 1), deep)
-plt.figure(figsize=(15, 10))
-sns.set(style='whitegrid')
-plt.scatter(shallow, deep)
-plt.axvline(x=0.0, c='k')
-plt.axhline(y=0.0, c='k')
-plt.plot(shallow, shallow * model.coef_ + model.intercept_)
-plt.xlabel('shallow search')
-plt.ylabel('deep search')
-plt.title('Probcut Values')
-plt.show()
 \end{lstlisting}
 
 Varianz, erklärte Varianz und Standardabweichung berechnen
