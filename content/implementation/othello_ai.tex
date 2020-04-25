@@ -296,14 +296,18 @@ Kaptitel implementierten, Heuristiken. Die Strategien bestehen jeweils
 aus einer bewertenden Funktion, die den Nutzen einer Spielsituation
 bestimmt, sowie aus einer aufrufenden Funktion, welche mithilfe der
 bewertenden Funktion den bestmöglichen Zug herleitet. Diese Komponenten
-können belibig kombiniert werden. Im Folgenden werden zunächst die
+können beliebig kombiniert werden. Im Folgenden werden zunächst die
 bewerteten Funktionen implementiert.
 
 \hypertarget{zufuxe4llige-ki}{%
 \subsubsection{Zufällige KI}\label{zufuxe4llige-ki}}
 
 Die zufällige KI bewertet den Nutzen aller Züge gleich, gibt also immer
-den Wert \(0\) zurück.
+den Wert \(0\) zurück. Da die Strategie-Funktionen völlig austauschbar
+sein sollen, müssen alle diese Funktionen dieselben Eingabeparameter
+haben. Im Fall der Funktion \passthrough{\lstinline!random\_ai!} wird
+jedoch keiner der definierten Parameter benötigt. Der Zweck dieser
+Künstlichen Intelligenz ist die Messung der Stärke, der anderen KI's.
 
 \begin{lstlisting}[language=Python]
 def random_ai(state, depth, heuristic, alpha, beta):
@@ -315,7 +319,15 @@ def random_ai(state, depth, heuristic, alpha, beta):
 
 Die Minimax Strategie verwendet den unveränderten Minimax-Algorithmus,
 wie er in \autoref{sec:minimax} beschrieben ist, zur Bestimmung der
-Nützlichkeit eines Zuges.
+Nützlichkeit eines Zuges. Eingabeparameter, sind hier der zu bewertende
+Spielzustand \passthrough{\lstinline!state!}, die gewünschte Suchtiefe
+\passthrough{\lstinline!depth!} sowie die zu verwendende Heuristik
+\passthrough{\lstinline!heuristic!}. Die Parameter
+\passthrough{\lstinline!alpha!} und \passthrough{\lstinline!beta!}
+dienen, wie oben beschrieben, der Kompatibilität mit den folgenden
+Strategiefunktionen und werden in der \passthrough{\lstinline!minimax!}
+Funktion nicht verwendet. Der Rückgabeparameter gibt die ermittelte
+Nützlichkeit des Spielzustands an.
 
 \begin{lstlisting}[language=Python]
 debug_mm_count = 0
@@ -352,10 +364,10 @@ def minimax(state, depth, heuristic, alpha, beta):
 \subsubsection{Alpha-Beta KI}\label{alpha-beta-ki}}
 
 Diese KI verwended den Minimax Algorithmus mit der Optimierung
-Alpha-Beta Pruning, um die Nützlichkeit eines Spielzustands zu
-bestimmen.
+Alpha-Beta Pruning, welche in \autoref{sec:alphabeta} beschrieben ist,
+um die Nützlichkeit eines Spielzustands zu bestimmen.
 
-Zum Merken vorheriger Ausführungen wird das Dictionary
+Zum Merken der Ergebnisse vorheriger Ausführungen wird das Dictionary
 \passthrough{\lstinline!transposition\_table!} verwendet. Dies ist
 gerade bei der Verwendung von Iterative Deepening für das Move-Ordering
 vorteilhaft. Der Schlüssel des Dictionaries besteht aus dem Zustand des
@@ -367,7 +379,15 @@ transposition_table = {}
 \end{lstlisting}
 
 Die Funktion \passthrough{\lstinline!alphabeta!} implementiert den
-Minimax Algorithmus mit Alpha-Beta-Pruning.
+Minimax Algorithmus mit Alpha-Beta-Pruning. Eingabeparameter der
+Funktion sind der zu bewertende Spielzustand
+\passthrough{\lstinline!state!}, die maximale Suchtiefe
+\passthrough{\lstinline!depth!}, die zu verwendende Heuristik
+\passthrough{\lstinline!heuristic!}, sowie die Werte
+\passthrough{\lstinline!alpha!} und \passthrough{\lstinline!beta!}, die,
+wie in \autoref{sec:alphabeta} beschrieben, jeweils die sicher
+erreichbaren Nützlichkeiten für den maximierenden und minimierenden
+Spieler angeben und für das Abschneiden von Zweigen verwendet werden.
 
 \begin{lstlisting}[language=Python]
 debug_ab_count = 0
@@ -424,13 +444,30 @@ def alphabeta(state, depth, heuristic, alpha, beta):
 \subsubsection{ProbCut KI}\label{probcut-ki}}
 
 An dieser Stelle beginnt die Implementierung der Künstlichen Intelligenz
-mittels des Minimax Algorithmus und ProbCut
+mittels des Minimax Algorithmus, Alpha-Beta Pruning und ProbCut. Die im
+Folgenden definierte Konstante \passthrough{\lstinline!PERCENTILE!}
+entspricht hierbei der Variable \(p\) aus \autoref{sec:probcut}.
+\passthrough{\lstinline!PROBCUT\_DEEP\_DEPTH!} entspricht der Variable
+\(d\) und \passthrough{\lstinline!PROBCUT\_SHALLOW\_DEPTH!} entspricht
+der Variable \(d'\) aus demselben Abschnitt dieser Arbeit.
 
 \begin{lstlisting}[language=Python]
 PERCENTILE = 1.5  # 93.3%
 PROBCUT_DEEP_DEPTH = 4
 PROBCUT_SHALLOW_DEPTH = 2
 \end{lstlisting}
+
+Die Implementierung der ProbCut Strategie gleicht in großen Teilen der
+Implementierung der Alpha-Beta Strategie. Jedoch wird bei jedem Aufruf
+mit der Tiefe \passthrough{\lstinline!PROBCUT\_DEEP\_DEPTH!}, zunächst
+eine Suche mit der Tiefe
+\passthrough{\lstinline!PROBCUT\_SHALLOW\_DEPTH!} durchgeführt. Anhand
+der dabei ermittelten Nützlichkeit, wird entsprechend der in
+\autoref{sec:probcut} beschriebenen Regeln entschieden, ob eine Tiefe
+Suche durchgeführt werden muss, oder eine der beiden Grenzwerte
+\passthrough{\lstinline!alpha!} oder \passthrough{\lstinline!beta!}
+zurückgegeben werden können. Die Eingabe- und der Rückgabeparameter
+gleichen der Funktion \passthrough{\lstinline!alphabeta!}.
 
 \begin{lstlisting}[language=Python]
 debug_pc_count = 0
@@ -498,25 +535,39 @@ def probcut(state, depth, heuristic, alpha, beta):
 \end{lstlisting}
 
 \hypertarget{durchfuxfchren-der-zuxfcge}{%
-\subsubsection{Durchführen der Züge}\label{durchfuxfchren-der-zuxfcge}}
+\subsection{Durchführen der Züge}\label{durchfuxfchren-der-zuxfcge}}
 
-Die folgenden Funktionen berechnen mit einer angegebenen KI den nächsten
-Zug und wenden diesen auf den Zustand an. Der Wert
-\passthrough{\lstinline!SELECTION\_TOLERANCE!} gibt an, wie viel der
-Nutzen eines Zuges vom besten Nutzen abweichen darf, um dennoch
-ausgewählt werden zu können.
+Die Folgenden Funktionen berechnen mithilfe einer angegebenen KI
+Strategie den nächsten Zug und wenden diesen auf den übergebenen Zustand
+\passthrough{\lstinline!state!} an. Damit die Strategien nicht völlig
+deterministisch sind, und somit besser die Stärke der einzelnen
+Strategien und Heuristiken bestimmt werden kann, wird nicht immer der
+beste Zug ausgewählt, sondern statdessen einer der Züge, die innerhalb
+eines festgelegten Abstands vom besten Zug liegen. Dieser Abstand wird
+im Folgenden als \passthrough{\lstinline!SELECTION\_TOLERANCE!}
+definiert.
 
 \begin{lstlisting}[language=Python]
 SELECTION_TOLERANCE = 0.0025
 \end{lstlisting}
 
-Die Funktion \passthrough{\lstinline!ai\_make\_move!} führt auf dem
-Zustand \passthrough{\lstinline!state!} den besten, durch den
-Algorithmus \passthrough{\lstinline!ai!} bestimmten, Zug aus. Für alle
-möglichen Züge wird die Nützlichkeit des resultierenden Zustands
-mithilfe des Algorithmus \passthrough{\lstinline!ai!} bestimmt. Aus
-allen Zügen wird einer der Züge ausgewählt, der für den Spieler den
-optimaleln Nutzen hat.
+\hypertarget{suche-mit-fester-tiefe}{%
+\subsubsection{Suche mit fester Tiefe}\label{suche-mit-fester-tiefe}}
+
+Die Funktion \passthrough{\lstinline!ai\_make\_move!} ist die einfachste
+der Ausführungsfunktionen. Sie bewertet alle, durch einen Zug vom
+Zustand \passthrough{\lstinline!state!} erreichbaren, Spielpositionen
+und wählt aus diesen, wie oben beschrieben, einen der besten Züge aus.
+Die Bewertung der Spielzustände wird von der als Parameter übergebenen
+Funktion \passthrough{\lstinline!ai!} vorgenommen, welche eine der im
+vorherigen Abschnitt definierten Strategie-Funktionen sein kann. Für
+jeden Zustand wird die Strategie-Funktion genau einmal mit der Tiefe
+\passthrough{\lstinline!depth-1!} ausgeführt. Das
+\passthrough{\lstinline!-1!} wird hierbei verwendet, da bereits in der
+Funktion \passthrough{\lstinline!ai\_make\_move!} selbst eine Iteration
+über die Kindzustände durchgeführt wird. Die Strategiefunktion erhält
+ausßerdem den übergebenen Parameter \passthrough{\lstinline!heuristic!},
+welche eine der implementierten Heuristikfunktionen sein kann.
 
 \begin{lstlisting}[language=Python]
 def ai_make_move(ai, state, depth, heuristic):
@@ -548,15 +599,25 @@ def ai_make_move(ai, state, depth, heuristic):
     return make_move(state, best_move)
 \end{lstlisting}
 
-Beim Iterative Deepening wird der Alphabeta-Algorithmus nacheinander mit
-steigender Tiefe ausgeführt. Die Werte aus der vorherigen Ausführung
-werden dann für das Move-Ordering verwendet. Durch das bessere
-Move-Ordering können beim Alpha-Beta-Pruning mehr Zweige abgeschnitten
-werden. Dadurch kann trotz der mehrfachen Ausführung eine höhere
-Performanz bei gleichem Ergebnis erreicht werden. Ein weiterer Vorteil
-ist, dass das Iterative Deepening jederzeit abgebrochen werden kann.
-Dadurch kann in einer vorgegebenen Zeit, die in dieser Zeit maximal
-mögliche Suchtiefe erreicht werden.
+\hypertarget{iterative-tiefensuche}{%
+\subsubsection{Iterative Tiefensuche}\label{iterative-tiefensuche}}
+
+Die Ausführungsfunktion \passthrough{\lstinline!ai\_make\_move\_id!}
+unterscheidet sich von \passthrough{\lstinline!ai\_make\_move!} dadurch,
+dass iterative Tiefensuche durchgeführt wird. Dazu wird die
+Strategiefunktion, statt nur einmal mit der vorgegebenen Tiefe
+aufgerufen zu werden, beginnend von 1 mit immer höherer Suchtiefe
+aufgerufen. Wird die Tiefe \passthrough{\lstinline!depth!} erreicht, so
+wird einer der besten Züge, wie auch in
+\passthrough{\lstinline!ai\_make\_move!} ausgewählt. Durch die
+Verwendung eines Cache, der
+\passthrough{\lstinline!transposition\_table!}, in den auf Alpha-Beta
+Prunning basierenden Strategien, kann durch die Wiederverwendung der
+Ergebnisse vorheriger Aufrufe ein besseres Move Ordering vorgenommen
+werden, und somit die Effizienz des Alpha-Beta Pruning gesteigert
+werden. Bei ausreichender Suchtiefe übertreffen die dadurch erzielten
+Ersparnisse, den zusätzlichen Aufwand, die Strategiefunktionen mehrfach
+aufzurufen.
 
 \begin{lstlisting}[language=Python]
 def ai_make_move_id(ai, state, depth, heuristic):
@@ -593,14 +654,31 @@ def ai_make_move_id(ai, state, depth, heuristic):
     return make_move(state, best_move)
 \end{lstlisting}
 
-Beim Iterative Deepening ist jederzeit der beste Zug der letzten
-Suchtiefe bekannt. Daher kann der Algorithmus verwendet werden, um in
-einer vorgegebenen Zeit mit größtmöglicher Suchtiefe zu suchen. Dazu
-wird die Dauer des nächsten Zugs anhand der Dauer des letzten Zugs
-geschätzt. Somit kann es vorkommen, dass die Berechnung etwas länger
-oder kürzer als die gegebene Zeit dauert. Dafür wird das Ergebnis aller
-Berechnungen verwendet und die letzte Suche muss nicht abgebrochen
-werden.
+\hypertarget{zeitbeschruxe4nkte-tiefensuche}{%
+\subsubsection{Zeitbeschränkte
+Tiefensuche}\label{zeitbeschruxe4nkte-tiefensuche}}
+
+Je nach Spielsituation ist die Mobilität der Spieler unterschiedlich
+hoch. Dadurch unterscheidet sich auch die Anzahl der zu betrachteten
+Spielzustände. Auch die Anzahl der durch Alpha-Beta Pruning entfernten
+Zweige kann variieren. Bei konstanter Suchtiefe ist daher mit variablen
+Ausführungszeiten zu rechnen. Im Spiel gegen einen Menschlichen Spieler
+ist es jedoch wünschenswert, eine maximale Zugdauer nicht zu
+überschreiten. Die verfügbare Zeit soll dabei dennoch effektiv für eine
+möglichst gute Entscheidung genutzt werden.
+
+Das ist das Ziel der Ausführungsfunktion
+\passthrough{\lstinline!ai\_make\_move\_id\_timelimited!}, diese führt
+Iterative Deepening durch, kann jedoch nach jeder Suchtiefe abbrechen
+und einen der bis dahin besten Züge wählen. Hierbei wird die
+Entscheidung zum Abbruch getroffen, wenn mit der nächsten Ausführung das
+durch die Konstante \passthrough{\lstinline!SECS\_PER\_MOVE!} gegebene
+Zeitlimit voraussichtlich überschritten würde. Dafür wird die Dauer der
+nächsten Ausführung approximiert, indem bestimmt wird, um welchen Faktor
+sich die Ausführungszeiten bei den letzten beiden Ausführungen geändert
+haben. Dieser Faktor \passthrough{\lstinline!factor!} wird dann mit der
+Dauer der letzten Ausführung multipliziert um die Dauer der nächsten
+Ausführung zu schätzen.
 
 \begin{lstlisting}[language=Python]
 SECS_PER_MOVE = 30

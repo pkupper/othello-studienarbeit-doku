@@ -1,0 +1,8 @@
+%!TEX root = ../../dokumentation.tex
+
+\section{Korrektheit von ProbCut}
+ProbCut schließt Zweige des Suchbaums aus, die mit einer bestimmten Wahrscheinlichkeit nicht zu einem guten Zug führen
+können. Als Grundlage werden statistisch bestimmte Werte verwendet. Ob diese hinreichend gut sind, sodass tatsächlich
+bis auf die bekannte Fehlerwahrscheinlichkeit der Zug mit dem besten MiniMax-Wert gefunden wird, sollte überprüft
+werden. Dazu kann in Spielen der beste Zug sowohl mit AlphaBeta, als auch mit ProbCut bestimmt werden.
+% TODO: Hypothesentest?
