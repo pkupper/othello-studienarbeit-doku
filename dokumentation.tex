@@ -80,7 +80,12 @@
 
 	\pagenumbering{arabic}
 	
-	\pagestyle{headings}		% Kolumnentitel im Kopf, Seitenzahlen im Fuß
+	\pagestyle{fancy}
+	\fancyhf{}
+	\fancyhead[L]{\nouppercase{\firstrightmark}}
+	\fancyhead[R]{\nouppercase{\firstleftmark}}
+
+	%\pagestyle{headings}		% Kolumnentitel im Kopf, Seitenzahlen im Fuß
 
 	% Inhalt
 	%\foreach \i in {01,02,03,04,05,06,07,08,09,...,99} {%
@@ -96,6 +101,7 @@
 	\input{content/theorie.tex}
 	\input{content/methode.tex}
 	\input{content/implementation.tex}
+	%\pagestyle{headings}
 	\input{content/ergebnis.tex}
 	\input{content/diskussion.tex}
 
