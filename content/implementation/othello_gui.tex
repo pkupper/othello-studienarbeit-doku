@@ -122,7 +122,7 @@ Spielzustand \passthrough{\lstinline!state!} auf den Canvas gezeichnet.
 def update_output(state):
     with ipycanvas.hold_canvas(canvas):
         canvas[1].clear()
-        for ((x, y), val) in numpy.ndenumerate(state.board):
+        for ((x, y), val) in np.ndenumerate(state.board):
             if val == NONE:
                 continue
             elif val == BLACK:
@@ -190,7 +190,6 @@ def mouse_down(x_px, y_px):
                 next_move(state)
             except KeyboardInterrupt:
                 pass
-
 
 canvas[1].on_mouse_down(mouse_down)
 \end{lstlisting}

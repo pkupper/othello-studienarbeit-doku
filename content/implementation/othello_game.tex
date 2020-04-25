@@ -196,14 +196,18 @@ class InvalidMoveException(Exception):
 Die Funktion \passthrough{\lstinline!can\_flip\_in\_dir!} überprüft für
 ein Spielfeld \passthrough{\lstinline!board!} und den Spieler
 \passthrough{\lstinline!player!}, ob beim Setzen eines Steins auf die
-Position \passthrough{\lstinline!(row, col)!} in die durch
-\passthrough{\lstinline!(rowdelta, coldelta)!} gegebene Richtung Steine
-umgedreht werden können. Die Variable \passthrough{\lstinline!board!}
-enthält das Spielfeld als Python-Liste, da einzelne Zugriffe so deutlich
-schneller sind, als auf ein numpy array.
+Position \passthrough{\lstinline!pos!} in die Richtung
+\passthrough{\lstinline!direction!} Steine umgedreht werden können. Die
+Variable \passthrough{\lstinline!board!} enthält das Spielfeld als
+Python-Liste, da einzelne Zugriffe so deutlich schneller sind, als auf
+bei einem numpy-Array. \passthrough{\lstinline!can\_flip\_in\_dir!} gibt
+einen Wahrheitswert zurück. True gibt dabei an, dass Steine umgedreht
+werden können.
 
 \begin{lstlisting}[language=Python]
-def can_flip_in_dir(board, row, col, rowdelta, coldelta, player):
+def can_flip_in_dir(board, pos, direction, player):
+    row, col = pos
+    rowdelta, coldelta = direction
     current_row = row + rowdelta
     current_col = col + coldelta
     if not (0 <= current_row < 8 and 0 <= current_col < 8):
@@ -227,25 +231,28 @@ def can_flip_in_dir(board, row, col, rowdelta, coldelta, player):
 
 Die Funktion \passthrough{\lstinline!is\_move\_valid!} überprüft für ein
 gegebenes Spielfeld \passthrough{\lstinline!board!}, ob ein Zug auf die
-angegebenen Koordinaten \passthrough{\lstinline!row!} und
-\passthrough{\lstinline!col!} für den Spieler
+position \passthrough{\lstinline!pos!} für den Spieler
 \passthrough{\lstinline!player!} möglich ist. Das Ergebnis wird als
 Wahrheitswert zurückgegeben. \passthrough{\lstinline!board!} ist hier
-ebenfalls eine Python-Liste, da der Zugriff auf Elemente schneller ist,
-als in einem numpy array.
+ebenfalls eine Python-Liste, da auch der Zugriff auf einzelne Elemente
+schneller ist, als bei einem numpy-Array.
 
 \begin{lstlisting}[language=Python]
-def is_move_valid(board, row, col, player):
-    for rowdelta, coldelta in directions:
-        if can_flip_in_dir(board, row, col, rowdelta, coldelta, player):
+def is_move_valid(board, pos, player):
+    for direction in directions:
+        if can_flip_in_dir(board, pos, direction, player):
             return True
     return False
 \end{lstlisting}
 
-\passthrough{\lstinline!get\_utility!} bestimmt für einen Endzustand den
-Gewinner des Spiels. Gewinnt Weiß, so wird der Wert 1 zurückgegeben.
-Gewinnt Schwarz, wird der Wert -1 zurückgegeben. Bei einem Unentschieden
-wird der Wert 0 zurückgegeben.
+\passthrough{\lstinline!get\_utility!} bestimmt für einen
+Endspielzustand \passthrough{\lstinline!state!} den Gewinner des Spiels
+anhand der Anzahl an Spielsteinen, die beide Spieler auf dem Spielfeld
+haben. Gewinnt Weiß, so wird der Wert der Konstante
+\passthrough{\lstinline!BLACK!} zurückgegeben. Gewinnt Schwarz, wird der
+Wert der Konstante \passthrough{\lstinline!WHITE!} zurückgegeben. Bei
+einem Unentschieden wird der Wert von \passthrough{\lstinline!NONE!}
+zurückgegeben.
 
 \begin{lstlisting}[language=Python]
 def get_utility(state):
@@ -261,28 +268,35 @@ def get_utility(state):
 
 Die Funktion \passthrough{\lstinline!get\_possible\_moves!} bestimmt für
 einen Spielzustand \passthrough{\lstinline!state!} und den Spieler
-\passthrough{\lstinline!player!} die möglichen Züge, die der Spieler
-machen kann. Die Züge werden als Liste von Koordinaten zurückgegeben.
+\passthrough{\lstinline!player!} alle möglichen Züge, die
+\passthrough{\lstinline!player!} im Spielzustand
+\passthrough{\lstinline!state!} machen kann. Die resultierenden Züge
+werden als Liste von Koordinatenpaaren zurückgegeben. Für eine bessere
+Performanz werden nur Felder aus der Menge
+\passthrough{\lstinline!frontier!} als mögliche Züge betrachtet.
 
 \begin{lstlisting}[language=Python]
 def get_possible_moves(state, player):
     board = state.board.tolist()
     possible_moves = []
-    for (row, col) in state.frontier:
-        if is_move_valid(board, row, col, player):
-            possible_moves.append((row, col))
+    for pos in state.frontier:
+        if is_move_valid(board, pos, player):
+            possible_moves.append(pos)
     return possible_moves
 \end{lstlisting}
 
-Diese Funktion dreht im Spielzustand \passthrough{\lstinline!state!},
-ausgehend von dem durch \passthrough{\lstinline!row!} und
-\passthrough{\lstinline!col!} gegebenen Feld, die für den Spieler
-\passthrough{\lstinline!player!} generischen Steine in die durch
-\passthrough{\lstinline!rowdelta!} und
-\passthrough{\lstinline!coldelta!} gegebene Richtung um.
+Diese Funktion \passthrough{\lstinline!flip\_in\_dir!} dreht im
+Spielzustand \passthrough{\lstinline!state!}, ausgehend von dem durch
+\passthrough{\lstinline!pos!} angegebenen Feld die für den Spieler
+\passthrough{\lstinline!player!} generischen Steine in die Richtung
+\passthrough{\lstinline!direction!} um. Der eingegebene
+\passthrough{\lstinline!state!} wird dabei modifiziert. Die Funktion hat
+keinen Rückgabewert.
 
 \begin{lstlisting}[language=Python]
-def flip_in_dir(state, row, col, rowdelta, coldelta, player):
+def flip_in_dir(state, pos, direction, player):
+    (row, col) = pos
+    rowdelta, coldelta = direction
     current_row = row + rowdelta
     current_col = col + coldelta
     
@@ -293,13 +307,16 @@ def flip_in_dir(state, row, col, rowdelta, coldelta, player):
 \end{lstlisting}
 
 \passthrough{\lstinline!update\_frontier!} wird nach jedem Zug
-aufgerufen um die Menge Frontier zu aktualisieren. Die durch
-\passthrough{\lstinline!row!} und \passthrough{\lstinline!col!} Gegebene
-Koordinate wird entfernt, während die Koordinaten von leeren umliegenden
-Feldern hinzugefügt werden.
+aufgerufen um die Menge \passthrough{\lstinline!frontier!} des
+Spielzustands \passthrough{\lstinline!state!} zu aktualisieren. Die
+durch \passthrough{\lstinline!pos!} gegebene Koordinate wird entfernt,
+während die Koordinaten aller leeren umliegenden Felder hinzugefügt
+werden. Der Spielzustand \passthrough{\lstinline!state!} wird hierbei
+direkt verändert. Es wird kein Wert zurückgegeben.
 
 \begin{lstlisting}[language=Python]
-def update_frontier(state, row, col):
+def update_frontier(state, pos):
+    (row, col) = pos
     for current_row in range(row-1, row+2):
         if not 0 <= current_row < 8:
             continue
@@ -313,16 +330,18 @@ def update_frontier(state, row, col):
 
 Die Funktion \passthrough{\lstinline!count\_disks!} zählt die Steine,
 die der Spieler \passthrough{\lstinline!player!} im Spielzustand
-\passthrough{\lstinline!state!} auf dem Spielfeld hat.
+\passthrough{\lstinline!state!} auf dem Spielfeld hat. Die resultierende
+Anzahl wird von der Funktion zurückgegeben.
 
 \begin{lstlisting}[language=Python]
 def count_disks(state, player):
     return np.count_nonzero(state.board == player)
 \end{lstlisting}
 
-\passthrough{\lstinline!get\_player\_string!} konvertiert die ID des
-Spielers \passthrough{\lstinline!player!} in dessen Name. Ist
-\passthrough{\lstinline!player == NONE!} so wird `Nobody' zurückgegeben.
+\passthrough{\lstinline!get\_player\_string!} konvertiert die
+Zahlenreprösentation des Spielers \passthrough{\lstinline!player!} in
+den Namen des Spielers. Ist \passthrough{\lstinline!player == NONE!} so
+wird `Nobody' zurückgegeben.
 
 \begin{lstlisting}[language=Python]
 def get_player_string(player):
@@ -369,18 +388,17 @@ def make_move(state, pos):
     
     state = copy.deepcopy(state)
     disks_flipped = False
-    (row, col) = pos
     board = state.board.tolist()
-    for (row_dir, col_dir) in directions:
-        if can_flip_in_dir(board, row, col, row_dir, col_dir, state.turn):
+    for direction in directions:
+        if can_flip_in_dir(board, pos, direction, state.turn):
             disks_flipped = True
-            flip_in_dir(state, row, col, row_dir, col_dir, state.turn)
+            flip_in_dir(state, pos, direction, state.turn)
 
     if disks_flipped:
         state.num_pieces += 1
         state.board[pos] = state.turn
         state.last_move = pos
-        update_frontier(state, row, col)
+        update_frontier(state, pos)
         state.turn = -state.turn
         state.possible_moves = get_possible_moves(state, state.turn)
         if len(state.possible_moves) == 0:
@@ -394,10 +412,12 @@ def make_move(state, pos):
     return state
 \end{lstlisting}
 
-\passthrough{\lstinline!make\_state!} erzeugt einen Spielzustand aus dem
-Spielfeld \passthrough{\lstinline!board!} und dem zu ziehenden Spieler
-\passthrough{\lstinline!turn!}. Diese Funktion wird zu Testzwecken
-genutzt.
+Die Funktion \passthrough{\lstinline!make\_state!} erzeugt einen
+Spielzustand aus einem beliebig vorbelegtem Spielfeld
+\passthrough{\lstinline!board!} und dem zu ziehenden Spieler
+\passthrough{\lstinline!turn!}. Diese Funktion wird zur Konstruktion
+von, zum Testen genutzten, Spielsituationen verwendet. Der Resultierende
+\passthrough{\lstinline!GameState!} wird von der Funktion zurückgegeben.
 
 \begin{lstlisting}[language=Python]
 def make_state(board, turn):

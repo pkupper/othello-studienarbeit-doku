@@ -114,49 +114,6 @@ for i in range(5, 45):
     #print(f'{i}: Var={round(variance, 5)}, explained: {round(explained_variance, 3)}')
 \end{lstlisting}
 
-\begin{lstlisting}
-5: Var=0.00019, explained: 0.938
-6: Var=0.00039, explained: 0.786
-7: Var=0.00154, explained: 0.932
-8: Var=0.0009, explained: 0.693
-9: Var=0.0021, explained: 0.877
-10: Var=0.00206, explained: 0.864
-11: Var=0.00296, explained: 0.924
-12: Var=0.00352, explained: 0.936
-13: Var=0.0034, explained: 0.948
-14: Var=0.00436, explained: 0.953
-15: Var=0.00478, explained: 0.959
-16: Var=0.00424, explained: 0.961
-17: Var=0.00519, explained: 0.955
-18: Var=0.00515, explained: 0.967
-19: Var=0.00545, explained: 0.957
-20: Var=0.00547, explained: 0.969
-21: Var=0.00569, explained: 0.967
-22: Var=0.00601, explained: 0.968
-23: Var=0.00549, explained: 0.949
-24: Var=0.00601, explained: 0.96
-25: Var=0.00643, explained: 0.96
-26: Var=0.00679, explained: 0.961
-27: Var=0.00693, explained: 0.968
-28: Var=0.00661, explained: 0.964
-29: Var=0.00653, explained: 0.964
-30: Var=0.00735, explained: 0.967
-31: Var=0.0075, explained: 0.954
-32: Var=0.00847, explained: 0.959
-33: Var=0.00733, explained: 0.943
-34: Var=0.00769, explained: 0.956
-35: Var=0.00722, explained: 0.934
-36: Var=0.00794, explained: 0.962
-37: Var=0.00686, explained: 0.921
-38: Var=0.00781, explained: 0.954
-39: Var=0.00775, explained: 0.947
-40: Var=0.00863, explained: 0.956
-41: Var=0.00883, explained: 0.92
-42: Var=0.0096, explained: 0.953
-43: Var=0.00909, explained: 0.932
-44: Var=0.01003, explained: 0.939
-\end{lstlisting}
-
 Folgender Code berechnet die Regressionsgerade der Standardabweichung in
 Abhängigkeit von der Anzahl der Steine auf dem Spielfeld mit \(sklearn\)
 und stellt diese grafisch dar.
@@ -167,7 +124,7 @@ model.fit(np.array(x).reshape(-1, 1), np.array(y))
 
 plt.figure(figsize=(15, 10))
 sns.set(style='whitegrid')
-plt.scatter(X, y)
+plt.scatter(x, y)
 plt.axvline(x=0.0, c='k')
 plt.axhline(y=0.0, c='k')
 plt.plot(x, x * model.coef_ + model.intercept_)
@@ -195,4 +152,7 @@ print(f'variance: {variance}')
 explained_variance = skl.explained_variance_score(shallow, deep)
 print(f'standard distribution: {np.sqrt(variance)}')
 print(f'explained variance: {explained_variance}')
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
 \end{lstlisting}

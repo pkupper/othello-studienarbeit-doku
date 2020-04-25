@@ -9,21 +9,46 @@
 \section{Implementierung einer Künstlichen Intelligenz für das Spiel
 Othello}\label{implementierung-einer-kuxfcnstlichen-intelligenz-fuxfcr-das-spiel-othello}}
 
-\hypertarget{initiale-konfiguration}{%
-\subsection{Initiale Konfiguration}\label{initiale-konfiguration}}
+Dieses Kapitel beschreibt die Implemenentierung der Künstlichen
+Intelligenz. Es werden mehrere, voneinander verschiedene, Strategien
+implementiert, um einen Vergleich von diesen zu ermöglichen.
 
-Importieren von Abhängigkeiten und Konfiguration
+\hypertarget{importieren-der-externen-abhuxe4ngigkeiten}{%
+\subsection{Importieren der externen
+Abhängigkeiten}\label{importieren-der-externen-abhuxe4ngigkeiten}}
 
-import math import numpy as np import random
+Zur Initialisierung der Parameter \passthrough{\lstinline!alpha!} und
+\passthrough{\lstinline!beta!} in der mit Alpha-Beta Pruning optimierten
+Minimax Strategie werden die Konstanten
+\passthrough{\lstinline!math.inf!} und
+\passthrough{\lstinline!-math.inf!} benötigt. Sie stehen jeweils für den
+maximalen und den minimalen Wert, den eine Fließkommazahl annehmen kann.
+Die Konstanten werden von der Python Standardbibliothek in dem Modul
+\passthrough{\lstinline!math!} bereitgestellt
+
+Das Modul \passthrough{\lstinline!random!} wird im Rahmen dieser
+Implementierung für mehrere Zwecke genutzt. Zum Einen zur
+Implementierung der \passthrough{\lstinline!random\_ai!}, einer
+Strategie, welche immer einen zufälligen Zug wählt. Und außerdem, um die
+auf Minimax basierenden Strategien nichtdeterministisch zu machen.
+
+\begin{lstlisting}[language=Python]
+import math
+import random
+\end{lstlisting}
+
+Die Implementierung der Künstlichen Intelligenz baut auf der
+Implementierung der Spielelogik von Othello auf. Das entsprechende
+Notebook muss also hier ausgeführt werden.
 
 \begin{lstlisting}[language=Python]
 %run othello_game.ipynb
 \end{lstlisting}
 
-Die aktuellen Nutzen-Werte der beiden Spieler werden in einer globalen
-Variable gespeichert, sodass diese in der GUI angezeigt werden können.
-Die Werte werden in den entsprechenden Funktionen der Strategien
-aktualisiert.
+Die aktuellen Nutzen-Werte der beiden Spieler werden in der globalen
+Variable utilities gespeichert, sodass diese in der GUI angezeigt werden
+können. Diese Werte werden in den entsprechenden Funktionen der
+Strategien aktualisiert.
 
 \begin{lstlisting}[language=Python]
 utilities = {WHITE: '-', BLACK: '-'}
@@ -37,19 +62,20 @@ benötigt. Im folgenden sind einige solcher Heuristiken implementiert. Da
 Weiß der maximierende Spieler, und Schwarz der minimierende Spieler ist,
 repräsentiert ein höherer Wert der Heuristik einen für Weiß
 vorteilhaften Zug, während ein niedriger Wert einen Vorteil für Schwarz
-repräsentiert. Die Werte der Heuristik liegen zwischen -1 und 1, wobei
-die Randwerte einen garantierten Sieg für den jeweiligen Spieler
-darstellen. Der Wert 0 steht für einen für beide Spieler gleich guten
-Spielzustand.
+repräsentiert. Die Werte aller Heuristiken liegen zwischen \(-1\) und
+\(1\), wobei diese Randwerte einen garantierten Sieg für den jeweiligen
+Spieler darstellen. Der Wert \(0\) steht für einen für beide Spieler
+gleich guten Spielzustand.
 
 Da das Ziel des Spiels Othello ist, zum Ende des Spiels mehr Steine als
 der Gegner auf dem Spielfeld zu haben, ist es naheliegend, die Differenz
 der Anzahlen von Steinen beider Spieler zur Abschätzung eines Zuges zu
 verwenden. Genau das macht die Disk-Count-Heuristik indem sie die
-Differenz der Steine, beider Spieler berechnet und den resultierenden
-Wert zur Normalisierung durch die maximale Anzahl an Steinen teilt. Bei
-genauerer Betrachtung ist es jedoch, gerade zu Beginn des Spiels nicht
-immer vorteilhaft, den Vorsprung an Steinen zu maximieren.
+Differenz der Anzahlen von Steinen, beider Spieler berechnet und den
+resultierenden Wert zur Normalisierung durch die maximale Anzahl an
+Steinen teilt. Bei genauerer Betrachtung ist es jedoch, gerade zu Beginn
+des Spiels, nicht immer vorteilhaft, den Vorsprung an Steinen zu
+maximieren.
 
 \begin{lstlisting}[language=Python]
 def disc_count_heuristic(state):
@@ -58,12 +84,18 @@ def disc_count_heuristic(state):
 
 Eine weitere Heuristik ist die Mobilität der Spieler. Diese gibt an, wie
 viele mögliche Züge ein Spieler im Vergleich zum Gegner hat. Die Idee
-bei dieser Heuristik ist, dass ein Spieler dadurch seine Freiheit
+hinter dieser Heuristik ist, dass ein Spieler dadurch seine Freiheit
 maximiert, während die Freiheit des Gegners durch eine geringe Anzahl an
 Zügen eingeschränkt wird. Die Mobilitäts-Heuristik gibt an wie viele
-möglicher Züge mehr Weiß gegenüber Schwarz im Aktuellen Spielzustand
-hat. Auch dieser Wert wird durch Division durch die Anzahl an Feldern
-normalisiert, um die Grenzen von -1 und 1 einzuhalten.
+mögliche Züge mehr Weiß gegenüber Schwarz im Aktuellen Spielzustand hat.
+Auch dieser Wert wird durch Division durch die Anzahl an Feldern
+normalisiert, um die Grenzen von \(-1\) und \(1\) einzuhalten. Zu
+beachten ist hier, dass auch die Anzahl möglicher Züge für einen Spieler
+bestimmt wird, der im Spielzustand gar nicht am Zug ist. Dies ist wirkt
+zunächst sematisch unsinnig, hat sich aber in Tests als effektiver
+gegenüber möglichen Alternativen, wie der Verwendung einer
+durchschnittlichen Mobilität für diesen Spieler in der jeweiligen
+Spielphase, bewiesen.
 
 \begin{lstlisting}[language=Python]
 def mobility_heuristic(state):
@@ -81,10 +113,12 @@ Position sein. Die Funktion
 \passthrough{\lstinline!pot\_mob\_heuristic!} berechnet für einen
 Zustand \passthrough{\lstinline!state!} die Differenz der potentiellen
 Mobilität beider Spieler. Die potentielle Mobilität eines Spielers ist
-die Summe aller freien Felder um gegnerische Spielsteine, da Michael
-Buro dieses Merkmal als in seiner Dissertation als bestes ausgemacht
-hat. Das Ergebnis wird durch 3.5 geteilt, da es im Durchschnitt 3.5 Mal
-so viele potentielle Züge wie tatsächliche Züge gibt.
+gegeben durch die Summe aller freien Felder um gegnerische Spielsteine,
+da Michael Buro dieses Merkmal als in seiner Dissertation als beste
+Metrik für die Potentielle Mobilität ausgemacht hat
+\cite[S. 9]{evaluationfunctions}. Das Ergebnis wird durch \(3.5\)
+geteilt, da es im Durchschnitt \(3.5\) Mal so viele potentielle Züge wie
+tatsächliche Züge gibt.
 
 \begin{lstlisting}[language=Python]
 def pot_mob_heuristic(state):
@@ -106,8 +140,9 @@ kombiniert die aktuelle und potentielle Mobilität, wobei zu Beginn des
 Spiels die potentielle Mobilität stärker gewichtet wird und gegen Ende
 die aktuelle Mobilität. Michael Buro beschreibt in seiner Dissertation,
 dass die potentielle Mobilität bis 36 Spielsteine auf dem Feld liegen
-wichtiger für die Bewertung ist, als die aktuelle Mobilität. Dieser
-Sachverhalt soll durch eine lineare Kombination modelliert werden.
+wichtiger für die Bewertung ist, als die aktuelle Mobilität
+\cite[S. 9]{evaluationfunctions}. Dieser Sachverhalt soll durch eine
+lineare Kombination modelliert werden.
 
 \begin{lstlisting}[language=Python]
 def combined_mobility_heuristic(state):
@@ -154,10 +189,30 @@ def gen_cowthello_matrix():
 cowthello_weights = gen_cowthello_matrix()
 \end{lstlisting}
 
+Die Funktion \passthrough{\lstinline!cowthello\_heuristic!} bestimmt aus
+einem Spielzustand und der aufgestellten Gewichtematrix
+\passthrough{\lstinline!cowthello\_weights!} die gewichtete Summe,
+welche als Heuristik genutzt wird.
+
 \begin{lstlisting}[language=Python]
 def cowthello_heuristic(state):
     return np.sum(np.multiply(state.board, cowthello_weights))
 \end{lstlisting}
+
+Die Cowthello Heuristik wertet den Besitz einiger Felder, wie zum
+Beispiel die an die Ecken des Spielfeldes angrenzenden Felder, als
+negativ, da der Gegner dadurch wertvolle Felder, wie die Ecken des
+Spielfelds, erlangen kann. Wenn die Ecke jedoch bereits besetzt ist,
+spielt das keine Rolle mehr. Die
+\passthrough{\lstinline!cowthello\_safe\_heuristic!} versucht dies zu
+berücksichtigen. Zunächst wird dabei in der Funktion
+\passthrough{\lstinline!safe\_in\_corner!} ausgehend von einer durch
+\passthrough{\lstinline!rdir!} und \passthrough{\lstinline!cdir!}
+angegeben Ecke des Spielfeldes \passthrough{\lstinline!board!} bestimmt,
+welche Steine des Spielers \passthrough{\lstinline!player!} nicht mehr
+umgedreht werden können. Alle dadurch als sicher bestimmten Felder,
+werden in der Boolean-Matrix safe auf den Wert
+\passthrough{\lstinline!True!} gesetzt.
 
 \begin{lstlisting}[language=Python]
 def safe_in_corner(board, safe, player, rdir, cdir):
@@ -179,10 +234,17 @@ def safe_in_corner(board, safe, player, rdir, cdir):
         safe[::rdir,col][:safe_in_col] = True
 \end{lstlisting}
 
+In der Funktion \passthrough{\lstinline!safe\_pieces!} wird die Funktion
+\passthrough{\lstinline!safe\_in\_corner!} für alle Ecken des Spielfelds
+\passthrough{\lstinline!board!} und dem Spieler
+\passthrough{\lstinline!player!} aufgerufen. Die sicheren Felder werden
+in der Boolean Matrix \passthrough{\lstinline!safe!} gesammelt, welche
+von der Funktion zurückgegeben wird.
+
 \begin{lstlisting}[language=Python]
 def safe_pieces(state, player):
     board = state.board
-    safe = numpy.zeros((8, 8), dtype=np.bool)
+    safe = np.zeros((8, 8), dtype=np.bool)
     safe_in_corner(board, safe, player, 1, 1)
     safe_in_corner(board, safe, player, 1,-1)
     safe_in_corner(board, safe, player,-1, 1)
@@ -190,11 +252,19 @@ def safe_pieces(state, player):
     return safe
 \end{lstlisting}
 
+Die \passthrough{\lstinline!cowthello\_safe\_heuristic!} bestimmt
+zunächst für beide Spieler die bereits gesicherten Felder. Die
+\passthrough{\lstinline!cowthello\_weights!} Matrix wird dann so
+angepasst, dass alle gesicherten Felder positiv gewichtet werden. Dazu
+wird der absolutwert der vorherigen Gewichtung verwendet. Die Berechnung
+der Heuristik, funktioniert dann, wie bei der unveränderten
+\passthrough{\lstinline!cowthello\_heuristic!}.
+
 \begin{lstlisting}[language=Python]
 def cowthello_safe_heuristic(state):
     black_safe = safe_pieces(state, BLACK)
     white_safe = safe_pieces(state, WHITE)
-    weights = numpy.copy(cowthello_weights)
+    weights = np.copy(cowthello_weights)
     weights[black_safe] = abs(weights[black_safe])
     weights[white_safe] = abs(weights[white_safe])
     return np.sum(np.multiply(state.board, weights))
@@ -220,11 +290,20 @@ def combined_heuristic(state):
 \subsection{Implementierung der
 Strategien}\label{implementierung-der-strategien}}
 
+Im Folgenden werden die verschiedenen Strategien der Künstlichen
+Intelligenz implementiert. Diese verwenden zum Teil die, im vorherigen
+Kaptitel implementierten, Heuristiken. Die Strategien bestehen jeweils
+aus einer bewertenden Funktion, die den Nutzen einer Spielsituation
+bestimmt, sowie aus einer aufrufenden Funktion, welche mithilfe der
+bewertenden Funktion den bestmöglichen Zug herleitet. Diese Komponenten
+können belibig kombiniert werden. Im Folgenden werden zunächst die
+bewerteten Funktionen implementiert.
+
 \hypertarget{zufuxe4llige-ki}{%
 \subsubsection{Zufällige KI}\label{zufuxe4llige-ki}}
 
 Die zufällige KI bewertet den Nutzen aller Züge gleich, gibt also immer
-den Wert \passthrough{\lstinline!0!} zurück.
+den Wert \(0\) zurück.
 
 \begin{lstlisting}[language=Python]
 def random_ai(state, depth, heuristic, alpha, beta):
@@ -234,7 +313,8 @@ def random_ai(state, depth, heuristic, alpha, beta):
 \hypertarget{minimax-ki}{%
 \subsubsection{Minimax KI}\label{minimax-ki}}
 
-Diese KI verwendet den Minimax-Algorithmus zur Bestimmung der
+Die Minimax Strategie verwendet den unveränderten Minimax-Algorithmus,
+wie er in \autoref{sec:minimax} beschrieben ist, zur Bestimmung der
 Nützlichkeit eines Zuges.
 
 \begin{lstlisting}[language=Python]
