@@ -1,27 +1,27 @@
 \section{Verbesserungen durch Pruning}
 
 Um den Einfluss von AlphaBeta-Pruning, Iterative Deepening und ProbCut auf die Leistung der KI beurteilen zu können,
-kann die Ausgabe der Funktion $debug\_num\_visited\_states$ betrachtet werden. Die Anzahl der überprüften Zustände ist
-ein gutes Maß für benötigte Rechenleistung. Diese wurden für verschiedene Suchtiefen berechnet und in Tabelle
-\ref{table:numstates} zusammengefasst. Hier ist deutlich zu erkennen, dass der AlphaBeta-Algorithmus durch das Anwenden
-von Pruning im Gegensatz zum reinen MiniMax-Algorithmus vor allem für größere Suchtiefen deutlich weniger Zustände
-überprüfen muss und somit performanter ist. AlphaBeta mit Iterative Deepening hat bei geringen Suchtiefen einen relativ
-hohen Overhead, sodass mehr Zustände überprüft werden müssen als ohne Iterative Deepening. Ab einer Suchtiefe von sieben
-ist Iterative Deepening allerdings deutlich überlegen, da durch die bessere Sortierung so viele Zweige ausgeschlossen
-werden können, dass trotz Overhead deutlich weniger Zustände betrachtet werden müssen.
+kann mithilfe der Funktion $debug\_num\_visited\_states$ die Zeit gemessen werden, die bei einem
+gegebenen Zustand benötigt wird, um den nächsten Zug zu berechnen. Diese wurde für verschiedene Suchtiefen berechnet und
+in Tabelle \ref{table:numstates} zusammengefasst. Hier ist deutlich zu erkennen, dass der AlphaBeta-Algorithmus durch
+das Anwenden von Pruning im Gegensatz zum reinen MiniMax-Algorithmus vor allem für größere Suchtiefen deutlich weniger
+Zeit benötigt. AlphaBeta mit Iterative Deepening hat bei geringen Suchtiefen einen relativ hohen Overhead, sodass die
+Berechnung länger dauert. Ab einer Suchtiefe von sieben ist Iterative Deepening allerdings deutlich überlegen, da durch
+die bessere Sortierung so viele Zweige ausgeschlossen werden können, dass trotz Overhead der nächste Zug schneller
+bestimmt werden kann.
+%TODO: ProbCut bringt nichts? evtl sind die Werte noch falsch
 
 \begin{table}[hb]
 \centering
-\begin{tabular}{c|cccc}
+\begin{tabular}{c|ccccc}
 \hline
-Suchtiefe & MiniMax & AlphaBeta & AB + ID & ProbCut \\ \hline
-    3     &   68    &    48     &    48   & TODO: \\
-    4     &   312   &    166    &    206  & \\
-    5     &  1 708  &    559    &    773  & \\
-    6     &  9 908  &   1 708   &   2 132 & \\ 
-    7     &  65 000 &   8 093   &   5 033 & \\ 
-    8     & 455 216 &   23 126  &  11 555 & \\ \hline
+\diagbox{Suchtiefe}{KI} & MiniMax & AlphaBeta & AB\,+\,ID & ProbCut & PC\,+\,ID \\ \hline
+3 & 0.11 & 0.10 & 0.14 & 0.10 & 0.14 \\
+4 & 0.66 & 0.32 & 0.42 & 0.50 & 0.48 \\
+5 & 4.31 & 1.51 & 1.67 & 1.68 & 2.01 \\
+6 & 33.72 & 6.13 & 7.53 & 7.18 & 10.42 \\ 
+7 & 273 & 22.7 & 21.9 & 27.6 & 17.8 \\
 \end{tabular}
-\caption{Anzahl überprüfter Zustände}
+\caption{Benötigte Zeit in Sekunden für die Berechnung des nächsten Zuges}
 \label{table:numstates}
 \end{table}
