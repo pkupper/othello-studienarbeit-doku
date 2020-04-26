@@ -34,11 +34,13 @@ times = {BLACK: 0, WHITE: 0}
 def next_move_blind(state, settings):
     global times
     start = time.time()
-    make_move = settings[state.turn]['mode']
-    algorithm = settings[state.turn]['algorithm']
+    make_move = settings[old_state.turn]['mode']
     depth = settings[state.turn]['depth']
-    heuristic = settings[state.turn]['heuristic']
-    state = make_move(algorithm, state, depth, heuristic)
+    timelim = settings[state.turn]['timelimit']
+    heuristic = settings[old_state.turn]['heuristic']
+    intval = timelim if make_move == ai_make_move_id_timelimited else depth
+    print(intval)
+    state = make_move(ai, old_state, intval, heuristic)
     times[state.turn] += time.time() - start
     if not state.game_over:
         next_move_blind(state, settings)

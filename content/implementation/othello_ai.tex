@@ -407,12 +407,9 @@ def alphabeta(state, depth, heuristic, alpha, beta):
     for child_state in child_states:
         cached = transposition_table.get(
             (child_state.board.tobytes(), child_state.turn, heuristic),
-            None
+            (heuristic(child_state), 0)
         )
-        if cached != None:
-            ordered_moves.append((cached, child_state))
-        else:
-            ordered_moves.append((heuristic(state), child_state))
+        ordered_moves.append((cached[0], child_state, cached[1]))
     ordered_moves.sort(reverse=(state.turn == WHITE))
 
     if state.turn == WHITE:
@@ -422,10 +419,13 @@ def alphabeta(state, depth, heuristic, alpha, beta):
         # minimizing
         utility = math.inf
 
-    for (_, tmp_state) in ordered_moves:
+    for (_, tmp_state, cached_depth) in ordered_moves:
         tmp_utility = alphabeta(tmp_state, depth - 1, heuristic, alpha, beta)
-        transposition_table[(tmp_state.board.tobytes(),
-                             tmp_state.turn, heuristic)] = tmp_utility
+        if depth - 1 > cached_depth:
+            transposition_table[
+                (tmp_state.board.tobytes(),
+                 tmp_state.turn, heuristic)
+            ] = (tmp_utility, depth -1)
 
         if state.turn == WHITE:
             # maximizing
@@ -481,9 +481,9 @@ def probcut(state, depth, heuristic, alpha, beta):
         debug_pc_count += 1
         return heuristic(state)
 
-    if depth == PROBCUT_DEEP_DEPTH - 1:
+    if depth == PROBCUT_DEEP_DEPTH:
         if state.num_pieces <= 45:
-            sigma = state.num_pieces * 0.00160610675723707 + 0.03369559303029926
+            sigma = state.num_pieces * 0.00213952338893382 - 0.00323353123554347
             # v >= beta with prob. of at least p? yes => cutoff
             bound = PERCENTILE * sigma + beta
             if probcut(state, PROBCUT_SHALLOW_DEPTH,
@@ -501,12 +501,10 @@ def probcut(state, depth, heuristic, alpha, beta):
     ordered_moves = []
     for child_state in child_states:
         cached = transposition_table.get(
-            (child_state.board.tobytes(), child_state.turn, heuristic), None
+            (child_state.board.tobytes(), child_state.turn, heuristic),
+            (heuristic(child_state), 0)
         )
-        if cached != None:
-            ordered_moves.append((cached, child_state))
-        else:
-            ordered_moves.append((heuristic(state), child_state))
+        ordered_moves.append((cached[0], child_state, cached[1]))
     ordered_moves.sort(reverse=(state.turn == WHITE))
 
     if state.turn == WHITE:
@@ -516,10 +514,13 @@ def probcut(state, depth, heuristic, alpha, beta):
         # minimizing
         utility = math.inf
 
-    for (_, tmp_state) in ordered_moves:
+    for (_, tmp_state, cached_depth) in ordered_moves:
         tmp_utility = probcut(tmp_state, depth - 1, heuristic, alpha, beta)
-        transposition_table[(tmp_state.board.tobytes(),
-                             tmp_state.turn, heuristic)] = tmp_utility
+        if depth - 1 > cached_depth:
+            transposition_table[
+                (tmp_state.board.tobytes(),
+                 tmp_state.turn, heuristic)
+            ] = (tmp_utility, depth -1)
 
         if state.turn == WHITE:
             # maximizing
@@ -577,21 +578,17 @@ def ai_make_move(ai, state, depth, heuristic):
     scored_moves = []
     if state.turn == WHITE:
         # maximizing
-        alpha = -math.inf
         for move in state.possible_moves:
             new_state = make_move(state, move)
-            utility = ai(new_state, depth-1, heuristic, alpha, math.inf)
+            utility = ai(new_state, depth-1, heuristic, -math.inf, math.inf)
             scored_moves.append((utility, move))
-            alpha = max(alpha, utility)
         best_score, _ = max(scored_moves)
     else:
         # minimizing
-        beta = math.inf
         for move in state.possible_moves:
             new_state = make_move(state, move)
-            utility = ai(new_state, depth-1, heuristic, -math.inf, beta)
+            utility = ai(new_state, depth-1, heuristic, -math.inf, math.inf)
             scored_moves.append((utility, move))
-            beta = min(beta, utility)
         best_score, _ = min(scored_moves)
     utilities[state.turn] = best_score
     top_moves = [move for move in scored_moves if abs(move[0] - best_score) <= SELECTION_TOLERANCE]
@@ -630,21 +627,17 @@ def ai_make_move_id(ai, state, depth, heuristic):
         scored_moves = []
         if state.turn == WHITE:
             # maximizing
-            alpha = -math.inf
             for move in state.possible_moves:
                 new_state = make_move(state, move)
-                utility = ai(new_state, cur_depth-1, heuristic, alpha, math.inf)
+                utility = ai(new_state, cur_depth-1, heuristic, -math.inf, math.inf)
                 scored_moves.append((utility, move))
-                alpha = max(alpha, utility)
             best_score, _ = max(scored_moves)
         else:
             # minimizing
-            beta = math.inf
             for move in state.possible_moves:
                 new_state = make_move(state, move)
-                utility = ai(new_state, cur_depth-1, heuristic, -math.inf, beta)
+                utility = ai(new_state, cur_depth-1, heuristic, -math.inf, math.inf)
                 scored_moves.append((utility, move))
-                beta = min(beta, utility)
             best_score, _ = min(scored_moves)
         utilities[state.turn] = best_score
         top_moves = [move for move in scored_moves
@@ -672,19 +665,20 @@ Das ist das Ziel der Ausführungsfunktion
 Iterative Deepening durch, kann jedoch nach jeder Suchtiefe abbrechen
 und einen der bis dahin besten Züge wählen. Hierbei wird die
 Entscheidung zum Abbruch getroffen, wenn mit der nächsten Ausführung das
-durch die Konstante \passthrough{\lstinline!SECS\_PER\_MOVE!} gegebene
+durch den Parameter \passthrough{\lstinline!timelimit!} gegebene
 Zeitlimit voraussichtlich überschritten würde. Dafür wird die Dauer der
 nächsten Ausführung approximiert, indem bestimmt wird, um welchen Faktor
 sich die Ausführungszeiten bei den letzten beiden Ausführungen geändert
 haben. Dieser Faktor \passthrough{\lstinline!factor!} wird dann mit der
 Dauer der letzten Ausführung multipliziert um die Dauer der nächsten
-Ausführung zu schätzen.
+Ausführung zu schätzen. Zu beachten ist, dass diese Funktion nicht exakt
+die gleiche Schnittstelle hat, wie die anderen Ausführungsfunktionen.
+Der paramenter \passthrough{\lstinline!depth!} wurde hier durch das
+\passthrough{\lstinline!timelimit!} ersetzt. Dies ist beim Aufruf der
+Funktion zu beachten.
 
 \begin{lstlisting}[language=Python]
-SECS_PER_MOVE = 30
-
-
-def ai_make_move_id_timelimited(ai, state, depth, heuristic):
+def ai_make_move_id_timelimited(ai, state, timelimit, heuristic):
     global utilities
     if state.game_over:
         return
@@ -702,25 +696,21 @@ def ai_make_move_id_timelimited(ai, state, depth, heuristic):
         scored_moves = []
         if state.turn == WHITE:
             # maximizing
-            alpha = -math.inf
             for move in state.possible_moves:
                 new_state = make_move(state, move)
-                utility = ai(new_state, depth-1, heuristic, alpha, math.inf)
+                utility = ai(new_state, depth-1, heuristic, -math.inf, math.inf)
                 scored_moves.append((utility, move))
-                alpha = max(alpha, utility)
             best_score, _ = max(scored_moves)
         else:
             # minimizing
-            beta = math.inf
             for move in state.possible_moves:
                 new_state = make_move(state, move)
-                utility = ai(new_state, depth-1, heuristic, -math.inf, beta)
+                utility = ai(new_state, depth-1, heuristic, -math.inf, math.inf)
                 scored_moves.append((utility, move))
-                beta = min(beta, utility)
             best_score, _ = min(scored_moves)
         utilities[state.turn] = best_score
         top_moves = [move for move in scored_moves
-                     if abs(move[0] - best_score) <= SELECTION_TOLERANCE]
+                     if abs(move[0] - best_score) <= timelimit]
         best_move = random.choice(top_moves)[1]
         second_last_time = last_time
         last_time = time.time() - last_time_start

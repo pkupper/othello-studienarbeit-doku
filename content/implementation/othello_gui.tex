@@ -177,8 +177,9 @@ Callback Funktion registriert.
 
 \begin{lstlisting}[language=Python]
 def mouse_down(x_px, y_px):
-    if not state.game_over:
-        with output:
+    global state
+    with output:
+        if not state.game_over:
             x = math.floor(x_px / CELL_SIZE)
             y = math.floor(y_px / CELL_SIZE)
             try:
@@ -223,8 +224,10 @@ black_mode = RadioButtons(
     options=modes.keys(),
     value='Zeitbegrenzte Vertiefung'
 )
-black_depth = IntSlider(value = 5, min=1, max=10, description='Suchtiefe:')
-black_config = HBox([black_algorithm, black_mode, black_heuristic, black_depth])
+black_depth = IntSlider(value=5, min=1, max=10, description='Suchtiefe:')
+black_timelimit = IntSlider(value=30, min=1, max=120, description='Zeitlimit:')
+black_ints = VBox([black_depth, black_timelimit])
+black_config = HBox([black_algorithm, black_mode, black_heuristic, black_ints])
 
 white_algorithm = RadioButtons(
     options=algorithms.keys(),
@@ -239,8 +242,10 @@ white_mode = RadioButtons(
     options=modes.keys(),
     value='Zeitbegrenzte Vertiefung'
 )
-white_depth = IntSlider(value = 5, min=1, max=10, description='Suchtiefe:')
-white_config = HBox([white_algorithm, white_mode, white_heuristic, white_depth])
+white_depth = IntSlider(value=5, min=1, max=10, description='Suchtiefe:')
+white_timelimit = IntSlider(value=30, min=1, max=120, description='Zeitlimit:')
+white_ints = VBox([white_depth, white_timelimit])
+white_config = HBox([white_algorithm, white_mode, white_heuristic, white_ints])
 settings = ipywidgets.VBox([black_config, white_config])
 \end{lstlisting}
 
@@ -254,9 +259,11 @@ def get_settings():
     return { BLACK: { 'heuristic': heuristics[black_heuristic.value],
                       'algorithm': algorithms[black_algorithm.value],
                       'depth': black_depth.value,
+                      'timelimit': black_timelimit.value,
                       'mode': modes[black_mode.value] },
              WHITE: { 'heuristic': heuristics[white_heuristic.value],
                       'algorithm': algorithms[white_algorithm.value],
                       'depth': white_depth.value,
+                      'timelimit': white_timelimit.value,
                       'mode': modes[white_mode.value] }}
 \end{lstlisting}

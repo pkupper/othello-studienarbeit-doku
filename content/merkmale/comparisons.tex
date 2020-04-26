@@ -1,9 +1,6 @@
 %!TEX root = ../../dokumentation.tex
 
-\section{Stärke der KI}
-Dieses Kapitel beschäftigt sich mit dem Vergleich von Parametern und Strategien, die sich auf die Stärke der KI auswirken.
-
-\subsection{Suchtiefe}
+\section{Suchtiefe}
 Ein wichtiger Faktor für die Stärke der KI ist die erreichte Suchtiefe.
 Die Erhöhung der Suchtiefe um eins führt dazu, dass die KI, je nach Gesamtsuchtiefe, zu 80~–~95\,\% gegen die KI mit geringerer Suchtiefe gewinnt.
 Diese Zahlen wurden ermittelt, indem die gleiche KI jeweils 20 Mal mit unterschiedlicher Suchtiefe gegeneinander spielen gelassen wurde.
@@ -27,12 +24,12 @@ Bei begrenzter Rechenzeit kann eine höhere Performanz zu einer stärkeren KI f�
     \label{table:search-depth}
 \end{table}
 
-\subsection{Heuristik}
+\section{Heuristik}
 In der Heuristik werden verschiedene Merkmale berücksichtigt. Diese müssen so gewichtet werden, dass die KI möglichst
 stark ist. Dabei kann es auch sein, dass ein Merkmal gar nicht mit in die Heuristik aufgenommen wird, da andere Merkmale
 besser sind.
 
-\subsubsection{Aktuelle Mobilität}
+\subsection{Aktuelle Mobilität}
 Die aktuelle Mobilität soll berücksichtigen, wie viele Züge beide Spieler ziehen können, wobei eigene Züge positiv und
 gegnerische Züge negativ bewertet werden. Die Anzahl der möglichen Züge des Spielers an der Reihe kann leicht bestimmt
 werden. Die Anzahl der gegnerischen Züge kann jedoch nicht genau bestimmt werden, da noch nicht bekannt ist, welcher Zug
@@ -49,7 +46,7 @@ selbst gespielt hat, haben ergeben, dass die dritte Möglichkeit in der stärkst
 Unentschieden erzielen. Dabei handelt es sich nicht um einen signifikanten Unterschied, aber da die Bestimmung der
 möglichen Züge aller Folgezustände ein hoher Rechnenaufwand ist, ist die dritte Möglichkeit die beste Option.
 
-\subsubsection{Mobilität}
+\subsection{Mobilität}
 Die aktuelle Mobilität und die potenzielle Mobilität zielen darauf ab, die Anzahl der möglichen Züge des Spielers zu
 erhöhen. Michael Buro ist in seiner Dissertation zu dem Ergebnis gekommen, dass der Nutzen der aktuellen Mobilität
 annähernd linear zunimmt, wohingegen die potenzielle Mobilität annähernd linear zunimmt. Gegen Ende des Spiels verlieren
