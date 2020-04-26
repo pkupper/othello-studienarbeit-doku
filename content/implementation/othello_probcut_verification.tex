@@ -1,0 +1,154 @@
+\hypertarget{guxfcte-von-probcut}{%
+\subsection{Güte von ProbCut}\label{guxfcte-von-probcut}}
+
+\begin{lstlisting}[language=Python]
+%run othello_ai.ipynb
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+def ai_get_moves(ai, state, depth, heuristic):
+    if state.game_over:
+        return
+    scored_moves = []
+    if state.turn == WHITE:
+        # maximizing
+        alpha = -math.inf
+        for move in state.possible_moves:
+            new_state = make_move(state, move)
+            utility = ai(new_state, depth-1, heuristic, alpha, math.inf)
+            scored_moves.append((utility, move))
+            alpha = max(alpha, utility)
+        best_score, _ = max(scored_moves)
+    else:
+        # minimizing
+        beta = math.inf
+        for move in state.possible_moves:
+            new_state = make_move(state, move)
+            utility = ai(new_state, depth-1, heuristic, -math.inf, beta)
+            scored_moves.append((utility, move))
+            beta = min(beta, utility)
+        best_score, _ = min(scored_moves)
+    top_moves = [move for move in scored_moves if move[0] == best_score]
+    return top_moves
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+test_board = GameState()
+fails = []
+correct = 0
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+while not test_board.game_over:
+    ab = ai_get_moves(alphabeta, test_board, 6, combined_heuristic)
+    pc = ai_get_moves(alphabeta, test_board, 6, combined_heuristic)
+    if ab != pc:
+        fails.append((test_board, ab, pc))
+    else:
+        correct += 1
+    test_board = ai_make_move(random_ai, test_board, 1, None)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+fails
+\end{lstlisting}
+
+\begin{lstlisting}
+[(<__main__.GameState at 0x7f422d7c13d0>,
+  [(0.1440345149253731, (0, 4))],
+  [(0.1440345149253731, (0, 4)), (0.1440345149253731, (7, 0))]),
+ (<__main__.GameState at 0x7f424444f3a0>,
+  [(0.0, (5, 5)),
+   (0.0, (6, 4)),
+   (0.0, (1, 4)),
+   (0.0, (7, 3)),
+   (0.0, (6, 7)),
+   (0.0, (1, 7)),
+   (0.0, (7, 6)),
+   (0.0, (2, 6)),
+   (0.0, (6, 6)),
+   (0.0, (1, 6))],
+  [(0.0, (5, 5)),
+   (0.0, (1, 4)),
+   (0.0, (7, 3)),
+   (0.0, (6, 7)),
+   (0.0, (1, 7)),
+   (0.0, (7, 6)),
+   (0.0, (2, 6)),
+   (0.0, (6, 6)),
+   (0.0, (1, 6))]),
+ (<__main__.GameState at 0x7f422d7c5fa0>,
+  [(-0.046875, (0, 4)),
+   (-0.046875, (1, 5)),
+   (-0.046875, (6, 4)),
+   (-0.046875, (1, 4)),
+   (-0.046875, (7, 3))],
+  [(-0.046875, (0, 4)),
+   (-0.046875, (6, 4)),
+   (-0.046875, (1, 4)),
+   (-0.046875, (7, 3))]),
+ (<__main__.GameState at 0x7f422e11f3a0>,
+  [(-0.015625, (0, 4)), (-0.015625, (1, 4)), (-0.015625, (2, 6))],
+  [(-0.015625, (0, 4)),
+   (-0.015625, (1, 4)),
+   (-0.015625, (6, 7)),
+   (-0.015625, (2, 6))])]
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+correct
+\end{lstlisting}
+
+\begin{lstlisting}
+56
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+for (board, ab, pc) in fails:
+    print(board.board)
+    print("AB:", ab)
+    print("PC:", pc)
+\end{lstlisting}
+
+\begin{lstlisting}
+[[ 1 -1 -1 -1  0  0  0  0]
+ [ 1  1 -1 -1  0  0  0  0]
+ [-1 -1 -1 -1 -1  0  0  0]
+ [-1 -1 -1  1  1 -1 -1  0]
+ [ 1  1 -1  1  1 -1  1  1]
+ [ 1  1 -1 -1 -1  0  1  0]
+ [-1 -1 -1  1  0  0  0  0]
+ [ 0  0  0  0  1  0  0  0]]
+AB: [(0.1440345149253731, (0, 4))]
+PC: [(0.1440345149253731, (0, 4)), (0.1440345149253731, (7, 0))]
+[[ 1 -1 -1 -1  0  0  0  0]
+ [ 1  1 -1 -1  0  0  0  0]
+ [-1 -1 -1 -1 -1  1  0  1]
+ [-1 -1 -1  1  1  1 -1 -1]
+ [ 1 -1 -1  1  1  1 -1 -1]
+ [ 1 -1 -1 -1  1  0  1 -1]
+ [-1 -1 -1  1  0  1  0  0]
+ [ 0 -1  1  0  1  0  0  0]]
+AB: [(0.0, (5, 5)), (0.0, (6, 4)), (0.0, (1, 4)), (0.0, (7, 3)), (0.0, (6, 7)), (0.0, (1, 7)), (0.0, (7, 6)), (0.0, (2, 6)), (0.0, (6, 6)), (0.0, (1, 6))]
+PC: [(0.0, (5, 5)), (0.0, (1, 4)), (0.0, (7, 3)), (0.0, (6, 7)), (0.0, (1, 7)), (0.0, (7, 6)), (0.0, (2, 6)), (0.0, (6, 6)), (0.0, (1, 6))]
+[[ 1 -1 -1 -1  0  0  0  0]
+ [ 1  1 -1 -1  0  0  0 -1]
+ [-1 -1 -1 -1 -1  1  0 -1]
+ [-1 -1 -1  1  1  1 -1 -1]
+ [ 1 -1 -1  1  1  1 -1 -1]
+ [ 1 -1  1 -1 -1  0  1 -1]
+ [ 1  1 -1  1  0 -1  0  0]
+ [ 1  1  1  0  1  0 -1  0]]
+AB: [(-0.046875, (0, 4)), (-0.046875, (1, 5)), (-0.046875, (6, 4)), (-0.046875, (1, 4)), (-0.046875, (7, 3))]
+PC: [(-0.046875, (0, 4)), (-0.046875, (6, 4)), (-0.046875, (1, 4)), (-0.046875, (7, 3))]
+[[ 1 -1 -1 -1  0 -1  0  0]
+ [ 1  1 -1 -1  0 -1  0 -1]
+ [-1 -1 -1 -1  1 -1  0 -1]
+ [-1 -1 -1  1  1 -1 -1 -1]
+ [ 1 -1  1  1 -1 -1 -1 -1]
+ [ 1  1  1 -1 -1 -1 -1 -1]
+ [ 1  1 -1  1  1 -1  0  0]
+ [ 1  1  1  0  1  0 -1  0]]
+AB: [(-0.015625, (0, 4)), (-0.015625, (1, 4)), (-0.015625, (2, 6))]
+PC: [(-0.015625, (0, 4)), (-0.015625, (1, 4)), (-0.015625, (6, 7)), (-0.015625, (2, 6))]
+\end{lstlisting}
