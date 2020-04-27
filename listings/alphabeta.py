@@ -1,14 +1,14 @@
 def alphabeta(state, alpha, beta, heuristic):
     if(state.game_over):
-        return utility(state, state.turn)
+        return get_utility(state, state.turn)
     if state.turn == WHITE:
         # maximizing
         utility = -math.inf
     else:
         # minimizing
         utility = math.inf  
-    for move in get_possible_moves(state, state.turn):
-        tmp_state = make_move(copy.deepcopy(state), move)
+    for move in state.possible_moves:
+        tmp_state = make_move(state, move)
         tmp_utility = alphabeta(tmp_state, alpha, beta, heuristic)
         if state.turn == WHITE:
             # maximizing

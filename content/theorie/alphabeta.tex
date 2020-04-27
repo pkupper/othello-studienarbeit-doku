@@ -2,9 +2,9 @@
 \label{sec:alphabeta}
 
 Alpha-Beta-Pruning ist eine Optimierung des Minimax Algorithmus, bei der komplette Zweige des Suchbaums ausgeschlossen
-werden können, die das Ergebnis des Algorithmus nicht mehr beeinflussen können. Ein Zweig kann dann ausgeschlossen
-werden, wenn für den Spieler am Zug bereits ein Zug mit einem größeren Nutzen gefunden wurde, als bei dem zu
-betrachtenden Zweig maximal noch erzielbar ist.
+werden, die das Ergebnis des Algorithmus nicht mehr beeinflussen können. Ein Zweig kann dann ausgeschlossen werden, wenn
+für den Spieler am Zug bereits ein Zug mit einem größeren Nutzen gefunden wurde, als bei dem zu betrachtenden Zweig
+maximal noch erzielbar ist.
 
 Erreicht wird dies durch zwei Variablen $Alpha$ und $Beta$ die jeweils für den maximierenden und den minimierenden
 Spieler den garantierten Nutzen repräsentieren, den diese selbst bei einem optimal spielenden Gegner erreichen können.
@@ -47,9 +47,11 @@ $D$ hat. Knoten $D$ muss also gar nicht betrachtet werden.
 Das folgende Python-Listing zeigt eine beispielhafte Implementierung des Alpha-Beta Algorithmus. Hierbei ist Weiß der
 maximierende Spieler und Schwarz der minimierende Spieler. Zur Vermeidung von Redundanz wird statt zwei Funktionen $min$
 und $max$ eine einzelne Funktion $alphabeta$ verwendet, in der abhängig vom aktuellen Spieler eine Fallunterscheidung
-durchgeführt wird.
+durchgeführt wird. Ein Spielzustand $state$ hat die Attribute $game\_over$, das einen Wahrheitswert enthält, ob das Spiel
+vorbei ist, $possible\_moves$, das eine Liste aller möglichen Züge enthält, und $turn$, das den Spieler an der Reihe
+enthält. Die Funktion $get_utility$ berechnet das Endergebnis für einen Zustand und einen Spieler und die Funktion $make\_move$ führt auf einem Zustand einen Zug aus und gibt diesen zurück.
 
-%TODO beschränkte tiefensuche separat erklären
+%TODO: beschränkte tiefensuche separat erklären
 \lstinputlisting[language=Python,float]{listings/alphabeta.py}
 
 Durch Anwendung von Alpha-Beta-Pruning wird das Ergebnis des Minimax Algorithmus nicht beeinflusst. Jedoch kann durch
