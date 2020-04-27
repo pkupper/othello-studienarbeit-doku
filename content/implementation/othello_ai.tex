@@ -690,7 +690,7 @@ def ai_make_move_id_timelimited(ai, state, timelimit, heuristic):
     start = time.time()
     while (
         depth <= 64 - state.num_pieces and
-        SECS_PER_MOVE - (time.time() - start) >= factor * last_time
+        timelimit - (time.time() - start) >= factor * last_time
     ):
         last_time_start = time.time()
         scored_moves = []
