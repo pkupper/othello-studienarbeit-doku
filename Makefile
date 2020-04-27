@@ -11,7 +11,7 @@ IMPLEMENTATION_FILES = $(NOTEBOOK_FILES:$(NOTEBOOK_DIR)/%.ipynb=$(IMPLEMENTATION
 ####latexmk
 
 # Build the LaTeX document with latexmk
-all: implementation report
+all: report
 
 # Remove output directory and generated document
 clean:
