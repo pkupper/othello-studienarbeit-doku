@@ -9,25 +9,56 @@
 \section{Probcut Statistik
 (othello\_probcut\_statistics.ipynb)}\label{probcut-statistik-othello_probcut_statistics.ipynb}}
 
+In diesem Notebook wird die für den Probcut Algorithmus benötigte
+Standardabweichung in Abhängigkeit von der aktuellen Spielphase, welche
+durch die Anzahl der Steine auf dem Spielfeld angegeben wird, bestimmt.
+Dazu wird in verschiedenen Spielzuständen, jeweils eine Suche der Tiefe
+\(d\) und eine Suche der Tiefe \(d'\) durchgeführt, und die Ergebnisse
+als Datenpunkte gesammelt. Im Anschluss wird für jede Spielphase die
+Varianz bestimmt, und diese mit einer geschlossenen Formel angenähert.
+
+Das Notebook basiert auf der Implementation der Künstlichen Intelligenz,
+welche daher im Folgenden eingebunden wird.
+
 \begin{lstlisting}[language=Python]
-%run othello_game.ipynb
 %run othello_ai.ipynb
 \end{lstlisting}
 
-\hypertarget{ermitteln-der-standardabweichung}{%
-\paragraph{Ermitteln der
-Standardabweichung}\label{ermitteln-der-standardabweichung}}
-
-Im Folgenden werden zunächst einige Datenpunkte gesammelt, indem in
-verschiedenen Spielzuständen jeweils eine tiefe und eine flache Suche
-durchgeführt wird. Die Spielzustände werden durch zufälliges Ziehen
-erreicht. Die Daten werden in einer CSV-Datei gespeichert.
+Für die statistische Betrachtung werden mehrere externe Bibliotheken
+verwendet. Dazu gehören \passthrough{\lstinline!pandas!} und
+\passthrough{\lstinline!csv!} für das schreiben und laden von
+CSV-Dateien. `sklearn
 
 \begin{lstlisting}[language=Python]
 import csv
 import os
+import pandas
+import numpy as np
+import sklearn.metrics as skl
+import sklearn.linear_model as lm
+import matplotlib.pyplot as plt
+import seaborn as sns
+import math
+\end{lstlisting}
 
+\hypertarget{sammeln-von-datenpunkten}{%
+\subsection{Sammeln von Datenpunkten}\label{sammeln-von-datenpunkten}}
 
+Im der Funktion \passthrough{\lstinline!sample\_probcut\_values!} werden
+zunächst einige Datenpunkte zur Bestimmung der Standardabweichung
+gesammelt, indem in vielen verschiedenen Spielzuständen jeweils eine
+tiefe und eine flache Suche durchgeführt wird. Die jeweiligen Tiefen
+werden dabei durch die Parameter
+\passthrough{\lstinline!shallow\_depth!} und
+\passthrough{\lstinline!deep\_depth!} spezifiziert. Die verwendeten
+Spielzustände werden ausgehen vom Startzustand durch zufälliges Ziehen
+erreicht, welches in der KI Strategie
+\passthrough{\lstinline!random\_ai!} implementiert wird. Es werden
+insgesamt \passthrough{\lstinline!num\_games!} Spiele auf diese Weise
+gespielt, und jeder Zustand entsprechend untersucht. Die so erhaltenen
+Daten werden in einer CSV-Datei gespeichert.
+
+\begin{lstlisting}[language=Python]
 def sample_probcut_values(num_games, shallow_depth, deep_depth):
     fname = f'probcut_dataset_{PROBCUT_SHALLOW_DEPTH}_{PROBCUT_DEEP_DEPTH}.csv'
     file_exists = os.path.isfile(fname)
@@ -55,14 +86,19 @@ def sample_probcut_values(num_games, shallow_depth, deep_depth):
             file.close()
 \end{lstlisting}
 
+Hier wird die Funktion \passthrough{\lstinline!sample\_probcut\_values!}
+für die in der Probcut Implementierung verwendeten Suchtiefen
+ausgeführt.
+
 \begin{lstlisting}[language=Python]
 sample_probcut_values(100, PROBCUT_SHALLOW_DEPTH, PROBCUT_DEEP_DEPTH)
 \end{lstlisting}
 
-Laden der Daten aus der CSV-Datei mithilfe von Pandas
+Der Folgende Codeabschnitt lädt die zu verwendeten Datenpunkte aus einer
+CSV-Datei. Dabei wird die externe Bibliothek
+\passthrough{\lstinline!pandas!} zum Datenimport genutzt.
 
 \begin{lstlisting}[language=Python]
-import pandas
 filename = f'probcut_dataset_{PROBCUT_SHALLOW_DEPTH}_{PROBCUT_DEEP_DEPTH}.csv'
 df = pandas.read_csv(filename)
 shallow = np.array(df['shallow'])
@@ -70,12 +106,11 @@ deep = np.array(df['deep'])
 moves = np.array(df['moves'])
 \end{lstlisting}
 
-Daten Visualisieren
+Der folgende Code setzt die Ergebnisse der fiefen Suchen zu denen der
+slachen Suchen in Form eines Scatterplots ins Verhältnis. (TODO: Plot im
+Anhang)
 
 \begin{lstlisting}[language=Python]
-import matplotlib.pyplot as plt
-import sklearn.linear_model as lm
-import seaborn as sns
 model = lm.LinearRegression()
 model.fit(shallow.reshape(len(shallow), 1), deep)
 plt.figure(figsize=(15, 10))
@@ -90,73 +125,83 @@ plt.title('Probcut Values')
 plt.show()
 \end{lstlisting}
 
-Folgender Code berechnet die Standardabweichung pro Anzahl Steine auf
+Wie zu erwarten, ist eine klare Lineare Abhängigkeit zu erkennen, welche
+durch die ebenfalls dargestellte Regressionsgerade hervorgehoben wird.
+Jedoch wird im Folgenden weitergehend untersucht, ob sich durch
+zusätzliche Betrachtung der Anzahl von Steinen auf dem Spielfeld, eine
+genauere Aussage über die Standardabweichung machen lässt.
+
+Der folgende Code berechnet die Standardabweichung pro Anzahl Steine auf
 dem Spielfeld. Dazu werden zunächst für jede Anzahl an Steinen aus den
 Daten die passenden Werte extrahiert. Für diese Teilmengen wird jeweils
-die Varianz mit \(numpy\) berechnet. Die Standardabweichung ist die
-positive Wurzel aus der Varianz. Die Anzahl an Steinen und die
-Standardabweichung werden an entsprechende Felder angehängt.
+die Varianz mit \passthrough{\lstinline!numpy!} berechnet. Die
+Standardabweichung ist dann die positive Wurzel aus der Varianz. Die
+Anzahl an Steinen und die dazugehörige Standardabweichung werden in den
+Feldern \passthrough{\lstinline!x!} und \passthrough{\lstinline!y!}
+gespeichert.
 
 \begin{lstlisting}[language=Python]
-import numpy as np
-import sklearn.metrics as skl
-import sklearn.linear_model as lm
-import matplotlib.pyplot as plt
-import seaborn as sns
-import math
+x = np.empty(0)
+y = np.empty(0)
 
-x = []
-y = []
-
-for i in range(5, 45):
+for i in range(5, 64):
     shallow_c = shallow[moves == i]
     deep_c = deep[moves == i]
     variance = np.var(np.stack([shallow_c, deep_c], axis=1))
     explained_variance = skl.explained_variance_score(shallow_c, deep_c)
-    x.append(i)
-    y.append(math.sqrt(variance))
-    #print(f'{i}: Var={round(variance, 5)}, explained: {round(explained_variance, 3)}')
+    x = np.append(x, i)
+    y = np.append(y, variance)
 \end{lstlisting}
 
-Folgender Code berechnet die Regressionsgerade der Standardabweichung in
-Abhängigkeit von der Anzahl der Steine auf dem Spielfeld mit \(sklearn\)
-und stellt diese grafisch dar.
+Im Anschluss werden diese Daten visualisiert, um zu beurteilen, wie die
+Standardabweichung durch eine geschlossene Formel angenähert werden
+kann.
 
 \begin{lstlisting}[language=Python]
-model = lm.LinearRegression()
-model.fit(np.array(x).reshape(-1, 1), np.array(y))
-
 plt.figure(figsize=(15, 10))
 sns.set(style='whitegrid')
 plt.scatter(x, y)
-plt.axvline(x=0.0, c='k')
 plt.axhline(y=0.0, c='k')
-plt.plot(x, x * model.coef_ + model.intercept_)
 plt.xlabel('number of disks on the board')
 plt.ylabel('standard deviation')
 plt.title('Standard Deviation')
 plt.show()
 \end{lstlisting}
 
-Ausgeben der Funktion der Regressionsgerade, welche die
-Standardabweichung in Abhängigkeit von der Anzahl an Spielsteinen auf
-dem Spielfeld berechnet
+Bei der Betrachtung ergibt sich, dass im Bereich zwischen 5 und 45 Zügen
+eine annähernd lineare Abhängigkeit vorliegt. Daher wird dieser Bereich
+mittels einer Regressionsgerade angehähert und visualisiert
+
+\begin{lstlisting}[language=Python]
+indices = np.argwhere((5 <= x) & (x <= 45))
+xnew = x[indices]
+ynew = y[indices]
+
+model = lm.LinearRegression()
+model.fit(np.array(xnew).reshape(-1, 1), np.array(ynew))
+
+plt.figure(figsize=(15, 10))
+sns.set(style='whitegrid')
+plt.scatter(xnew, ynew)
+plt.axhline(y=0.0, c='k')
+plt.plot(xnew, xnew * model.coef_ + model.intercept_)
+plt.xlabel('number of disks on the board')
+plt.ylabel('standard deviation')
+plt.title('Standard Deviation')
+plt.show()
+\end{lstlisting}
+
+Folgender Code berechnet die Regressionsgerade der Standardabweichung in
+Abhängigkeit von der Anzahl der Steine auf dem Spielfeld mit
+\passthrough{\lstinline!sklearn!} und stellt diese grafisch dar.
+
+Hier wird die Funktion der Regressionsgerade ausgegeben, welche
+näherungsweise die Standardabweichung in Abhängigkeit von der Anzahl an
+Spielsteinen auf dem Spielfeld berechnet
 
 \begin{lstlisting}[language=Python]
 print('x *', model.coef_[0], '+', model.intercept_)
 \end{lstlisting}
 
-Varianz, erklärte Varianz und Standardabweichung berechnen
-
-\begin{lstlisting}[language=Python]
-import numpy as np
-import sklearn.metrics as skl
-variance = np.var(np.stack([shallow, deep], axis=1))
-print(f'variance: {variance}')
-explained_variance = skl.explained_variance_score(shallow, deep)
-print(f'standard distribution: {np.sqrt(variance)}')
-print(f'explained variance: {explained_variance}')
-\end{lstlisting}
-
-\begin{lstlisting}[language=Python]
-\end{lstlisting}
+Die hier ausgegebenen Funktion wird in der Probcut Implementierung zur
+Bestimmung der Standardabweichung genutzt.

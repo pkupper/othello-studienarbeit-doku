@@ -32,5 +32,31 @@ C: Wechsel von potenzieller zu aktueller Mobilität bei 36 Steinen auf dem Spiel
 D: Lineare Kombination von potenzieller und aktueller Mobilität}
 
 \pagebreak
+
+\section*{B. Anzahl der Steine als Heuristik am Ende des Spiels}
+ 
+\setcounter{table}{0}
+\renewcommand{\thetable}{B\arabic{table}}
+
+\begin{table}[hb]
+\centering
+\begin{tabular}{c|ccccc}
+\hline
+Verwendete Heuristik S\,/\,W & \#Spiele & Siege S & Unentschieden & Siege W \\
+\hline
+ A\,/\,B & 20 &100\,\% &  0\,\% & 0\,\% \\
+ A\,/\,C & 20 & 90\,\% & 10\,\% & 0\,\% \\
+\hline
+\end{tabular}
+\caption{Einfluss der Anzahl der Steine auf den Anteil der Siege}
+\label{table:disccount}
+\end{table}
+
+\small{
+A: Heuristik ohne Anzahl der Steine (Mobilität und Cowtello) \\
+B: Anzahl der Steine ab 50 belegten Feldern \\
+C: Anzahl der Steine ab 58 belegten Feldern}
+
+\pagebreak
 %\includepdf[pages=-,scale=.9,pagecommand={}]{Aufgabenstellung.pdf} % PDF um 10% verkleinert einbinden --> Kopf- und Fußzeile  werden so korrekt dargestellt. Die Option `pages' ermöglicht es, eine bestimmte Sequenz von Seiten (z.B. 2-10 oder `-' für alle Seiten) auszuwählen.
 

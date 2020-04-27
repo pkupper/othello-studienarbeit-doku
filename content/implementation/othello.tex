@@ -9,24 +9,35 @@
 \section{Othello Frontend
 (othello.ipynb)}\label{othello-frontend-othello.ipynb}}
 
+Dieses Notebook dient als Benutzerschnittstelle, über die ein
+menschlicher Spieler gegen die Künstliche Intelligenz antreten kann.
+Zusätzlich werden Mensch-gegen-Mensch und KI-gegen-KI Spiele ermöglicht.
+Dazu werden die Funktionalitäten der KI Implementierung, sowie die der
+grafischen Benutzeroberfläche verwendet, welche im Folgenden eingebunden
+werden.
+
 \begin{lstlisting}[language=Python]
 %run othello_ai.ipynb
 %run othello_gui.ipynb
 \end{lstlisting}
 
+Damit bei Verwendung einer besonders schnellen Konfiguration der KI die
+einzelnen Züge immer noch nachvollziehbar sind, wird das Modul
+\passthrough{\lstinline!time!} aus der Standardbibliothek eingebunden,
+dessen Funktion \passthrough{\lstinline!sleep!} im späteren Verlauf
+genutzt wird.
+
 \begin{lstlisting}[language=Python]
 import time
 \end{lstlisting}
 
-\hypertarget{applikation-starten}{%
-\subsubsection{Applikation Starten}\label{applikation-starten}}
-
-Im folgenden wird für beide Spieler die zu verwendende Künstliche
-Intelligenz, sowie die jeweils angewandte Heuristik festgelegt. Ein Wert
-von \passthrough{\lstinline!None!} bei der KI steht hierbei für einen
-menschlichen Spieler. Die KIs und Heuristiken werden jeweils in einem
-Dictionary gespeicher, sodass mit Spieler als Index auf die
-entsprechende KI oder Heuristik zugegriffen werden kann.
+Durch den Aufruf von \passthrough{\lstinline!configure\_settings!} aus
+der GUI Implementierung wird eine Benutzeroberfläche angezeigt, welche
+dem Benutzer die Konfiguration der Spieleinstellungen ermöglicht. Für
+beide Spieler kann festgelegt werden, ob dieser ein menschlicher Spieler
+ist, von einer der verfügbaren KI Strategien kontrolliert werden soll.
+Für die KI Agenten können zusätzlich dazugehörigen Parameter, wie die zu
+verwendende Heuristik und die Suchtiefe festgelegt werden.
 
 \begin{lstlisting}[language=Python]
 configure_settings()
@@ -34,12 +45,15 @@ configure_settings()
 
 Folgender Code dient zum Starten der interaktiven Applikation. Die
 Funktion \passthrough{\lstinline!next\_move!} wird für jeden Spielzug
-ausgeführt. Sie wird zu Beginn einmal aufgerufen. Wenn eine KI spielt,
-wird die Funktion rekursiv für den nächsten Zug aufgerufen. Wenn der
-Spieler menschlich ist, muss die Ausführung unterbrochen werden, da auf
-das Aufrufen eines Callbacks durch einen Klick gewartet werden muss. Im
-Callback wird auch die Funktion \passthrough{\lstinline!next\_move!} für
-den nächsten Zug aufgerufen.
+ausgeführt. Ist eine KI an der Reihe, so wird ein Zug der KI
+durchgeführt und die Funktion im Anschluss rekursiv für den nächsten Zug
+aufgerufen. Ist ein menschlicher Spieler and der Reihe, wird die
+Ausführung unterbrochen. Durch einen Klick auf das gewünschte Feld wird
+mittels eines Callbacks in der GUI Implementierung der entsprechende Zug
+ausgeführt. Im Callback wird auch die Funktion
+\passthrough{\lstinline!next\_move!} erneut für den nächsten Zug
+aufgerufen. Zu Beginn des Spiels muss die Funktion
+\passthrough{\lstinline!next\_move!} einmal aufgerufen werden.
 
 \begin{lstlisting}[language=Python]
 state = GameState()
@@ -57,7 +71,6 @@ def next_move(old_state):
         timelim = settings[state.turn]['timelimit']
         heuristic = settings[old_state.turn]['heuristic']
         intval = timelim if make_move == ai_make_move_id_timelimited else depth
-        print(intval)
         state = make_move(ai, old_state, intval, heuristic)
         update_output(state)
         if not state.game_over:

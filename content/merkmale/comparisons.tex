@@ -66,3 +66,11 @@ dem Anteil der freien Felder.
 Um zu bestimmen, welche Kombination der Mobilität zur stärksten KI führt, wurden verschiedene Kombinationen jeweils 50
 Mal mit einer Suchtiefe von drei gegeneinander spielen gelassen. Es hat sich gezeigt, dass ein Wechsel von der potenziellen zur aktuellen Mobilität bei 36 Steinen auf dem Spielfeld keinen messbaren Unterschied zur aktuellen oder potenziellen Mobilität alleine bewirkt. Eine lineare Kombination von aktueller und potenzieller Mobilität konnte allerdings mit 56 – 60\,\% Siegen einen leichten Vorteil gegenüber den anderen Möglichkeiten erzielen.
 Tabelle \ref{table:mobility} im Anhang zeigt den Anteil der Siege und Niederlagen der verschiedenen Kombinationen.
+
+\subsection{Anzahl der Steine}
+Da es das Ziel von Othello ist, möglichst viele eigene Steine auf dem Spielfeld zu haben, ist es naheliegend, diese am
+Ende des Spiels zu maximieren. Der Ansatz ist, ab einer bestimmten Anzahl an Steinen auf dem Spielfeld als Heuristik die
+Differenz der Anzahl der eigenen Spielsteine und der gegnerischen Spielsteine zu verwenden. Tests haben allerdings
+ergeben, dass die KI, die diese abgewandelte Heuristik verwendet, der unveränderten Heuristik deutlich unterlegen ist.
+Tabelle \ref{table:disccount} im Anhang zeigt die Ergebnisse von Spielen der KIs mit den unterschiedlichen Heuristiken
+gegeneinander. Diese Heuristik sollte also nicht verwendet werden.
