@@ -273,14 +273,11 @@ def cowthello_safe_heuristic(state):
 Die oben implementierten Heuristiken bewerten jeweils nur ein Merkmal
 der aktuellen Spielsitation. Durch eine Kombination mehrerer dieser
 Heuristiken können mehrere Merkmale gleichzeitig betrachtet werden. Die
-Kombination der Heuristiken kann in Abhängigkeit von der aktuellen
-Spielphase geschehen. Beispielsweise wird zu Ende des Spiels die
-Disc-Count-Heuristik wichtiger.
+Kombination der Heuristiken kann auch in Abhängigkeit von der aktuellen
+Spielphase geschehen.
 
 \begin{lstlisting}[language=Python]
 def combined_heuristic(state):
-    if state.num_pieces >= 50:
-        return disc_count_heuristic(state)
     mobility = combined_mobility_heuristic(state)
     cowthello = cowthello_safe_heuristic(state)
     return 0.5 * mobility + 0.5 * cowthello
@@ -307,7 +304,7 @@ den Wert \(0\) zurück. Da die Strategie-Funktionen völlig austauschbar
 sein sollen, müssen alle diese Funktionen dieselben Eingabeparameter
 haben. Im Fall der Funktion \passthrough{\lstinline!random\_ai!} wird
 jedoch keiner der definierten Parameter benötigt. Der Zweck dieser
-Künstlichen Intelligenz ist die Messung der Stärke, der anderen KI's.
+Künstlichen Intelligenz ist die Messung der Stärke, der anderen KIs.
 
 \begin{lstlisting}[language=Python]
 def random_ai(state, depth, heuristic, alpha, beta):
@@ -331,7 +328,6 @@ Nützlichkeit des Spielzustands an.
 
 \begin{lstlisting}[language=Python]
 debug_mm_count = 0
-
 
 def minimax(state, depth, heuristic, alpha, beta):
     global debug_mm_count
@@ -391,7 +387,6 @@ Spieler angeben und für das Abschneiden von Zweigen verwendet werden.
 
 \begin{lstlisting}[language=Python]
 debug_ab_count = 0
-
 
 def alphabeta(state, depth, heuristic, alpha, beta):
     global debug_ab_count
@@ -472,7 +467,6 @@ gleichen der Funktion \passthrough{\lstinline!alphabeta!}.
 \begin{lstlisting}[language=Python]
 debug_pc_count = 0
 
-
 def probcut(state, depth, heuristic, alpha, beta):
     global debug_pc_count
     if state.game_over:
@@ -482,8 +476,9 @@ def probcut(state, depth, heuristic, alpha, beta):
         return heuristic(state)
 
     if depth == PROBCUT_DEEP_DEPTH:
-        if state.num_pieces <= 45:
-            sigma = state.num_pieces * 0.00213952338893382 - 0.00323353123554347
+        num_p = state.num_pieces
+        if num_p <= 58:
+            sigma = 0.00261067 + 0.00119532 * num_p + 2.65512979e-05 * num_p**2
             # v >= beta with prob. of at least p? yes => cutoff
             bound = PERCENTILE * sigma + beta
             if probcut(state, PROBCUT_SHALLOW_DEPTH,
@@ -538,12 +533,12 @@ def probcut(state, depth, heuristic, alpha, beta):
 \hypertarget{durchfuxfchren-der-zuxfcge}{%
 \subsection{Durchführen der Züge}\label{durchfuxfchren-der-zuxfcge}}
 
-Die Folgenden Funktionen berechnen mithilfe einer angegebenen KI
+Die folgenden Funktionen berechnen mithilfe einer angegebenen KI
 Strategie den nächsten Zug und wenden diesen auf den übergebenen Zustand
 \passthrough{\lstinline!state!} an. Damit die Strategien nicht völlig
 deterministisch sind, und somit besser die Stärke der einzelnen
 Strategien und Heuristiken bestimmt werden kann, wird nicht immer der
-beste Zug ausgewählt, sondern statdessen einer der Züge, die innerhalb
+beste Zug ausgewählt, sondern stattdessen einer der Züge, die innerhalb
 eines festgelegten Abstands vom besten Zug liegen. Dieser Abstand wird
 im Folgenden als \passthrough{\lstinline!SELECTION\_TOLERANCE!}
 definiert.
@@ -591,7 +586,8 @@ def ai_make_move(ai, state, depth, heuristic):
             scored_moves.append((utility, move))
         best_score, _ = min(scored_moves)
     utilities[state.turn] = best_score
-    top_moves = [move for move in scored_moves if abs(move[0] - best_score) <= SELECTION_TOLERANCE]
+    top_moves = [move for move in scored_moves
+                 if abs(move[0] - best_score) <= SELECTION_TOLERANCE]
     best_move = random.choice(top_moves)[1]
     return make_move(state, best_move)
 \end{lstlisting}

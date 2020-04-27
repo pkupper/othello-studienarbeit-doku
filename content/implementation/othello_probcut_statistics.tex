@@ -38,6 +38,7 @@ import pandas
 import numpy as np
 import sklearn.metrics as skl
 import sklearn.linear_model as lm
+import sklearn.preprocessing as pp
 import matplotlib.pyplot as plt
 import seaborn as sns
 import math
@@ -150,9 +151,8 @@ for i in range(5, 64):
     shallow_c = shallow[moves == i]
     deep_c = deep[moves == i]
     variance = np.var(np.stack([shallow_c, deep_c], axis=1))
-    explained_variance = skl.explained_variance_score(shallow_c, deep_c)
     x = np.append(x, i)
-    y = np.append(y, variance)
+    y = np.append(y, math.sqrt(variance))
 \end{lstlisting}
 
 Im Anschluss werden diese Daten visualisiert, um zu beurteilen, wie die
@@ -170,39 +170,47 @@ plt.title('Standard Deviation')
 plt.show()
 \end{lstlisting}
 
-Bei der Betrachtung ergibt sich, dass im Bereich zwischen 5 und 45 Zügen
-eine annähernd lineare Abhängigkeit vorliegt. Daher wird dieser Bereich
-mittels einer Regressionsgerade angehähert und visualisiert
+Bei der Betrachtung ergibt sich, dass im Bereich zwischen 5 und 58 Zügen
+eine annähernd quadratische Abhängigkeit vorliegt. Daher wird dieser
+Bereich mittels Polynomieller Regression angehähert und visualisiert
+
+Folgender Code berechnet das Regressionspolynom zweiten Gerades der
+Standardabweichung in Abhängigkeit von der Anzahl der Steine auf dem
+Spielfeld mit \passthrough{\lstinline!sklearn!} und stellt dieses
+grafisch dar.
 
 \begin{lstlisting}[language=Python]
-indices = np.argwhere((5 <= x) & (x <= 45))
+indices = np.argwhere(x <= 58)
 xnew = x[indices]
-ynew = y[indices]
+ynew = y[indices][:,0]
+polynomial_features= pp.PolynomialFeatures(degree=2)
+xpoly = polynomial_features.fit_transform(xnew)
 
 model = lm.LinearRegression()
-model.fit(np.array(xnew).reshape(-1, 1), np.array(ynew))
+model.fit(xpoly, ynew)
+
+theta0 = model.intercept_
+theta1, theta2, theta3 = model.coef_
+a = np.arange(0.0, 60.0, 0.01)
+b = theta0 + (theta1 + theta2) * a + theta3 * a**2
 
 plt.figure(figsize=(15, 10))
 sns.set(style='whitegrid')
 plt.scatter(xnew, ynew)
 plt.axhline(y=0.0, c='k')
-plt.plot(xnew, xnew * model.coef_ + model.intercept_)
+plt.plot(a, b)
 plt.xlabel('number of disks on the board')
 plt.ylabel('standard deviation')
 plt.title('Standard Deviation')
 plt.show()
 \end{lstlisting}
 
-Folgender Code berechnet die Regressionsgerade der Standardabweichung in
-Abhängigkeit von der Anzahl der Steine auf dem Spielfeld mit
-\passthrough{\lstinline!sklearn!} und stellt diese grafisch dar.
-
-Hier wird die Funktion der Regressionsgerade ausgegeben, welche
-näherungsweise die Standardabweichung in Abhängigkeit von der Anzahl an
-Spielsteinen auf dem Spielfeld berechnet
+Hier wird das Regressionspolynom ausgegeben, welches näherungsweise die
+Standardabweichung in Abhängigkeit von der Anzahl an Spielsteinen auf
+dem Spielfeld berechnet
 
 \begin{lstlisting}[language=Python]
-print('x *', model.coef_[0], '+', model.intercept_)
+print(theta0, '+', theta1 + theta2, '* x +', theta3, '* x**2')
 \end{lstlisting}
 
 Die hier ausgegebenen Funktion wird in der Probcut Implementierung zur
