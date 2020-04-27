@@ -1,0 +1,75 @@
+\begin{lstlisting}[language=Python]
+from previous_ai.othello import Othello
+from previous_ai.Agents.alphaBetaPruning import AlphaBetaPruning
+from previous_ai.Agents.monteCarlo import MonteCarlo
+from previous_ai.Agents.random import Random
+import time
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+%run othello_ai.ipynb
+%run othello_gui.ipynb
+\end{lstlisting}
+
+\hypertarget{spiele-gegen-die-ki-der-vorguxe4ngerarbeit}{%
+\section{Spiele gegen die KI der
+Vorgängerarbeit}\label{spiele-gegen-die-ki-der-vorguxe4ngerarbeit}}
+
+Dieses Notebook lässt die KI gegen die der Vorgängerarbeit spielen.
+
+\begin{lstlisting}[language=Python]
+game = Othello()
+game.init_game()
+opponent = MonteCarlo()
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+settings = { BLACK: { 'heuristic': None,
+                      'algorithm': None,
+                      'depth': 5,
+                      'mode': ai_make_move },
+             WHITE: { 'heuristic': combined_heuristic,
+                      'algorithm': probcut,
+                      'depth': 5,
+                      'mode': ai_make_move }}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+state = GameState()
+display_board(state)
+results = []
+
+
+def next_move(old_state):
+    global state
+    # Check if/which AI is playing
+    ai = settings[state.turn]['algorithm']
+    #time.sleep(0.2)
+    if ai is not None:
+        ai_make_move = settings[old_state.turn]['mode']
+        depth = settings[state.turn]['depth']
+        heuristic = settings[old_state.turn]['heuristic']
+        state = ai_make_move(ai, old_state, depth, heuristic)
+        game.play_position(state.last_move)
+        update_output(state)
+        if not state.game_over:
+            next_move(state)
+        else:
+            results.append(get_utility(state))
+    else:
+        move = opponent.get_move(game)
+        game.play_position(move)
+        state = make_move(state, move)
+        update_output(state)
+        if not state.game_over:
+            next_move(state)
+        else:
+            results.append(get_utility(state))
+
+for i in range(20):
+    game = Othello()
+    game.init_game()
+    state = GameState()
+    next_move(state)
+    print(results)
+\end{lstlisting}

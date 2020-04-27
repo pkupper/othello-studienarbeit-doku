@@ -90,21 +90,22 @@ Da das Spielfeld nicht gezeichnet werden soll, wird statt
 
 \begin{lstlisting}[language=Python]
 def next_move_blind(state, settings):
-    make_move = settings[old_state.turn]['mode']
+    make_move = settings[state.turn]['mode']
     depth = settings[state.turn]['depth']
     timelim = settings[state.turn]['timelimit']
-    heuristic = settings[old_state.turn]['heuristic']
+    heuristic = settings[state.turn]['heuristic']
+    ai = settings[state.turn]['algorithm']
     intval = timelim if make_move == ai_make_move_id_timelimited else depth
-    print(intval)
-    state = make_move(ai, old_state, intval, heuristic)
+    state = make_move(ai, state, intval, heuristic)
     if not state.game_over:
-        next_move_blind(state, settings)
+        state = next_move_blind(state, settings)
+    return state
 \end{lstlisting}
 
 \begin{lstlisting}[language=Python]
 def play_game(settings):
     state = GameState()
-    next_move_blind(state, settings)
+    state = next_move_blind(state, settings)
     return count_disks(state, BLACK), count_disks(state, WHITE)
 \end{lstlisting}
 

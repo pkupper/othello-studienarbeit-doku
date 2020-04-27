@@ -1,0 +1,35 @@
+%!TEX root = ../../dokumentation.tex
+
+\section{Vergleich mit anderen KIs}
+Dieses Kapitel beschäftigt sich mit dem Vergleich mit anderen Othello KIs.
+
+\subsection{Vorgänger}
+Im letzten Jahr wurde bereits eine Studienarbeit von anderen Studenten über die Entwicklung einer Othello-KI verfasst.
+In dieser wurden im Wesentlichen zwei alternative KIs implementiert.
+\begin{enumerate}
+    \item Die erste KI nutzt den Monte-Carlo Algorithmus. Um den nächsten Spielzug zu berechnen, wird für alle möglichen
+    Züge das Spiel $n$ Mal zufällig bis zum Ende gespielt.
+    \cite[S.~19]{othellustudienarbeit}
+    \item Die zweite KI basiert auf dem AlphaBeta-Algorithmus und kann verschiedene Heuristiken verwenden. Am
+    erfolgreichsten war die „Stored Monte-Carlo-Heuristik“, die auf statistischen Daten über die
+    Siegeswahrscheinlichkeit beim Setzen auf ein bestimmtes Feld in einem bestimmten Zug beruht.
+    \cite[S.~30]{othellustudienarbeit}
+\end{enumerate}
+Die Arbeit ist zu dem Ergebnis gekommen, dass der Monte-Carlo-Algorithmus AlphaBeta überlegen ist.
+\cite[S.~55]{othellustudienarbeit}
+
+Tabelle \ref{table:comp:previous} zeigt einen Vergleich der in dieser Arbeit entwickelten KI mit den oben genannten Strategien. Dabei wurde sowohl für ProbCut als auch für AlphaBeta eine Suchtiefe von 5 verwendet.
+
+\begin{table}[hb]
+\centering
+\begin{tabular}{c|cccc}
+\hline
+Gegnerische KI & Siege ProbCut & Unentschieden & Siege Gegner \\
+\hline
+ Monte-Carlo & \,\% &  \,\% & \,\% \\ %TODO: Werte
+ AlphaBeta   & \,\% &  \,\% & \,\% \\
+\hline
+\end{tabular}
+\caption{Anteil der Siege und Niederlagen von ProbCut gegen die KI der Vorgängerarbeit}
+\label{table:comp:previous}
+\end{table}
