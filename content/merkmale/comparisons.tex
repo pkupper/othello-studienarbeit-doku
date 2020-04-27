@@ -71,7 +71,10 @@ Tabelle \ref{table:mobility} im Anhang zeigt den Anteil der Siege und Niederlage
 \subsection{Anzahl der Steine}
 Da es das Ziel von Othello ist, möglichst viele eigene Steine auf dem Spielfeld zu haben, ist es naheliegend, diese am
 Ende des Spiels zu maximieren. Der Ansatz ist, ab einer bestimmten Anzahl an Steinen auf dem Spielfeld als Heuristik die
-Differenz der Anzahl der eigenen Spielsteine und der gegnerischen Spielsteine zu verwenden. Tests haben allerdings
-ergeben, dass die KI, die diese abgewandelte Heuristik verwendet, der unveränderten Heuristik deutlich unterlegen ist.
-Tabelle \ref{table:disccount} im Anhang zeigt die Ergebnisse von Spielen der KIs mit den unterschiedlichen Heuristiken
-gegeneinander. Diese Heuristik sollte also nicht verwendet werden.
+Differenz der Anzahl der eigenen Spielsteine und der gegnerischen Spielsteine zu verwenden. Tests haben ergeben, dass es
+erst ab 62 Steinen auf dem Spielfeld sinnvoll ist, die Anzahl der Steine als Heuristik zu verwenden. Tabelle
+\ref{table:disccount} im Anhang zeigt die Ergebnisse von Spielen der KIs mit den unterschiedlichen Heuristiken
+gegeneinander.
+
+Wenn die Heuristik ab 62 Steinen auf dem Spielfeld verwendet wird, verändert sie genau die Entscheidung für den letzten
+Zug, bei dem der Spieler noch eine Wahl hat – vorausgesetzt, beide Spieler können ziehen. Hier ist es offensichtlich besser, die für den Sieg relevante Anzahl der Steine zu betrachten.
