@@ -10,15 +10,16 @@ In dieser wurden im Wesentlichen zwei alternative KIs implementiert.
     \item Die erste KI nutzt den Monte-Carlo Algorithmus. Um den nächsten Spielzug zu berechnen, wird für alle möglichen
     Züge das Spiel $n$ Mal zufällig bis zum Ende gespielt.
     \cite[S.~19]{othellustudienarbeit}
-    \item Die zweite KI basiert auf dem AlphaBeta-Algorithmus und kann verschiedene Heuristiken verwenden. Am
+    \item Die zweite KI basiert auf dem Alpha-Beta-Algorithmus und kann verschiedene Heuristiken verwenden. Am
     erfolgreichsten war die „Stored Monte-Carlo-Heuristik“, die auf statistischen Daten über die
     Siegeswahrscheinlichkeit beim Setzen auf ein bestimmtes Feld in einem bestimmten Zug beruht.
     \cite[S.~30]{othellustudienarbeit}
 \end{enumerate}
-Die Arbeit ist zu dem Ergebnis gekommen, dass der Monte-Carlo-Algorithmus AlphaBeta überlegen ist.
+Die Arbeit ist zu dem Ergebnis gekommen, dass die Implementierung des Monte-Carlo-Algorithmus der des
+Alpha-Beta-Algorithmus überlegen ist.
 \cite[S.~55]{othellustudienarbeit}
 
-Tabelle \ref{table:comp:previous} zeigt einen Vergleich der in dieser Arbeit entwickelten KI mit den oben genannten Strategien. Dabei wurde sowohl für ProbCut als auch für AlphaBeta eine Suchtiefe von 5 verwendet.
+Tabelle \ref{table:comp:previous} zeigt einen Vergleich der in dieser Arbeit entwickelten KI mit den oben genannten Strategien. Dabei wurde sowohl für ProbCut als auch für Alpha-Beta eine Suchtiefe von 5 verwendet.
 
 \begin{table}[hb]
 \centering
@@ -27,7 +28,7 @@ Tabelle \ref{table:comp:previous} zeigt einen Vergleich der in dieser Arbeit ent
 Gegnerische KI & \#Spiele & Siege ProbCut & Unentschieden & Siege Gegner \\
 \hline
  Monte-Carlo & 20 & 100\,\% &   0\,\% &  0\,\% \\
- AlphaBeta   & 20 & 100\,\% &   0\,\% &  0\,\% \\
+ Alpha-Beta   & 20 & 100\,\% &   0\,\% &  0\,\% \\
 \hline
 \end{tabular}
 \caption{Anteil der Siege und Niederlagen von ProbCut gegen die KI der Vorgängerarbeit}

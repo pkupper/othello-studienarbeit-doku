@@ -19,5 +19,5 @@ def alphabeta(state, alpha, beta, heuristic):
             utility = min(utility, tmp_utility)
             beta = min(beta, utility)
         if(alpha >= beta):
-            break # alphabeta pruning
+            break # alpha-beta pruning
     return utility

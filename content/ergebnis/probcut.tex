@@ -4,7 +4,7 @@
 ProbCut schließt Zweige des Suchbaums aus, die mit einer bestimmten Wahrscheinlichkeit nicht zu einem guten Zug führen
 können. Als Grundlage werden statistische Daten verwendet. Ob diese hinreichend gut sind, sodass tatsächlich bis auf
 eine geringe Fehlerwahrscheinlichkeit der Zug mit dem besten MiniMax-Wert gefunden wird, sollte überprüft werden. Dazu
-kann in Spielen der beste Zug sowohl mit AlphaBeta, als auch mit ProbCut bestimmt werden. Stimmt dieser nicht überein,
+kann in Spielen der beste Zug sowohl mit Alpha-Beta, als auch mit ProbCut bestimmt werden. Stimmt dieser nicht überein,
 hat ProbCut fälschlicherweise den Zweig ausgeschlossen, der zu dem besten MiniMax-Wert führt.
 
 ProbCut soll zu 99\,\% zu dem gleichen Ergebnis kommen wie der MiniMax-Algorithmus. Dazu wird ein linksseitiger
@@ -21,7 +21,7 @@ Anhand eines Stichprobenumfangs von $n=240$ soll auf einem Signifikanzniveau von
 folgt, dass bei 234 oder weniger Übereinstimmungen die Nullhypothese abgelehnt werden kann.
 
 Zum Erheben der Daten der Stichprobe wurden Spiele mit zufälligen Zügen durchgeführt. Bei jedem aufgetretenen Zustand
-wurde für alle möglichen Züge der Nutzen mit AlphaBeta und ProbCut bestimmt und überprüft, ob diese übereinstimmen.
+wurde für alle möglichen Züge der Nutzen mit Alpha-Beta und ProbCut bestimmt und überprüft, ob diese übereinstimmen.
 Dieses Vorgehen wurde gewählt, da auf Basis dieser Werte die Entscheidung getroffen wird, welcher Zug gezogen wird.
-Dabei kam es immer zu einer Übereinstimmung der Ergebnisse von AlphaBeta und ProbCut und die Nullhypothese kann
+Dabei kam es immer zu einer Übereinstimmung der Ergebnisse von Alpha-Beta und ProbCut und die Nullhypothese kann
 angenommen werden.
