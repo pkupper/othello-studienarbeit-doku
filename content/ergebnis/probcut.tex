@@ -3,13 +3,13 @@
 \section{Korrektheit von ProbCut}
 ProbCut schließt Zweige des Suchbaums aus, die mit einer bestimmten Wahrscheinlichkeit nicht zu einem guten Zug führen
 können. Als Grundlage werden statistische Daten verwendet. Ob diese hinreichend gut sind, sodass tatsächlich bis auf
-eine geringe Fehlerwahrscheinlichkeit der Zug mit dem besten MiniMax-Wert gefunden wird, sollte überprüft werden. Dazu
+eine geringe Fehlerwahrscheinlichkeit der Zug mit dem besten Minimax-Wert gefunden wird, sollte überprüft werden. Dazu
 kann in Spielen der beste Zug sowohl mit Alpha-Beta, als auch mit ProbCut bestimmt werden. Stimmt dieser nicht überein,
-hat ProbCut fälschlicherweise den Zweig ausgeschlossen, der zu dem besten MiniMax-Wert führt.
+hat ProbCut fälschlicherweise den Zweig ausgeschlossen, der zu dem besten Minimax-Wert führt.
 
-ProbCut soll zu 99\,\% zu dem gleichen Ergebnis kommen wie der MiniMax-Algorithmus. Dazu wird ein linksseitiger
+ProbCut soll zu 99\,\% zu dem gleichen Ergebnis kommen wie der Minimax-Algorithmus. Dazu wird ein linksseitiger
 Hypothesetest durchgeführt. $p$ sei die Wahrscheinlichkeit, mit der ProbCut die gleichen bestmöglichen Züge findet wie
-der MiniMax-Algorithmus. Die Nullhypothese $H_0$ und Gegenhypothese $H_1$ lauten dann:
+der Minimax-Algorithmus. Die Nullhypothese $H_0$ und Gegenhypothese $H_1$ lauten dann:
 
 \hspace*{1.3cm}
 $H_0:p>=0.99$
