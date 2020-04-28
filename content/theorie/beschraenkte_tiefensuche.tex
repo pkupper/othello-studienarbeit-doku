@@ -1,0 +1,19 @@
+\section{Beschränkte Tiefensuche}
+
+In vielen relevanten Spielen ist es aufgrund der Größe des Suchbaums praktisch nicht möglich diesen vollständing zu
+durchsuchen. In der Praxis wird deshalb häufig eine beschränkte Tiefensuche durchgeführt. Dabei erhält die Rekursion
+eine zusätzliche Abbruchbedingung. Neben dem Erreichen eines Endzustands, wird auch bei der Erreichung einer
+vorgegebenen Rekursionstiefe die Suche gestoppt.
+
+Da in dem so erreichten Zustand der Ausgang des Spiels noch nicht bekannt ist, kann an dieser Stelle nicht der
+tatsächliche Nutzen des Spielzustandes zurückgegeben werden. Stattdessen wird eine Approximation des Nutzens verwendet \cite[S.~171]{ai2010russel}.
+
+Diese Approximation wird im folgenden \autoref{sec:heuristic} genauer betrachtet.
+
+Durch die Anwendung einer Approximation, anstelle des tatsächlichen Nutzens, verliert der Minimax Algorithmus seine Optimalität. Es
+wird also nicht mehr garantiert der Zug mit dem größten Nutzen gewählt. Mit einer passend gewählten Approximation
+können dennoch gute Ergebnisse erzielt werden, die in vielen Spielen die Fähigkeiten eines menschlichen Gegenspielers
+übertreffen.
+
+Bei der beschränkten Tiefensuche wächst die Spielstärke der KI in der Regel mit zunehmender Suchtiefe, da dadurch Zustände
+betrachtet werden, die näher am Endzustand liegen.
