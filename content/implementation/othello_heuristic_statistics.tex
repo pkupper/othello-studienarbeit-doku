@@ -1,13 +1,15 @@
+\hypertarget{vergleich-der-heuristiken-othello_heuristic_statistics.ipynb}{%
+\section{Vergleich der Heuristiken
+(othello\_heuristic\_statistics.ipynb)}\label{vergleich-der-heuristiken-othello_heuristic_statistics.ipynb}}
+
+\label{sec:heuristiccomparison}
+
 \begin{lstlisting}[language=Python]
 %%HTML
 <style>
 .container { width:100% }
 </style>
 \end{lstlisting}
-
-\hypertarget{vergleich-der-heuristiken-othello_heuristic_statistics.ipynb}{%
-\section{Vergleich der Heuristiken
-(othello\_heuristic\_statistics.ipynb)}\label{vergleich-der-heuristiken-othello_heuristic_statistics.ipynb}}
 
 \begin{lstlisting}[language=Python]
 %run othello_test_util.ipynb
@@ -202,6 +204,13 @@ def test_combined_heuristic(state):
     cowthello = cowthello_heuristic(state)
     return 0.5 * mobility + 0.5 * cowthello
 
+def test_combined_heuristic_p(state):
+    if state.num_pieces >= 50:
+        return disc_count_heuristic(state)
+    mobility = pot_mob_heuristic(state)
+    cowthello = cowthello_heuristic(state)
+    return 0.5 * mobility + 0.5 * cowthello
+
 def test_combined_heuristic_pot(state):
     if state.num_pieces >= 50:
         return disc_count_heuristic(state)
@@ -226,6 +235,28 @@ def test_combined_heuristic_pot3(state):
 \end{lstlisting}
 
 \begin{lstlisting}[language=Python]
+settings = { BLACK: { 'heuristic': test_combined_heuristic_pot,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move },
+             WHITE: { 'heuristic': test_combined_heuristic_pot2,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move }}
+
+get_statistics(50, settings)
+
+settings = { BLACK: { 'heuristic': test_combined_heuristic_pot2,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move },
+             WHITE: { 'heuristic': test_combined_heuristic_pot3,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move }}
+
+get_statistics(50, settings)
+
 settings = { BLACK: { 'heuristic': test_combined_heuristic,
                       'algorithm': alphabeta,
                       'depth': 3,
@@ -235,7 +266,55 @@ settings = { BLACK: { 'heuristic': test_combined_heuristic,
                       'depth': 3,
                       'mode': ai_make_move }}
 
-get_statistics(20, settings)
+get_statistics(50, settings)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+settings = { BLACK: { 'heuristic': test_combined_heuristic,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move },
+             WHITE: { 'heuristic': test_combined_heuristic_pot,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move }}
+
+get_statistics(50, settings)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+settings = { BLACK: { 'heuristic': test_combined_heuristic_p,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move },
+             WHITE: { 'heuristic': test_combined_heuristic_pot,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move }}
+
+get_statistics(50, settings)
+
+settings = { BLACK: { 'heuristic': test_combined_heuristic_p,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move },
+             WHITE: { 'heuristic': test_combined_heuristic_pot2,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move }}
+
+get_statistics(50, settings)
+
+settings = { BLACK: { 'heuristic': test_combined_heuristic_p,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move },
+             WHITE: { 'heuristic': test_combined_heuristic,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move }}
+
+get_statistics(50, settings)
 \end{lstlisting}
 
 \begin{lstlisting}[language=Python]
@@ -289,6 +368,49 @@ settings = { BLACK: { 'heuristic': test_combined_heuristic_cow,
                       'algorithm': alphabeta,
                       'depth': 4,
                       'mode': ai_make_move }}
+
+get_statistics(20, settings)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+# same ai
+settings = { BLACK: { 'heuristic': combined_heuristic,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move,
+                      'timelimit': None },
+             WHITE: { 'heuristic': combined_heuristic,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move,
+                      'timelimit': None }}
+
+get_statistics(20, settings)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+def combined_heuristic_dskcnt1(state):
+    cowthello = cowthello_safe_heuristic(state)
+    mobility = combined_mobility_heuristic(state)
+    return 0.5 * mobility + 0.5 * cowthello
+
+def combined_heuristic_dskcnt2(state):
+    if state.num_pieces >= 50:
+        return disc_count_heuristic(state)
+    cowthello = cowthello_safe_heuristic(state)
+    mobility = combined_mobility_heuristic(state)
+    return 0.5 * mobility + 0.5 * cowthello
+
+settings = { BLACK: { 'heuristic': combined_heuristic_dskcnt1,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move,
+                      'timelimit': None },
+             WHITE: { 'heuristic': combined_heuristic_dskcnt2,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move,
+                      'timelimit': None }}
 
 get_statistics(20, settings)
 \end{lstlisting}

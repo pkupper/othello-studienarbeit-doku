@@ -1,13 +1,15 @@
+\hypertarget{gui-implementierung-othello_gui.ipynb}{%
+\section{GUI Implementierung
+(othello\_gui.ipynb)}\label{gui-implementierung-othello_gui.ipynb}}
+
+\label{sec:gui}
+
 \begin{lstlisting}[language=Python]
 %%HTML
 <style>
 .container { width:100% }
 </style>
 \end{lstlisting}
-
-\hypertarget{gui-implementierung-othello_gui.ipynb}{%
-\section{GUI Implementierung
-(othello\_gui.ipynb)}\label{gui-implementierung-othello_gui.ipynb}}
 
 Im folgenden Abschnitt wird eine Benutzeroberfläche für das Spiel
 Othello implementiert. Diese ermöglicht das Anzeigen Spielfelds und das
@@ -228,7 +230,7 @@ und Parameter der KI angepasst werden.
 \begin{lstlisting}[language=Python]
 algorithms = { 'Menschlicher Spieler': None,
                'ProbCut': probcut,
-               'AlphaBeta': alphabeta,
+               'Alpha-Beta': alphabeta,
                'Minimax': minimax,
                'Zufällig': random_ai }
 modes = { 'Feste Tiefe': ai_make_move,

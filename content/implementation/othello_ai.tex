@@ -1,13 +1,15 @@
+\hypertarget{ki-implementierung-othello_ai.ipynb}{%
+\section{KI Implementierung
+(othello\_ai.ipynb)}\label{ki-implementierung-othello_ai.ipynb}}
+
+\label{sec:aiimpl}
+
 \begin{lstlisting}[language=Python]
 %%HTML
 <style>
 .container { width:100% }
 </style>
 \end{lstlisting}
-
-\hypertarget{ki-implementierung-othello_ai.ipynb}{%
-\section{KI Implementierung
-(othello\_ai.ipynb)}\label{ki-implementierung-othello_ai.ipynb}}
 
 Dieses Kapitel beschreibt die Implemenentierung der Künstlichen
 Intelligenz. Es werden mehrere, voneinander verschiedene, Strategien
@@ -92,10 +94,10 @@ Auch dieser Wert wird durch Division durch die Anzahl an Feldern
 normalisiert, um die Grenzen von \(-1\) und \(1\) einzuhalten. Zu
 beachten ist hier, dass auch die Anzahl möglicher Züge für einen Spieler
 bestimmt wird, der im Spielzustand gar nicht am Zug ist. Dies ist wirkt
-zunächst sematisch unsinnig, hat sich aber in Tests als effektiver
-gegenüber möglichen Alternativen, wie der Verwendung einer
-durchschnittlichen Mobilität für diesen Spieler in der jeweiligen
-Spielphase, bewiesen.
+zunächst sematisch nicht sinvoll, hat sich jedoch, wie in
+\autoref{sec:currentmobility} gezeigt, im Vergleich gegenüber möglichen
+Alternativen, wie der Verwendung einer durchschnittlichen Mobilität, als
+effektiv bewiesen.
 
 \begin{lstlisting}[language=Python]
 def mobility_heuristic(state):
@@ -117,7 +119,7 @@ gegeben durch die Summe aller freien Felder um gegnerische Spielsteine,
 da Michael Buro dieses Merkmal als in seiner Dissertation als beste
 Metrik für die Potentielle Mobilität ausgemacht hat
 \cite[S. 9]{evaluationfunctions}. Das Ergebnis wird durch \(3.5\)
-geteilt, da es im Durchschnitt \(3.5\) Mal so viele potentielle Züge wie
+geteilt, da es im Durchschnitt \(3.5\) mal so viele potentielle Züge wie
 tatsächliche Züge gibt.
 
 \begin{lstlisting}[language=Python]
@@ -138,11 +140,12 @@ def pot_mob_heuristic(state):
 Die Funktion \passthrough{\lstinline!combined\_mobility\_heuristic!}
 kombiniert die aktuelle und potentielle Mobilität, wobei zu Beginn des
 Spiels die potentielle Mobilität stärker gewichtet wird und gegen Ende
-die aktuelle Mobilität. Michael Buro beschreibt in seiner Dissertation,
-dass die potentielle Mobilität bis 36 Spielsteine auf dem Feld liegen
-wichtiger für die Bewertung ist, als die aktuelle Mobilität
-\cite[S. 9]{evaluationfunctions}. Dieser Sachverhalt soll durch eine
-lineare Kombination modelliert werden.
+des Spiels die aktuelle Mobilität. Michael Buro beschreibt in seiner
+Dissertation, dass die potentielle Mobilität bis 36 Spielsteine auf dem
+Feld liegen wichtiger für die Bewertung ist, als die aktuelle Mobilität
+\cite[S. 9]{evaluationfunctions}. Eigene Tests, welche in
+\autoref{sec:combinedmobility} beschrieben sind, ergeben, dass eine
+lineare Kombination der beiden Merkmale zu einem guten Ergebnis führt.
 
 \begin{lstlisting}[language=Python]
 def combined_mobility_heuristic(state):
@@ -375,7 +378,7 @@ transposition_table = {}
 \end{lstlisting}
 
 Die Funktion \passthrough{\lstinline!alphabeta!} implementiert den
-Minimax Algorithmus mit Alpha-Beta-Pruning. Eingabeparameter der
+Minimax-Algorithmus mit Alpha-Beta-Pruning. Eingabeparameter der
 Funktion sind der zu bewertende Spielzustand
 \passthrough{\lstinline!state!}, die maximale Suchtiefe
 \passthrough{\lstinline!depth!}, die zu verwendende Heuristik
@@ -431,7 +434,7 @@ def alphabeta(state, depth, heuristic, alpha, beta):
             utility = min(utility, tmp_utility)
             beta = min(beta, utility)
         if alpha >= beta:
-            break  # alphabeta pruning
+            break  # alpha-beta pruning
     return utility
 \end{lstlisting}
 
@@ -461,8 +464,13 @@ der dabei ermittelten Nützlichkeit, wird entsprechend der in
 \autoref{sec:probcut} beschriebenen Regeln entschieden, ob eine Tiefe
 Suche durchgeführt werden muss, oder eine der beiden Grenzwerte
 \passthrough{\lstinline!alpha!} oder \passthrough{\lstinline!beta!}
-zurückgegeben werden können. Die Eingabe- und der Rückgabeparameter
-gleichen der Funktion \passthrough{\lstinline!alphabeta!}.
+zurückgegeben werden können. Zur Abschätzung der für den Probcut
+Algorithmus benötigten Standardabweichung
+\passthrough{\lstinline!sigma!}, wird eine quadratische Funktion in
+Abhängigkeit von der Anzahl an steinen auf dem Spielfeld verwendet.
+Diese wird im folgenden \autoref{sec:pcsigma} hergeleitet. Die Eingabe-
+und der Rückgabeparameter gleichen der Funktion
+\passthrough{\lstinline!alphabeta!}.
 
 \begin{lstlisting}[language=Python]
 debug_pc_count = 0
@@ -479,13 +487,11 @@ def probcut(state, depth, heuristic, alpha, beta):
         num_p = state.num_pieces
         if num_p <= 58:
             sigma = 0.00261067 + 0.00119532 * num_p + 2.65512979e-05 * num_p**2
-            # v >= beta with prob. of at least p? yes => cutoff
             bound = PERCENTILE * sigma + beta
             if probcut(state, PROBCUT_SHALLOW_DEPTH,
                        heuristic, bound-1, bound) >= bound:
                 return beta
-
-            # v <= alpha with prob. of at least p? yes => cutoff
+            
             bound = -PERCENTILE * sigma + alpha
             if probcut(state, PROBCUT_SHALLOW_DEPTH,
                        heuristic, bound, bound+1) <= bound:
@@ -526,7 +532,7 @@ def probcut(state, depth, heuristic, alpha, beta):
             utility = min(utility, tmp_utility)
             beta = min(beta, utility)
         if alpha >= beta:
-            break  # alphabeta pruning
+            break  # alpha-beta pruning
     return utility
 \end{lstlisting}
 
