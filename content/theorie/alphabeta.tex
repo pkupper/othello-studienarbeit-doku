@@ -1,10 +1,11 @@
 \section{Alpha-Beta-Pruning}
 \label{sec:alphabeta}
+%TODO: Quelle
 
 Alpha-Beta-Pruning ist eine Optimierung des Minimax Algorithmus, bei der komplette Zweige des Suchbaums ausgeschlossen
-werden können, die das Ergebnis des Algorithmus nicht mehr beeinflussen können. Ein Zweig kann dann ausgeschlossen
-werden, wenn für den Spieler am Zug bereits ein Zug mit einem größeren Nutzen gefunden wurde, als bei dem zu
-betrachtenden Zweig maximal noch erzielbar ist.
+werden, die das Ergebnis des Algorithmus nicht mehr beeinflussen können. Ein Zweig kann dann ausgeschlossen werden, wenn
+für den Spieler am Zug bereits ein Zug mit einem größeren Nutzen gefunden wurde, als bei dem zu betrachtenden Zweig
+maximal noch erzielbar ist.
 
 Erreicht wird dies durch zwei Variablen $Alpha$ und $Beta$ die jeweils für den maximierenden und den minimierenden
 Spieler den garantierten Nutzen repräsentieren, den diese selbst bei einem optimal spielenden Gegner erreichen können.
@@ -47,33 +48,39 @@ $D$ hat. Knoten $D$ muss also gar nicht betrachtet werden.
 Das folgende Python-Listing zeigt eine beispielhafte Implementierung des Alpha-Beta Algorithmus. Hierbei ist Weiß der
 maximierende Spieler und Schwarz der minimierende Spieler. Zur Vermeidung von Redundanz wird statt zwei Funktionen $min$
 und $max$ eine einzelne Funktion $alphabeta$ verwendet, in der abhängig vom aktuellen Spieler eine Fallunterscheidung
-durchgeführt wird.
+durchgeführt wird. Ein Spielzustand $state$ hat die Attribute $game\_over$, das einen Wahrheitswert enthält, ob das Spiel
+vorbei ist, $possible\_moves$, das eine Liste aller möglichen Züge enthält, und $turn$, das den Spieler an der Reihe
+enthält. Die Funktion $get\_utility$ berechnet das Endergebnis für einen Zustand und einen Spieler und die Funktion $make\_move$ führt auf einem Zustand einen Zug aus und gibt diesen zurück.
 
-%TODO beschränkte tiefensuche separat erklären
-\lstinputlisting[language=Python,float]{listings/alphabeta.py}
+\lstinputlisting[language=Python, float]{listings/alphabeta.py}
 
 Durch Anwendung von Alpha-Beta-Pruning wird das Ergebnis des Minimax Algorithmus nicht beeinflusst. Jedoch kann durch
 die Betrachtung einer geringeren Zahl von Knoten die Performanz signifikant verbessert werden.
 
+\subsection{Beschränkte Tiefensuche}
+%TODO: beschränkte tiefensuche separat erklären
 Bei einer Alpha-Beta-Suche, die nicht den vollständigen Suchbaum umfasst, kann bei Verwendung einer heuristischen
 Evaluations-Funktion die maximale Suchtiefe bei gleicher Rechenzeit erhöht werden, was zu einem besseren Ergebnis führt.
+%TODO: ??
+%TODO: Quelle
 
+\subsection{Move Ordering}
 Da Alpha-Beta-Pruning nur dann Zweige ausschließen kann, wenn bereits bessere Zweige gefunden wurden, ist es von
 Vorteil, die Zweige in der Reihenfolge absteigenden Nutzens zu betrachten. So kann die Anzahl der ausgeschlossenen
 Zweige maximiert werden kann. Dies ist jedoch in der Praxis nicht optimal möglich, da dafür ja bereits eine korrekte
 Bewertung der Züge stattgefunden haben muss, was die Anwendung der Alpha-Beta Suche überflüssig machen würde. Eine
 ungefähre Anordnung der Züge, die dennoch zu einer wesentlichen Effizienzverbesserung führt, ist jedoch häufig möglich.
 Beispielsweise können in einem primitiven Ansatz beim Schach Züge, in denen eine gegnerische Figur geschlagen wird,
-priorisiert werden.
+priorisiert werden. Dieses Sortieren der Züge wird „Move Ordering“ genannt.
 
 Um für Othello eine geeignete Reihenfolge der Züge zu berechnen, kann zunächst eine Suche mit einer geringeren Tiefe
-durchgeführt werden. Diesen Ansatz macht sich "'Iterative Deepening"' zunutze: Begonnen wird mit einer Suchtiefe von
+durchgeführt werden. Diesen Ansatz macht sich „Iterative Deepening“ zunutze: Begonnen wird mit einer Suchtiefe von
 $d_1=1$. Das Ergebnis wird verwendet, um die Züge für eine Suche der Tiefe $d_2=d_1+1=2$ zu ordnen. Dieser Schritt wird
 bis zu einer Suchtiefe $n$ wiederholt, sodass die Berechnung innerhalb von vertretbarer Zeit durchgeführt wird. Dabei
 kann $n$ entweder vorher festgelegt oder dynamisch anhand der Laufzeit ermittelt werden. Ein Vorteil von Iterative
 Deepening besteht darin, dass die Ausführung jederzeit unterbrochen werden kann und der bestmögliche Zug der bisherigen
 Suchtiefe bekannt ist.
-\cite{alphabetaefficiency}
+\cite[S.~4]{alphabetaefficiency}
 
 \ifx false
 % Template for game tree
