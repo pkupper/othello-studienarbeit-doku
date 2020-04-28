@@ -60,7 +60,7 @@ utilities = {WHITE: '-', BLACK: '-'}
 \subsection{Heuristiken}\label{heuristiken}}
 
 Zum Abschätzen der Nützlichkeit eines Spielzustands wird eine Heuristik
-benötigt. ImFolgenden sind einige solcher Heuristiken implementiert. Da
+benötigt. Im Folgenden sind einige solcher Heuristiken implementiert. Da
 Weiß der maximierende Spieler, und Schwarz der minimierende Spieler ist,
 repräsentiert ein höherer Wert der Heuristik einen für Weiß
 vorteilhaften Zug, während ein niedriger Wert einen Vorteil für Schwarz
@@ -444,13 +444,15 @@ def alphabeta(state, depth, heuristic, alpha, beta):
 An dieser Stelle beginnt die Implementierung der Künstlichen Intelligenz
 mittels des Minimax Algorithmus, Alpha-Beta Pruning und ProbCut. Die im
 Folgenden definierte Konstante \passthrough{\lstinline!PERCENTILE!}
-entspricht hierbei der Variable \(p\) aus \autoref{sec:probcut}.
-\passthrough{\lstinline!PROBCUT\_DEEP\_DEPTH!} entspricht der Variable
-\(d\) und \passthrough{\lstinline!PROBCUT\_SHALLOW\_DEPTH!} entspricht
-der Variable \(d'\) aus demselben Abschnitt dieser Arbeit.
+entspricht hierbei dem Term \(\Phi^{-1}(p)\) aus \autoref{sec:probcut}.
+Für ein \(p\) von \(93.3\%\) hat \passthrough{\lstinline!PERCENTILE!}
+den Wert \(1.5\). \passthrough{\lstinline!PROBCUT\_DEEP\_DEPTH!} und
+\passthrough{\lstinline!PROBCUT\_SHALLOW\_DEPTH!} entsprechen den
+Variablen \(d\) und \(d'\) aus Abschnitt \autoref{sec:probcut} dieser
+Arbeit.
 
 \begin{lstlisting}[language=Python]
-PERCENTILE = 1.5  # 93.3%
+PERCENTILE = 1.5
 PROBCUT_DEEP_DEPTH = 4
 PROBCUT_SHALLOW_DEPTH = 2
 \end{lstlisting}
