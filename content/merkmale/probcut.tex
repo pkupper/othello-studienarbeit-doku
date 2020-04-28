@@ -1,6 +1,15 @@
 %!TEX root = ../../dokumentation.tex
 
-\section{Korrektheit von ProbCut}
+\section{ProbCut}
+
+\subsection{Suchtiefe von ProbCut}
+ProbCut benötigt als Parameter die Tiefe der flachen Suche und die Tiefe der tiefen Suche. Die Differenz der beiden
+Parameter sollte gerade sein, da die Heuristik nicht berücksichtigt, welcher Spieler an der Reihe ist. Bei einer
+ungeraden Differenz kann anhand der flachen Suche keine zuverlässige Aussage über das Ergebnis der tiefen Suche gemacht
+werden.
+%TODO: warum mindestens tiefe 2
+
+\subsection{Korrektheit von ProbCut}
 ProbCut schließt Zweige des Suchbaums aus, die mit einer bestimmten Wahrscheinlichkeit nicht zu einem guten Zug führen
 können. Als Grundlage werden statistische Daten verwendet. Ob diese hinreichend gut sind, sodass tatsächlich bis auf
 eine geringe Fehlerwahrscheinlichkeit der Zug mit dem besten Minimax-Wert gefunden wird, sollte überprüft werden. Dazu
