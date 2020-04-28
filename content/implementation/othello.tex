@@ -34,16 +34,24 @@ import time
 \end{lstlisting}
 
 Durch den Aufruf von \passthrough{\lstinline!configure\_settings!} aus
-der GUI Implementierung wird eine Benutzeroberfläche angezeigt, welche
-dem Benutzer die Konfiguration der Spieleinstellungen ermöglicht. Für
-beide Spieler kann festgelegt werden, ob dieser ein menschlicher Spieler
-ist, von einer der verfügbaren KI Strategien kontrolliert werden soll.
-Für die KI Agenten können zusätzlich dazugehörigen Parameter, wie die zu
-verwendende Heuristik und die Suchtiefe festgelegt werden.
+der GUI Implementierung wird die, in \autoref{fig:gui_settings} zu
+sehende, Benutzeroberfläche angezeigt, welche dem Benutzer die
+Konfiguration der Spieleinstellungen ermöglicht. Für beide Spieler kann
+festgelegt werden, ob dieser ein menschlicher Spieler ist, von einer der
+verfügbaren KI Strategien kontrolliert werden soll. Für die KI Agenten
+können zusätzlich dazugehörigen Parameter, wie die zu verwendende
+Heuristik und die Suchtiefe festgelegt werden.
 
 \begin{lstlisting}[language=Python]
 configure_settings()
 \end{lstlisting}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{gui_settings}
+    \caption{Grafische Oberfläche zur Konfiguration der Spieler}
+    \label{fig:gui_settings}
+\end{figure}
 
 Folgender Code dient zum Starten der interaktiven Applikation. Die
 Funktion \passthrough{\lstinline!next\_move!} wird für jeden Spielzug
@@ -55,7 +63,8 @@ mittels eines Callbacks in der GUI Implementierung der entsprechende Zug
 ausgeführt. Im Callback wird auch die Funktion
 \passthrough{\lstinline!next\_move!} erneut für den nächsten Zug
 aufgerufen. Zu Beginn des Spiels muss die Funktion
-\passthrough{\lstinline!next\_move!} einmal aufgerufen werden.
+\passthrough{\lstinline!next\_move!} einmal aufgerufen werden. Die
+Grafische Benutzeroberfläche ist in \autoref{fig:gui_board} zu sehen.
 
 \begin{lstlisting}[language=Python]
 state = GameState()
@@ -82,3 +91,10 @@ try:
 except KeyboardInterrupt:
     pass
 \end{lstlisting}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{gui_board}
+    \caption{Grafische Oberfläche des Spiels}
+    \label{fig:gui_board}
+\end{figure}

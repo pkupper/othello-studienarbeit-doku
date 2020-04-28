@@ -111,9 +111,10 @@ deep = np.array(df['deep'])
 moves = np.array(df['moves'])
 \end{lstlisting}
 
-Der folgende Code setzt die Ergebnisse der fiefen Suchen zu denen der
-slachen Suchen in Form eines Scatterplots ins Verhältnis. (TODO: Plot im
-Anhang)
+Der folgende Code setzt die Ergebnisse der tiefen Suchen zu denen der
+flachen Suchen in Form eines Scatterplots ins Verhältnis. Das
+resultierende Schaubild ist in \autoref{fig:probcut_all_depths} zu
+sehen.
 
 \begin{lstlisting}[language=Python]
 model = lm.LinearRegression()
@@ -130,7 +131,14 @@ plt.title('Probcut Values')
 plt.show()
 \end{lstlisting}
 
-Wie zu erwarten, ist eine klare Lineare Abhängigkeit zu erkennen, welche
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{probcut_all_depths}
+    \caption{Probcut Datenpunkte}
+    \label{fig:probcut_all_depths}
+\end{figure}
+
+Wie zu erwarten, ist eine klare lineare Abhängigkeit zu erkennen, welche
 durch die ebenfalls dargestellte Regressionsgerade hervorgehoben wird.
 Die Ausreißer bei Deep Depth Werten von \(1\) und \(-1\) entstehen
 dadurch, dass in diesen Spielzuständen, mit einer Tiefen Suche bereits
@@ -166,7 +174,8 @@ for i in range(5, 64):
 
 Im Anschluss werden diese Daten visualisiert, um zu beurteilen, wie die
 Standardabweichung durch eine geschlossene Formel angenähert werden
-kann.
+kann. Der Scatterplot kann in \autoref{fig:probcut_sigma_by_disccount}
+betrachtet werden.
 
 \begin{lstlisting}[language=Python]
 plt.figure(figsize=(15, 10))
@@ -179,14 +188,22 @@ plt.title('Standard Deviation')
 plt.show()
 \end{lstlisting}
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{probcut_sigma_by_disccount}
+    \caption{Probcut Standardabweichung abhängig von der Steinzahl}
+    \label{fig:probcut_sigma_by_disccount}
+\end{figure}
+
 Bei der Betrachtung ergibt sich, dass im Bereich zwischen 5 und 58 Zügen
 eine annähernd quadratische Abhängigkeit vorliegt. Daher wird dieser
 Bereich mittels Polynomieller Regression angehähert und visualisiert
 
 Folgender Code berechnet das Regressionspolynom zweiten Gerades der
 Standardabweichung in Abhängigkeit von der Anzahl der Steine auf dem
-Spielfeld mit \passthrough{\lstinline!sklearn!} und stellt dieses
-grafisch dar.
+Spielfeld mit \passthrough{\lstinline!sklearn!} und stellt dieses, wie
+in \autoref{fig:probcut_sigma_polynomial_regression} zu sehen, grafisch
+dar.
 
 \begin{lstlisting}[language=Python]
 indices = np.argwhere(x <= 58)
@@ -213,6 +230,13 @@ plt.ylabel('standard deviation')
 plt.title('Standard Deviation')
 plt.show()
 \end{lstlisting}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{probcut_sigma_polynomial_regression}
+    \caption{Annäherung der Standardabweichung durch Polynomielle Regression}
+    \label{fig:probcut_sigma_polynomial_regression}
+\end{figure}
 
 Hier wird das Regressionspolynom ausgegeben, welches näherungsweise die
 Standardabweichung in Abhängigkeit von der Anzahl an Spielsteinen auf
