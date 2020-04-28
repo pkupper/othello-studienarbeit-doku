@@ -132,9 +132,16 @@ plt.show()
 
 Wie zu erwarten, ist eine klare Lineare Abhängigkeit zu erkennen, welche
 durch die ebenfalls dargestellte Regressionsgerade hervorgehoben wird.
-Jedoch wird im Folgenden weitergehend untersucht, ob sich durch
-zusätzliche Betrachtung der Anzahl von Steinen auf dem Spielfeld, eine
-genauere Aussage über die Standardabweichung machen lässt.
+Die Ausreißer bei Deep Depth Werten von \(1\) und \(-1\) entstehen
+dadurch, dass in diesen Spielzuständen, mit einer Tiefen Suche bereits
+der Ausgang des Spiels bestimmt werden kann, während bei der Flachen
+Suche noch die Heuristik verwendet wird. Theoretisch kann bereits hier
+die Standardabeweichung ermittelt, und dann in Probcut genutzt werden.
+Bei zusätzlicher Betrachtung der Anzahl von Steinen auf dem Spielfeld
+stellt sich jedoch heraus, dass die Standardabweichung stark davon
+abhängt. Durch Einbeziehung der Steinzahl bei der Ermittleung der
+Standardabweichung lässt sich also eine genauere Aussage über die
+Standardabweichung machen.
 
 Der folgende Code berechnet die Standardabweichung pro Anzahl Steine auf
 dem Spielfeld. Dazu werden zunächst für jede Anzahl an Steinen aus den

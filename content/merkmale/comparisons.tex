@@ -42,19 +42,20 @@ gezogen wird. Zur Schätzung wurden drei Möglichkeiten untersucht:
     \item Es wird für den aktuellen Spielzustand die Anzahl der möglichen Züge beider Spieler berechnet, obwohl ein
     Spieler nicht an der Reihe ist.
 \end{enumerate}
-Von den Autoren durchgeführte Tests, in denen die KI mit unterschiedlich berechneter aktueller Mobilität 20 Mal mit einer Suchtiefe von 4 gegen sich
-selbst gespielt hat, haben ergeben, dass die dritte Möglichkeit in der stärksten KI resultiert. Option 3 konnte zu
-75\,\% gegen Option 2 gewinnen, 25\,\% waren Niederlagen. Gegen Option 1 konnte Option 3 50\,\% Siege und 12\,\%
-Unentschieden erzielen. Dabei handelt es sich nicht um einen signifikanten Unterschied, aber da die Bestimmung der
-möglichen Züge aller Folgezustände ein hoher Rechnenaufwand ist, ist die dritte Möglichkeit die beste Option.
+Von den Autoren durchgeführte Tests, in denen die KI mit unterschiedlich berechneter aktueller Mobilität 20 Mal mit
+einer Suchtiefe von 4 gegen sich selbst gespielt hat, haben ergeben, dass die dritte Möglichkeit in der stärksten KI
+resultiert. Option 3 konnte zu 75\,\% gegen Option 2 gewinnen, 25\,\% waren Niederlagen. Gegen Option 1 konnte Option 3
+50\,\% Siege und 12\,\% Unentschieden erzielen. Dabei handelt es sich nicht um einen signifikanten Unterschied, aber da
+die Bestimmung der möglichen Züge aller Folgezustände ein hoher Rechnenaufwand ist, ist die dritte Möglichkeit die beste
+Option.
 
-\subsection{Mobilität}
+\subsection{Gewichtung von aktueller und potenzieller Mobilität}
 \label{sec:combinedmobility}
-Die aktuelle Mobilität und die potenzielle Mobilität zielen beide darauf ab, die Anzahl der möglichen Züge eines Spielers zu
-erhöhen. Michael Buro ist in seiner Dissertation zu dem Ergebnis gekommen, dass der Nutzen der aktuellen Mobilität
-annähernd linear zunimmt, wohingegen die potenzielle Mobilität annähernd linear zunimmt. Gegen Ende des Spiels verlieren
-beide Merkmale an Bedeutung. Bis 36 Steine auf dem Spielfeld liegen, hat die potenzielle Mobilität einen größeren
-Nutzen, danach die aktuelle Mobilität. \cite[S.~20]{evaluationfunctions}
+Die aktuelle Mobilität und die potenzielle Mobilität zielen beide darauf ab, die Anzahl der möglichen Züge eines
+Spielers zu erhöhen. Michael Buro ist in seiner Dissertation zu dem Ergebnis gekommen, dass der Nutzen der aktuellen
+Mobilität annähernd linear zunimmt, wohingegen die potenzielle Mobilität annähernd linear zunimmt. Gegen Ende des Spiels
+verlieren beide Merkmale an Bedeutung. Bis 36 Steine auf dem Spielfeld liegen, hat die potenzielle Mobilität einen
+größeren Nutzen, danach die aktuelle Mobilität. \cite[S.~20]{evaluationfunctions}
 
 Der erste Ansatz, die aktuelle und die potenzielle Mobilität zu kombinieren, besteht darin, bis zu einer bestimmten
 Anzahl an Steinen auf dem Feld die potenzielle Mobilität zu verwenden, und danach die aktuelle Mobilität. Das hat den
@@ -72,6 +73,12 @@ potenziellen zur aktuellen Mobilität bei 36 Steinen auf dem Spielfeld keinen me
 potenziellen Mobilität alleine bewirkt. Eine lineare Kombination von aktueller und potenzieller Mobilität konnte
 allerdings mit 56 – 60\,\% Siegen einen leichten Vorteil gegenüber den anderen Möglichkeiten erzielen. Tabelle
 \ref{table:mobility} im Anhang zeigt den Anteil der Siege und Niederlagen der verschiedenen Kombinationen.
+
+\subsection{Gewichtung von Mobilität und Cowthello}
+Letztendlich müssen die Mobilität und Cowthello zu einer Heuristik kombiniert werden. Um die Gewichtung der beiden
+Merkmale zu bestimmen wurde die KI mit unterschiedlich gewichteter Heuristik und Suchtiefe 3 gegeneinander
+spielen gelassen. Die Ergebnisse befinden sich in Tabelle \ref{table:combinedweighting}.
+%TODO: WIP
 
 \subsection{Anzahl der Steine}
 Da es das Ziel von Othello ist, möglichst viele eigene Steine auf dem Spielfeld zu haben, ist es naheliegend, diese am

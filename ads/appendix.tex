@@ -53,9 +53,30 @@ Verwendete Heuristik S\,/\,W & \#Spiele & Siege S & Unentschieden & Siege W \\
 \end{table}
 
 \small{
-A: Heuristik ohne Anzahl der Steine (Mobilität und Cowtello) \\
+A: Heuristik ohne Anzahl der Steine (Mobilität und Cowthello) \\
 B: Anzahl der Steine ab 50 belegten Feldern \\
 C: Anzahl der Steine ab 58 belegten Feldern}
+
+\pagebreak
+
+\section*{C. Gewichtung von Mobilität und Cowthello}
+ 
+\setcounter{table}{0}
+\renewcommand{\thetable}{C\arabic{table}}
+
+\begin{table}[hb]
+\centering
+\begin{tabular}{c|c|ccc}
+\hline
+Gewichtung Mobilität A\,/\,B & \#Spiele & Siege A & Unentschieden & Siege B \\
+\hline
+   0\,\%\,/\, 50\,\% & 20 &  0\,\% &  0\,\% &100\,\% \\
+  50\,\%\,/\,100\,\% & 20 &100\,\% &  0\,\% &  0\,\% \\
+\hline
+\end{tabular}
+\caption{Einfluss der Anzahl der Steine auf den Anteil der Siege}
+\label{table:combinedweighting}
+\end{table}
 
 \pagebreak
 %\includepdf[pages=-,scale=.9,pagecommand={}]{Aufgabenstellung.pdf} % PDF um 10% verkleinert einbinden --> Kopf- und Fußzeile  werden so korrekt dargestellt. Die Option `pages' ermöglicht es, eine bestimmte Sequenz von Seiten (z.B. 2-10 oder `-' für alle Seiten) auszuwählen.
