@@ -3,14 +3,13 @@
 \section{Verbesserungen durch Pruning}
 
 Um den Einfluss von Alpha-Beta-Pruning, Iterative Deepening und ProbCut auf die Leistung der KI beurteilen zu können,
-kann mithilfe der Funktion $debug\_num\_visited\_states$ die Zeit gemessen werden, die bei einem
-gegebenen Zustand benötigt wird, um den nächsten Zug zu berechnen. Diese wurde für verschiedene Suchtiefen berechnet und
-in Tabelle \ref{table:numstates} zusammengefasst. Hier ist deutlich zu erkennen, dass der Alpha-Beta-Algorithmus durch
-das Anwenden von Pruning im Gegensatz zum reinen Minimax-Algorithmus vor allem für größere Suchtiefen deutlich weniger
-Zeit benötigt. Alpha-Beta mit Iterative Deepening hat bei geringen Suchtiefen einen relativ hohen Overhead, sodass die
-Berechnung länger dauert. Ab einer Suchtiefe von sieben ist Iterative Deepening allerdings deutlich überlegen, da durch
-die bessere Sortierung so viele Zweige ausgeschlossen werden können, dass trotz Overhead der nächste Zug schneller
-bestimmt werden kann.
+kann die Zeit gemessen werden, die bei einem gegebenen Zustand benötigt wird, um den nächsten Zug zu berechnen. Diese
+wurde für verschiedene Suchtiefen berechnet und in Tabelle \ref{table:numstates} zusammengefasst. Hier ist deutlich zu
+erkennen, dass der Alpha-Beta-Algorithmus durch das Anwenden von Pruning im Gegensatz zum reinen Minimax-Algorithmus vor
+allem für größere Suchtiefen deutlich weniger Zeit benötigt. Alpha-Beta mit Iterative Deepening hat bei geringen
+Suchtiefen einen relativ hohen Overhead, sodass die Berechnung länger dauert. Ab einer Suchtiefe von sieben ist
+Iterative Deepening allerdings deutlich überlegen, da durch die bessere Sortierung so viele Zweige ausgeschlossen werden
+können, dass trotz Overhead der nächste Zug schneller bestimmt werden kann.
 %TODO: ProbCut bringt nichts? evtl sind die Werte noch falsch
 
 \begin{table}[hb]
