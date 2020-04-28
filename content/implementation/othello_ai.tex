@@ -109,17 +109,17 @@ def mobility_heuristic(state):
                 len(state.possible_moves)) / 64
 \end{lstlisting}
 
-Nicht nur die aktuelle, sondern auch die potentielle Mobilität kann vor
+Nicht nur die aktuelle, sondern auch die potenzielle Mobilität kann vor
 allem in frühen Phasen des Spiels wichtig für die Bewertung einer
 Position sein. Die Funktion
 \passthrough{\lstinline!pot\_mob\_heuristic!} berechnet für einen
-Zustand \passthrough{\lstinline!state!} die Differenz der potentiellen
-Mobilität beider Spieler. Die potentielle Mobilität eines Spielers ist
+Zustand \passthrough{\lstinline!state!} die Differenz der potenziellen
+Mobilität beider Spieler. Die potenzielle Mobilität eines Spielers ist
 gegeben durch die Summe aller freien Felder um gegnerische Spielsteine,
 da Michael Buro dieses Merkmal als in seiner Dissertation als beste
-Metrik für die Potentielle Mobilität ausgemacht hat
+Metrik für die Potenzielle Mobilität ausgemacht hat
 \cite[S. 9]{evaluationfunctions}. Das Ergebnis wird durch \(3.5\)
-geteilt, da es im Durchschnitt \(3.5\) mal so viele potentielle Züge wie
+geteilt, da es im Durchschnitt \(3.5\) mal so viele potenzielle Züge wie
 tatsächliche Züge gibt.
 
 \begin{lstlisting}[language=Python]
@@ -132,20 +132,20 @@ def pot_mob_heuristic(state):
             yi = y + dy
             if 0 <= xi < 8 and 0 <= yi < 8 and board[xi][yi] != 0:
                 fields -= board[xi][yi]
-    # Im Durchschnitt gibt es 3.5 Mal mehr potentielle wie tatsächliche Züge
+    # Im Durchschnitt gibt es 3.5 Mal mehr potenzielle wie tatsächliche Züge
     fields /= 3.5 
     return fields / 64
 \end{lstlisting}
 
 Die Funktion \passthrough{\lstinline!combined\_mobility\_heuristic!}
-kombiniert die aktuelle und potentielle Mobilität, wobei zu Beginn des
-Spiels die potentielle Mobilität stärker gewichtet wird und gegen Ende
+kombiniert die aktuelle und potenzielle Mobilität, wobei zu Beginn des
+Spiels die potenzielle Mobilität stärker gewichtet wird und gegen Ende
 des Spiels die aktuelle Mobilität. Michael Buro beschreibt in seiner
-Dissertation, dass die potentielle Mobilität bis 36 Spielsteine auf dem
+Dissertation, dass die potenzielle Mobilität bis 36 Spielsteine auf dem
 Feld liegen wichtiger für die Bewertung ist, als die aktuelle Mobilität
-\cite[S. 9]{evaluationfunctions}. Eigene Tests, welche in
-\autoref{sec:combinedmobility} beschrieben sind, ergeben, dass eine
-lineare Kombination der beiden Merkmale zu einem guten Ergebnis führt.
+\cite[S. 9]{evaluationfunctions}. Eigene Tests, welche in Kapitel
+\ref{sec:combinedmobility} beschrieben sind, ergeben, dass eine lineare
+Kombination der beiden Merkmale zu einem guten Ergebnis führt.
 
 \begin{lstlisting}[language=Python]
 def combined_mobility_heuristic(state):
@@ -283,7 +283,7 @@ Gewichtung von Mobilität und Cowthello wird in Kapitel
 def combined_heuristic(state):
     mobility = combined_mobility_heuristic(state)
     cowthello = cowthello_safe_heuristic(state)
-    return 0.5 * mobility + 0.5 * cowthello
+    return 0.625 * mobility + 0.375 * cowthello
 \end{lstlisting}
 
 \hypertarget{implementierung-der-strategien}{%
