@@ -1,5 +1,5 @@
 \hypertarget{probcut-standardabweichung-othello_pc_sigma.ipynb}{%
-\section{Probcut Standardabweichung
+\section{ProbCut Standardabweichung
 (othello\_pc\_sigma.ipynb)}\label{probcut-standardabweichung-othello_pc_sigma.ipynb}}
 
 \label{sec:pcsigma}
@@ -11,7 +11,7 @@
 </style>
 \end{lstlisting}
 
-In diesem Notebook wird die für den Probcut Algorithmus benötigte
+In diesem Notebook wird die für den ProbCut Algorithmus benötigte
 Standardabweichung in Abhängigkeit von der aktuellen Spielphase, welche
 durch die Anzahl der Steine auf dem Spielfeld angegeben wird, bestimmt.
 Dazu wird in verschiedenen Spielzuständen, jeweils eine Suche der Tiefe
@@ -29,7 +29,7 @@ welche daher im Folgenden eingebunden wird.
 Für die statistische Betrachtung werden mehrere externe Bibliotheken
 verwendet. Dazu gehören \passthrough{\lstinline!pandas!} und
 \passthrough{\lstinline!csv!} für das Schreiben und Laden von
-CSV-Dateien, \passthrough{\lstinline!sklearn!} für die Lineare
+CSV-Dateien, \passthrough{\lstinline!sklearn!} für die lineare
 Regression, sowie \passthrough{\lstinline!matplotlib!} und
 \passthrough{\lstinline!seaborn!} für die grafische Darstellung.
 
@@ -49,7 +49,7 @@ import math
 \hypertarget{sammeln-von-datenpunkten}{%
 \subsection{Sammeln von Datenpunkten}\label{sammeln-von-datenpunkten}}
 
-Im der Funktion \passthrough{\lstinline!sample\_probcut\_values!} werden
+In der Funktion \passthrough{\lstinline!sample\_probcut\_values!} werden
 zunächst einige Datenpunkte zur Bestimmung der Standardabweichung
 gesammelt, indem in vielen verschiedenen Spielzuständen jeweils eine
 tiefe und eine flache Suche durchgeführt wird. Die jeweiligen Tiefen
@@ -57,7 +57,7 @@ werden dabei durch die Parameter
 \passthrough{\lstinline!shallow\_depth!} und
 \passthrough{\lstinline!deep\_depth!} spezifiziert. Die verwendeten
 Spielzustände werden ausgehen vom Startzustand durch zufälliges Ziehen
-erreicht, welches in der KI Strategie
+erreicht, welches in der KI-Strategie
 \passthrough{\lstinline!random\_ai!} implementiert wird. Es werden
 insgesamt \passthrough{\lstinline!num\_games!} Spiele auf diese Weise
 gespielt, und jeder Zustand entsprechend untersucht. Die so erhaltenen
@@ -92,7 +92,7 @@ def sample_probcut_values(num_games, shallow_depth, deep_depth):
 \end{lstlisting}
 
 Hier wird die Funktion \passthrough{\lstinline!sample\_probcut\_values!}
-für die in der Probcut Implementierung verwendeten Suchtiefen
+für die in der ProbCut Implementierung verwendeten Suchtiefen
 ausgeführt.
 
 \begin{lstlisting}[language=Python]
@@ -144,7 +144,7 @@ Die Ausreißer bei Deep Depth Werten von \(1\) und \(-1\) entstehen
 dadurch, dass in diesen Spielzuständen, mit einer Tiefen Suche bereits
 der Ausgang des Spiels bestimmt werden kann, während bei der Flachen
 Suche noch die Heuristik verwendet wird. Theoretisch kann bereits hier
-die Standardabeweichung ermittelt, und dann in Probcut genutzt werden.
+die Standardabeweichung ermittelt, und dann in ProbCut genutzt werden.
 Bei zusätzlicher Betrachtung der Anzahl von Steinen auf dem Spielfeld
 stellt sich jedoch heraus, dass die Standardabweichung stark davon
 abhängt. Durch Einbeziehung der Steinzahl bei der Ermittleung der
@@ -197,7 +197,7 @@ plt.show()
 
 Bei der Betrachtung ergibt sich, dass im Bereich zwischen 5 und 58 Zügen
 eine annähernd quadratische Abhängigkeit vorliegt. Daher wird dieser
-Bereich mittels Polynomieller Regression angehähert und visualisiert
+Bereich mittels Polynomieller Regression angehähert und visualisiert.
 
 Folgender Code berechnet das Regressionspolynom zweiten Gerades der
 Standardabweichung in Abhängigkeit von der Anzahl der Steine auf dem
@@ -246,5 +246,5 @@ dem Spielfeld berechnet
 print(theta0, '+', theta1 + theta2, '* x +', theta3, '* x**2')
 \end{lstlisting}
 
-Die hier ausgegebenen Funktion wird in der Probcut Implementierung zur
+Die hier ausgegebenen Funktion wird in der ProbCut Implementierung zur
 Bestimmung der Standardabweichung genutzt.

@@ -11,7 +11,7 @@
 </style>
 \end{lstlisting}
 
-Dieses Kapitel beschreibt die Implemenentierung der Künstlichen
+Dieses Kapitel beschreibt die Implementierung der Künstlichen
 Intelligenz. Es werden mehrere, voneinander verschiedene, Strategien
 implementiert, um einen Vergleich von diesen zu ermöglichen.
 
@@ -29,7 +29,7 @@ Die Konstanten werden von der Python Standardbibliothek in dem Modul
 \passthrough{\lstinline!math!} bereitgestellt
 
 Das Modul \passthrough{\lstinline!random!} wird im Rahmen dieser
-Implementierung für mehrere Zwecke genutzt. Zum Einen zur
+Implementierung für mehrere Zwecke genutzt. Zum einen zur
 Implementierung der \passthrough{\lstinline!random\_ai!}, einer
 Strategie, welche immer einen zufälligen Zug wählt. Und außerdem, um die
 auf Minimax basierenden Strategien nichtdeterministisch zu machen.
@@ -60,7 +60,7 @@ utilities = {WHITE: '-', BLACK: '-'}
 \subsection{Heuristiken}\label{heuristiken}}
 
 Zum Abschätzen der Nützlichkeit eines Spielzustands wird eine Heuristik
-benötigt. Im folgenden sind einige solcher Heuristiken implementiert. Da
+benötigt. ImFolgenden sind einige solcher Heuristiken implementiert. Da
 Weiß der maximierende Spieler, und Schwarz der minimierende Spieler ist,
 repräsentiert ein höherer Wert der Heuristik einen für Weiß
 vorteilhaften Zug, während ein niedriger Wert einen Vorteil für Schwarz
@@ -72,7 +72,7 @@ gleich guten Spielzustand.
 Da das Ziel des Spiels Othello ist, zum Ende des Spiels mehr Steine als
 der Gegner auf dem Spielfeld zu haben, ist es naheliegend, die Differenz
 der Anzahlen von Steinen beider Spieler zur Abschätzung eines Zuges zu
-verwenden. Genau das macht die Disk-Count-Heuristik indem sie die
+verwenden. Genau das macht die Disk-Count-Heuristik, indem sie die
 Differenz der Anzahlen von Steinen, beider Spieler berechnet und den
 resultierenden Wert zur Normalisierung durch die maximale Anzahl an
 Steinen teilt. Bei genauerer Betrachtung ist es jedoch, gerade zu Beginn
@@ -89,11 +89,11 @@ viele mögliche Züge ein Spieler im Vergleich zum Gegner hat. Die Idee
 hinter dieser Heuristik ist, dass ein Spieler dadurch seine Freiheit
 maximiert, während die Freiheit des Gegners durch eine geringe Anzahl an
 Zügen eingeschränkt wird. Die Mobilitäts-Heuristik gibt an wie viele
-mögliche Züge mehr Weiß gegenüber Schwarz im Aktuellen Spielzustand hat.
+mögliche Züge mehr Weiß gegenüber Schwarz im aktuellen Spielzustand hat.
 Auch dieser Wert wird durch Division durch die Anzahl an Feldern
 normalisiert, um die Grenzen von \(-1\) und \(1\) einzuhalten. Zu
 beachten ist hier, dass auch die Anzahl möglicher Züge für einen Spieler
-bestimmt wird, der im Spielzustand gar nicht am Zug ist. Dies ist wirkt
+bestimmt wird, der im Spielzustand gar nicht am Zug ist. Dies wirkt
 zunächst sematisch nicht sinvoll, hat sich jedoch, wie in
 \autoref{sec:currentmobility} gezeigt, im Vergleich gegenüber möglichen
 Alternativen, wie der Verwendung einer durchschnittlichen Mobilität, als
@@ -117,7 +117,7 @@ Zustand \passthrough{\lstinline!state!} die Differenz der potenziellen
 Mobilität beider Spieler. Die potenzielle Mobilität eines Spielers ist
 gegeben durch die Summe aller freien Felder um gegnerische Spielsteine,
 da Michael Buro dieses Merkmal als in seiner Dissertation als beste
-Metrik für die Potenzielle Mobilität ausgemacht hat
+Metrik für die potenzielle Mobilität ausgemacht hat
 \cite[S. 9]{evaluationfunctions}. Das Ergebnis wird durch \(3.5\)
 geteilt, da es im Durchschnitt \(3.5\) mal so viele potenzielle Züge wie
 tatsächliche Züge gibt.
@@ -156,14 +156,14 @@ def combined_mobility_heuristic(state):
 
 Beim Spielen von Othello fällt auf, dass es bestimmte Felder gibt, deren
 Belegung von Vorteil ist, sowie einige, deren Belegung eher nachteilhaft
-ist. Diese Eigenschaft macht sich die Cowthello-Heuristik zu Nutze.
-Diese weist jedem Feld einen Wert zu der angibt, wie Vorteilhaft der
-Besitz dieses Feldes ist, bzw. wie Nachteilhaft die Belegung des Feldes
-durch den Gegner ist. Diese Gewichte werden mit der aktuellen Belegung
-des Spielfelds multipliziert und die Ergebnisse anschließend
-aufsummiert. Der resultierende Wert schätzt dann den Nutzen der
-aktuellen Position ein. Auch bei dieser Heuristik findet eine
-Normalisierung statt.
+ist. Diese Eigenschaft macht sich die Cowthello-Heuristik
+\cite{cowthello} zunutze. Sie weist jedem Feld einen Wert zu, der
+angibt, wie Vorteilhaft der Besitz dieses Feldes ist, bzw. wie
+Nachteilhaft die Belegung des Feldes durch den Gegner ist. Diese
+Gewichte werden mit der aktuellen Belegung des Spielfelds multipliziert
+und die Ergebnisse anschließend aufsummiert. Der resultierende Wert
+schätzt dann den Nutzen der aktuellen Position ein. Auch bei dieser
+Heuristik findet eine Normalisierung statt.
 
 Aufgrund der Symmetrie des Othello Spielfeldes ist es für die
 Weight-Heuristik nicht nötig, für jedes Feld einzeln dessen Gewicht
@@ -172,7 +172,7 @@ Viertel des Spielfelds angegeben und dieses anschließend gespiegelt. Die
 Funktion \passthrough{\lstinline!gen\_cowthello\_matrix!} generiert dann
 die Gewichte-Matrix für das gesamte Feld und führt auch die
 Normalisierung durch. Dabei werden die Gewichte aus dem Online-Othello
-Programm Cowthello verwendet. \cite{cowthello} Cowthello ist unter der
+Programm Cowthello \cite{cowthello} verwendet. Cowthello ist unter der
 URL \url{https://www.aurochs.org/games/cowthello/} verfügbar.
 
 \begin{lstlisting}[language=Python]
@@ -567,7 +567,7 @@ jeden Zustand wird die Strategie-Funktion genau einmal mit der Tiefe
 \passthrough{\lstinline!depth-1!} ausgeführt. Das
 \passthrough{\lstinline!-1!} wird hierbei verwendet, da bereits in der
 Funktion \passthrough{\lstinline!ai\_make\_move!} selbst eine Iteration
-über die Kindzustände durchgeführt wird. Die Strategiefunktion erhält
+über die Kindzustände durchgeführt wird. Die Strategie-Funktion erhält
 ausßerdem den übergebenen Parameter \passthrough{\lstinline!heuristic!},
 welche eine der implementierten Heuristikfunktionen sein kann.
 
@@ -604,7 +604,7 @@ def ai_make_move(ai, state, depth, heuristic):
 Die Ausführungsfunktion \passthrough{\lstinline!ai\_make\_move\_id!}
 unterscheidet sich von \passthrough{\lstinline!ai\_make\_move!} dadurch,
 dass iterative Tiefensuche durchgeführt wird. Dazu wird die
-Strategiefunktion, statt nur einmal mit der vorgegebenen Tiefe
+Strategie-Funktion, statt nur einmal mit der vorgegebenen Tiefe
 aufgerufen zu werden, beginnend von 1 mit immer höherer Suchtiefe
 aufgerufen. Wird die Tiefe \passthrough{\lstinline!depth!} erreicht, so
 wird einer der besten Züge, wie auch in
@@ -612,10 +612,10 @@ wird einer der besten Züge, wie auch in
 Verwendung eines Cache, der
 \passthrough{\lstinline!transposition\_table!}, in den auf Alpha-Beta
 Prunning basierenden Strategien, kann durch die Wiederverwendung der
-Ergebnisse vorheriger Aufrufe ein besseres Move Ordering vorgenommen
+Ergebnisse vorheriger Aufrufe ein besseres Move-Ordering vorgenommen
 werden, und somit die Effizienz des Alpha-Beta Pruning gesteigert
 werden. Bei ausreichender Suchtiefe übertreffen die dadurch erzielten
-Ersparnisse, den zusätzlichen Aufwand, die Strategiefunktionen mehrfach
+Ersparnisse, den zusätzlichen Aufwand, die Strategie-Funktionen mehrfach
 aufzurufen.
 
 \begin{lstlisting}[language=Python]
@@ -657,7 +657,7 @@ Je nach Spielsituation ist die Mobilität der Spieler unterschiedlich
 hoch. Dadurch unterscheidet sich auch die Anzahl der zu betrachteten
 Spielzustände. Auch die Anzahl der durch Alpha-Beta Pruning entfernten
 Zweige kann variieren. Bei konstanter Suchtiefe ist daher mit variablen
-Ausführungszeiten zu rechnen. Im Spiel gegen einen Menschlichen Spieler
+Ausführungszeiten zu rechnen. Im Spiel gegen einen menschlichen Spieler
 ist es jedoch wünschenswert, eine maximale Zugdauer nicht zu
 überschreiten. Die verfügbare Zeit soll dabei dennoch effektiv für eine
 möglichst gute Entscheidung genutzt werden.

@@ -14,7 +14,7 @@
 Im Folgenden ist die Spielelogik des Spiels Othello implementiert. Dazu
 gehört die Implementation aller im \autoref{sec:spieltheorie} genannten
 Aspekte, wie zum Beispiel die Erzeugung eines Startzustands, sowie die
-die Bestimmung und Durchführung von Spielzügen ausgehend von einem
+Bestimmung und Durchführung von Spielzügen ausgehend von einem
 Spielzustand.
 
 \hypertarget{importieren-der-externen-abhuxe4ngigkeiten}{%
@@ -40,7 +40,7 @@ import copy
 \hypertarget{globale-konstanten}{%
 \subsection{Globale Konstanten}\label{globale-konstanten}}
 
-Im Folgenden Abschnitt werden zunächst einige Konstanten definiert,
+Im folgenden Abschnitt werden zunächst einige Konstanten definiert,
 welche in der späteren Implementation häufig genutzt werden.
 
 Die Konstante \passthrough{\lstinline!BOARD\_SIZE!} gibt die Anzahl an
@@ -51,8 +51,8 @@ ob gegebene Koordinaten innerhalb des Spielfeldes liegen.
 
 Die Konstanten \passthrough{\lstinline!BLACK!},
 \passthrough{\lstinline!WHITE!} und \passthrough{\lstinline!NONE!}
-werden auf die Zahlenwerte -1 , 1 und 0 abgebildet und werden für
-mehrere Zwecke genutzt:
+werden auf die Zahlenwerte -1, 1 und 0 abgebildet und werden für mehrere
+Zwecke genutzt:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -66,10 +66,10 @@ mehrere Zwecke genutzt:
   \passthrough{\lstinline!NONE!} ein leeres Feld repräsentiert.
 \item
   Repräsentation der Spieler: \passthrough{\lstinline!BLACK!} und
-  \passthrough{\lstinline!WHITE!} werden zur Repäsentation eines
+  \passthrough{\lstinline!WHITE!} werden zur Repräsentation eines
   Spielers genutzt. Beispielsweise enthält der Spielzustand eine
-  Variable \passthrough{\lstinline!turn!} die angibt, welcher Spieler am
-  Zug ist.
+  Variable \passthrough{\lstinline!turn!}, die angibt, welcher Spieler
+  am Zug ist.
 \item
   Berechnung der Heuristiken: Die Werte \passthrough{\lstinline!BLACK!},
   \passthrough{\lstinline!WHITE!} und \passthrough{\lstinline!NONE!}
@@ -93,13 +93,13 @@ NONE = 0 # NO PLAYER
 
 Die Klasse \passthrough{\lstinline!GameState!} repäsentiert einen
 Spielzustand von Othello. Dieser wird durch die im Folgenden genannten
-Attribute beschrieben
+Attribute beschrieben:
 
 \begin{itemize}
 \tightlist
 \item
   Das Spielfeld \passthrough{\lstinline!board!}, welches durch eine
-  zweidimensionale Numpy Matrix repräsentiert wird, bei der jede Zelle
+  zweidimensionale Numpy-Matrix repräsentiert wird, bei der jede Zelle
   die die Werte \passthrough{\lstinline!BLACK!},
   \passthrough{\lstinline!WHITE!} und \passthrough{\lstinline!NONE!}
   annehmen kann.
@@ -108,7 +108,7 @@ Attribute beschrieben
   ist. Zusätzlich enthält der Spielzustand weitere Informationen welche
   zur Verbesserung der Performanz genutzt werden.
 \item
-  Die im aktuellen Spielzustand möglichen Züge, werden als Paare von
+  Die im aktuellen Spielzustand möglichen Züge werden als Paare von
   Koordinaten in der Variable \passthrough{\lstinline!possible\_moves!}
   gespeichert werden. Ein Koordinatenpaar steht hierbei für das Setzen
   eines Spielsteins auf die entsprechende Stelle auf dem Spielfeld unter
@@ -134,12 +134,12 @@ Attribute beschrieben
   \passthrough{\lstinline!last\_move!} gespeichert.
 \end{itemize}
 
-Die zur Performance-Verbesserung genutzen Variablen werden im Laufe des
+Die zur Performance-Verbesserung genutzten Variablen werden im Laufe des
 Spielverlaufs immer aktuell gehalten.
 
 In dem Konstruktor \passthrough{\lstinline!\_\_init\_\_!} der Klasse
 \passthrough{\lstinline!GameState!} wird ein neuer Spielzustand
-entsprechend den Othello Spielregeln instanziert, indem alle Variablen
+entsprechend den Othello Spielregeln instanziiert, indem alle Variablen
 entsprechen initialisiert werden.
 
 Die Funktion \passthrough{\lstinline!\_\_lt\_\_!} ist implementiert,
@@ -148,7 +148,7 @@ Vergleichsoperator angewendet werden kann. Das ist nötig, damit in der
 Künstlichen Intelligenz Tupel sortiert werden können, die beispielsweise
 aus einer Priorität und einen \passthrough{\lstinline!GameState!}
 bestehen. Da in diesem Fall nur die Sortierung nach der Priorität
-wichtig ist, ist die implementation von
+wichtig ist, ist die Implementation von
 \passthrough{\lstinline!\_\_lt\_\_!} irrelevant. Daher wird, der
 Einfachkeit wegen, immer True zurückgegeben.
 
@@ -185,7 +185,7 @@ directions = [(-1,-1),(0,-1),(1,-1),(-1,0),(1,0),(-1,1),(0,1),(1,1)]
 
 Die Exception \passthrough{\lstinline!InvalidMoveException!}, wird
 später in der Funktion \passthrough{\lstinline!make\_move!} geworfen,
-wenn ein ungültigen Spielzug gefordert wird. Dies dient der
+wenn ein ungültiger Spielzug gefordert wird. Dies dient der
 Fehlerbehandlung.
 
 \begin{lstlisting}[language=Python]
@@ -199,8 +199,8 @@ ein Spielfeld \passthrough{\lstinline!board!} und den Spieler
 Position \passthrough{\lstinline!pos!} in die Richtung
 \passthrough{\lstinline!direction!} Steine umgedreht werden können. Die
 Variable \passthrough{\lstinline!board!} enthält das Spielfeld als
-Python-Liste, da einzelne Zugriffe so deutlich schneller sind, als auf
-bei einem numpy-Array. \passthrough{\lstinline!can\_flip\_in\_dir!} gibt
+Python-Liste, da einzelne Zugriffe so deutlich schneller sind, als bei
+einem Numpy-Array. \passthrough{\lstinline!can\_flip\_in\_dir!} gibt
 einen Wahrheitswert zurück. True gibt dabei an, dass Steine umgedreht
 werden können.
 
