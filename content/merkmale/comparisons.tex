@@ -7,7 +7,6 @@ Diese Zahlen wurden ermittelt, indem die gleiche KI jeweils 20 Mal mit unterschi
 Die Ergebnisse befinden sich in der Tabelle \ref{table:search-depth}.
 Es ist also wichtig, eine möglichst hohe Suchtiefe in akzeptabler Zeit zu erreichen.
 Bei begrenzter Rechenzeit kann eine höhere Performanz zu einer stärkeren KI führen.
-%TODO: Tabelle in Anhang?
 
 \begin{table}[hb]
 \centering
@@ -68,11 +67,12 @@ Das heißt, die Gewichtung der potenziellen Mobilität entspricht dem Anteil der
 dem Anteil der freien Felder.
 
 Um zu bestimmen, welche Kombination der Mobilität zur stärksten KI führt, wurden verschiedene Kombinationen jeweils 50
-Mal mit einer Suchtiefe von drei gegeneinander spielen gelassen. Es hat sich gezeigt, dass ein Wechsel von der
-potenziellen zur aktuellen Mobilität bei 36 Steinen auf dem Spielfeld keinen messbaren Unterschied zur aktuellen oder
-potenziellen Mobilität alleine bewirkt. Eine lineare Kombination von aktueller und potenzieller Mobilität konnte
-allerdings mit 56 – 60\,\% Siegen einen leichten Vorteil gegenüber den anderen Möglichkeiten erzielen. Tabelle
-\ref{table:mobility} im Anhang zeigt den Anteil der Siege und Niederlagen der verschiedenen Kombinationen.
+Mal mit einer Suchtiefe von drei gegeneinander spielen gelassen. Dabei hat jede KI gleich oft angefangen, um einen
+eventuellen Vorteil dadurch auszuschließen. Es hat sich gezeigt, dass eine lineare Kombination der beiden Merkmale
+stärker ist, als aktuelle oder potenzielle Mobilität alleine. Eine lineare Kombination von aktueller und potenzieller
+Mobilität ist ähnlich gut wie nur die potenzielle Mobilität, hat allerdings mit 74\,\% Siegen einen Vorteil gegenüber
+dem Wechsel nach 36 Steinen und ist somit die stärkste Kombination. Tabelle \ref{table:mobility} im Anhang zeigt den
+Anteil der Siege und Niederlagen der verschiedenen Kombinationen.
 
 \subsection{Gewichtung von Mobilität und Cowthello} \label{sec:mobcowweight}
 Letztendlich müssen die Mobilität und Cowthello zu einer Heuristik kombiniert werden. Um die Gewichtung der beiden
