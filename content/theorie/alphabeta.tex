@@ -1,6 +1,5 @@
 \section{Alpha-Beta-Pruning}
 \label{sec:alphabeta}
-%TODO: Quelle
 
 Alpha-Beta-Pruning ist eine Optimierung des Minimax Algorithmus, bei der komplette Zweige des Suchbaums ausgeschlossen
 werden, die das Ergebnis des Algorithmus nicht mehr beeinflussen können. Ein Zweig kann dann ausgeschlossen werden, wenn
@@ -14,6 +13,7 @@ $Beta = \infty$. Die Variablen werden an die rekursiven Funktionsaufrufe weiterg
 einen der Spieler auftritt, aktualisiert. Ist $Beta < Alpha$, d. h. sowohl der maximierende als auch der minimierende
 Spieler können bereits einen für sich jeweils besseren Zug forcieren, so muss der Zweig nicht weiter beachtet werden, da
 er in einem Spiel mit optimalen Spielern nicht auftritt.
+\cite[S.~167]{ai2010russel}
 
 Das Beispiel in Abbildung \ref{fig:game_tree_ab_pruning} veranschaulicht das Alpha-Beta-Pruning: An Konten $A$ ist der
 maximierende Spieler an der Reihe, an den Knoten $B$ und $C$ der minimierende Spieler. Der maximierende Spieler
@@ -48,21 +48,19 @@ $D$ hat. Knoten $D$ muss also gar nicht betrachtet werden.
 Das folgende Python-Listing zeigt eine beispielhafte Implementierung des Alpha-Beta Algorithmus. Hierbei ist Weiß der
 maximierende Spieler und Schwarz der minimierende Spieler. Zur Vermeidung von Redundanz wird statt zwei Funktionen $min$
 und $max$ eine einzelne Funktion $alphabeta$ verwendet, in der abhängig vom aktuellen Spieler eine Fallunterscheidung
-durchgeführt wird. Ein Spielzustand $state$ hat die Attribute $game\_over$, das einen Wahrheitswert enthält, ob das Spiel
-vorbei ist, $possible\_moves$, das eine Liste aller möglichen Züge enthält, und $turn$, das den Spieler an der Reihe
-enthält. Die Funktion $get\_utility$ berechnet das Endergebnis für einen Zustand und einen Spieler und die Funktion $make\_move$ führt auf einem Zustand einen Zug aus und gibt diesen zurück.
+durchgeführt wird. Ein Spielzustand $state$ hat die Attribute $game\_over$, das einen Wahrheitswert enthält, ob das
+Spiel vorbei ist, $possible\_moves$, das eine Liste aller möglichen Züge enthält, und $turn$, das den Spieler an der
+Reihe enthält. Die Funktion $get\_utility$ berechnet das Endergebnis für einen Zustand und einen Spieler und die
+Funktion $make\_move$ führt auf einem Zustand einen Zug aus und gibt diesen zurück.
 
 \lstinputlisting[language=Python, float]{listings/alphabeta.py}
 
 Durch Anwendung von Alpha-Beta-Pruning wird das Ergebnis des Minimax Algorithmus nicht beeinflusst. Jedoch kann durch
 die Betrachtung einer geringeren Zahl von Knoten die Performanz signifikant verbessert werden.
+\cite[S.~167]{ai2010russel}
 
-\subsection{Beschränkte Tiefensuche}
-%TODO: beschränkte tiefensuche separat erklären
-Bei einer Alpha-Beta-Suche, die nicht den vollständigen Suchbaum umfasst, kann bei Verwendung einer heuristischen
-Evaluations-Funktion die maximale Suchtiefe bei gleicher Rechenzeit erhöht werden, was zu einem besseren Ergebnis führt.
-%TODO: ??
-%TODO: Quelle
+Bei einer beschränkten Tiefensuche kann somit bei Verwendung einer heuristischen Evaluations-Funktion die maximale
+Suchtiefe bei gleicher Rechenzeit erhöht werden, was zu einem besseren Ergebnis führt.
 
 \subsection{Move Ordering}
 Da Alpha-Beta-Pruning nur dann Zweige ausschließen kann, wenn bereits bessere Zweige gefunden wurden, ist es von
@@ -72,6 +70,7 @@ Bewertung der Züge stattgefunden haben muss, was die Anwendung der Alpha-Beta S
 ungefähre Anordnung der Züge, die dennoch zu einer wesentlichen Effizienzverbesserung führt, ist jedoch häufig möglich.
 Beispielsweise können in einem primitiven Ansatz beim Schach Züge, in denen eine gegnerische Figur geschlagen wird,
 priorisiert werden. Dieses Sortieren der Züge wird „Move Ordering“ genannt.
+\cite[S.~169]{ai2010russel}
 
 Um für Othello eine geeignete Reihenfolge der Züge zu berechnen, kann zunächst eine Suche mit einer geringeren Tiefe
 durchgeführt werden. Diesen Ansatz macht sich „Iterative Deepening“ zunutze: Begonnen wird mit einer Suchtiefe von

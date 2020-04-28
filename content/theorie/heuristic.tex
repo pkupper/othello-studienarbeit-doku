@@ -1,10 +1,10 @@
 \section{Heuristische Evaluations-Funktion}
 \label{sec:heuristic}
 
+%TODO: beschränkte tiefensuche separat erklären
 In vielen relevanten Spielen ist es aufgrund der Größe des Suchbaums praktisch nicht möglich diesen vollständing zu
-durchsuchen. In der Praxis kann der Suchbaum deshalb nur bis zu einer begrenzten Tiefe durchsucht werden. An diesem
-Punkt kommt eine heuristische Evaluations-Funktion zum Einsatz, welche den Nutzen des Spielzustands für einen Spieler
-approximiert.
+durchsuchen. In der Praxis wird deshalb häufig eine beschränkte Tiefensuche durchgeführt. An der maximalen Suchtiefe kommt
+eine heuristische Evaluations-Funktion zum Einsatz, die den Nutzen des Spielzustands für einen Spieler approximiert.
 \cite[S.~171]{ai2010russel}
 
 Optimalerweise würde die Evaluations-Funktion den tatsächlichen Nutzen einer Spielsituation bestimmen. Eine solche
