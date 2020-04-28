@@ -276,8 +276,8 @@ def cowthello_safe_heuristic(state):
 Die oben implementierten Heuristiken bewerten jeweils nur ein Merkmal
 der aktuellen Spielsitation. Durch eine Kombination mehrerer dieser
 Heuristiken können mehrere Merkmale gleichzeitig betrachtet werden. Die
-Kombination der Heuristiken kann auch in Abhängigkeit von der aktuellen
-Spielphase geschehen.
+Gewichtung von Mobilität und Cowthello wird in Kapitel
+\ref{sec:mobcowweight} bestimmt.
 
 \begin{lstlisting}[language=Python]
 def combined_heuristic(state):
