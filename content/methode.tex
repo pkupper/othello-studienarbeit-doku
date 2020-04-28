@@ -10,4 +10,12 @@ ermöglichen es, Dokumentation und Erklärungen direkt in Textfeldern beim entsp
 Die KI soll auf dem Minimax-Algorithmus mit begrenzter Tiefensuche und den Erweiterungen Alpha-Beta und ProbCut
 basieren.
 
-Kapitel \ref{chap:implementation} enthält die Implementation von Jupyter Notebooks, welche die KI, eine grafische Oberfläche und Funktionalitäten zum Testen, Bestimmen und Evaluieren von Parametern implementieren.
+Um eine möglichst starke KI zu entwickeln, muss überprüft werden, welche Merkmale wie stark in die Heuristik einfließen.
+Dazu wird die Alpha-Beta-KI gegen sich selbst mit verschiedenen Heuristiken spielen gelassen. Beide KIs machen gleich
+oft den ersten Zug, um auszuschließen, dass durch das Beginnen ein Vorteil oder Nachteil entsteht. Es wird der
+Alpha-Beta-Algorithmus verwendet, da die Standardabweichung des ProbCut-Algorithmus von der Heuristik abhängt und jedes
+Mal neu bestimmt werden müsste. Die Spiele verlaufen nicht deterministisch, da nicht unbedingt der Zug mit dem höchsten
+Nutzen gewählt wird, sondern ggf. auch ein Zug, dessen Nutzen sehr ähnlich ist. Die Auswahl geschieht zufällig.
+
+Kapitel \ref{chap:implementation} enthält die Implementation von Jupyter Notebooks, welche die KI, eine grafische
+Oberfläche und Funktionalitäten zum Testen, Bestimmen und Evaluieren von Parametern implementieren.
