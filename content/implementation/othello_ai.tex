@@ -396,16 +396,21 @@ def alphabeta(state, depth, heuristic, alpha, beta):
         return get_utility(state)
     if depth == 0:
         debug_ab_count += 1
-        return heuristic(state)
+        h = heuristic(state)
+        key = (state.board.tobytes(), state.turn, heuristic)
+        if key not in transposition_table:
+            transposition_table[key] = (h, 0)
+        return h
 
     moves = state.possible_moves
     child_states = [make_move(state, move) for move in moves]
     ordered_moves = []
     for child_state in child_states:
-        cached = transposition_table.get(
-            (child_state.board.tobytes(), child_state.turn, heuristic),
-            (heuristic(child_state), 0)
-        )
+        key = (child_state.board.tobytes(), child_state.turn, heuristic)
+        cached = transposition_table.get(key)
+        if cached == None:
+            cached = (heuristic(child_state), 0)
+            transposition_table[key] = cached
         ordered_moves.append((cached[0], child_state, cached[1]))
     ordered_moves.sort(reverse=(state.turn == WHITE))
 
@@ -451,8 +456,8 @@ Variablen \(d\) und \(d'\) aus \autoref{sec:probcut} dieser Arbeit.
 
 \begin{lstlisting}[language=Python]
 PERCENTILE = 1.5
-PROBCUT_DEEP_DEPTH = 4
-PROBCUT_SHALLOW_DEPTH = 2
+PROBCUT_DEEP_DEPTH = 3
+PROBCUT_SHALLOW_DEPTH = 1
 \end{lstlisting}
 
 Die Implementierung der ProbCut Strategie gleicht in großen Teilen der
@@ -481,33 +486,40 @@ def probcut(state, depth, heuristic, alpha, beta):
         return get_utility(state)
     if depth == 0:
         debug_pc_count += 1
-        return heuristic(state)
+        h = heuristic(state)
+        key = (state.board.tobytes(), state.turn, heuristic)
+        if key not in transposition_table:
+            print("saved")
+            transposition_table[key] = (h, 0)
+        return h
 
     if depth == PROBCUT_DEEP_DEPTH:
         num_p = state.num_pieces
         if num_p <= 58:
-            sigma = 0.00574961 + 0.00121003 * num_p + 1.20564162e-05 * num_p**2
+            if PROBCUT_DEEP_DEPTH == 4:
+                sigma = 0.0057496 + 0.00121 * num_p + 1.20564e-05 * num_p**2
+            elif PROBCUT_DEEP_DEPTH == 3:
+                sigma = 0.0028828 + 0.00165 * num_p + 6.02573e-06 * num_p**2
             if beta < 1:
                 bound = PERCENTILE * sigma + beta
                 if probcut(state, PROBCUT_SHALLOW_DEPTH,
-                           heuristic, bound-1, bound) >= bound:
-                    print('cut b')
+                           heuristic, -math.inf, bound) >= bound:
                     return beta
             if alpha > -1:
                 bound = -PERCENTILE * sigma + alpha
                 if probcut(state, PROBCUT_SHALLOW_DEPTH,
-                           heuristic, bound, bound+1) <= bound:
-                    print('cut a')
+                           heuristic, bound, math.inf) <= bound:
                     return alpha
 
     moves = state.possible_moves
     child_states = [make_move(state, move) for move in moves]
     ordered_moves = []
     for child_state in child_states:
-        cached = transposition_table.get(
-            (child_state.board.tobytes(), child_state.turn, heuristic),
-            (heuristic(child_state), 0)
-        )
+        key = (child_state.board.tobytes(), child_state.turn, heuristic)
+        cached = transposition_table.get(key)
+        if cached == None:
+            cached = (heuristic(child_state), 0)
+            transposition_table[key] = cached
         ordered_moves.append((cached[0], child_state, cached[1]))
     ordered_moves.sort(reverse=(state.turn == WHITE))
 
