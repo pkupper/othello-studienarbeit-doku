@@ -65,7 +65,7 @@ Daten werden in einer CSV-Datei gespeichert.
 
 \begin{lstlisting}[language=Python]
 def sample_probcut_values(num_games, shallow_depth, deep_depth):
-    fname = f'probcut_dataset_{PROBCUT_SHALLOW_DEPTH}_{PROBCUT_DEEP_DEPTH}.csv'
+    fname = f'pc_dataset_{PROBCUT_SHALLOW_DEPTH}_{PROBCUT_DEEP_DEPTH}.csv'
     file_exists = os.path.isfile(fname)
     if file_exists:
         print('using existing dataset')
@@ -104,8 +104,8 @@ CSV-Datei. Dabei wird die externe Bibliothek
 \passthrough{\lstinline!pandas!} zum Datenimport genutzt.
 
 \begin{lstlisting}[language=Python]
-filename = f'probcut_dataset_{PROBCUT_SHALLOW_DEPTH}_{PROBCUT_DEEP_DEPTH}.csv'
-df = pandas.read_csv(filename)
+fname = f'pc_dataset_{PROBCUT_SHALLOW_DEPTH}_{PROBCUT_DEEP_DEPTH}.csv'
+df = pandas.read_csv(fname)
 shallow = np.array(df['shallow'])
 deep = np.array(df['deep'])
 moves = np.array(df['moves'])

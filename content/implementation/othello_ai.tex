@@ -425,7 +425,7 @@ def alphabeta(state, depth, heuristic, alpha, beta):
         utility = math.inf
 
     for (_, tmp_state, cached_depth) in ordered_moves:
-        tmp_utility = alphabeta(tmp_state, depth - 1, heuristic, alpha, beta)
+        tmp_utility = alphabeta(tmp_state, depth-1, heuristic, alpha, beta)
         if depth - 1 > cached_depth:
             transposition_table[
                 (tmp_state.board.tobytes(),
@@ -651,14 +651,16 @@ def ai_make_move_id(ai, state, depth, heuristic):
             # maximizing
             for move in state.possible_moves:
                 new_state = make_move(state, move)
-                utility = ai(new_state, cur_depth-1, heuristic, -math.inf, math.inf)
+                utility = ai(new_state, cur_depth-1,
+                             heuristic, -math.inf, math.inf)
                 scored_moves.append((utility, move))
             best_score, _ = max(scored_moves)
         else:
             # minimizing
             for move in state.possible_moves:
                 new_state = make_move(state, move)
-                utility = ai(new_state, cur_depth-1, heuristic, -math.inf, math.inf)
+                utility = ai(new_state, cur_depth-1,
+                             heuristic, -math.inf, math.inf)
                 scored_moves.append((utility, move))
             best_score, _ = min(scored_moves)
         utilities[state.turn] = best_score
@@ -720,14 +722,16 @@ def ai_make_move_id_timelimited(ai, state, timelimit, heuristic):
             # maximizing
             for move in state.possible_moves:
                 new_state = make_move(state, move)
-                utility = ai(new_state, depth-1, heuristic, -math.inf, math.inf)
+                utility = ai(new_state, depth-1,
+                             heuristic, -math.inf, math.inf)
                 scored_moves.append((utility, move))
             best_score, _ = max(scored_moves)
         else:
             # minimizing
             for move in state.possible_moves:
                 new_state = make_move(state, move)
-                utility = ai(new_state, depth-1, heuristic, -math.inf, math.inf)
+                utility = ai(new_state, depth-1,
+                             heuristic, -math.inf, math.inf)
                 scored_moves.append((utility, move))
             best_score, _ = min(scored_moves)
         utilities[state.turn] = best_score
