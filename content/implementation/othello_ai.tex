@@ -69,33 +69,25 @@ repräsentiert. Die Werte aller Heuristiken liegen zwischen \(-1\) und
 Spieler darstellen. Der Wert \(0\) steht für einen für beide Spieler
 gleich guten Spielzustand.
 
-Da das Ziel des Spiels Othello ist, zum Ende des Spiels mehr Steine als
-der Gegner auf dem Spielfeld zu haben, ist es naheliegend, die Differenz
-der Anzahlen von Steinen beider Spieler zur Abschätzung eines Zuges zu
-verwenden. Genau das macht die Disk-Count-Heuristik, indem sie die
-Differenz der Anzahlen von Steinen, beider Spieler berechnet und den
-resultierenden Wert zur Normalisierung durch die maximale Anzahl an
-Steinen teilt. Bei genauerer Betrachtung ist es jedoch, gerade zu Beginn
-des Spiels, nicht immer vorteilhaft, den Vorsprung an Steinen zu
-maximieren.
+Die Funktion \passthrough{\lstinline!disc\_count\_heuristik!}
+implementiert die in \ref{sec:disccount} beschriebene Heuristik. Dafür
+wird die Differenz der Anzahlen an Steinen beider Spieler auf dem
+Spielfeld bestimmt. Diese wird zur Normalisierung durch die maximale
+Steinzahl \(64\) geteilt.
 
 \begin{lstlisting}[language=Python]
 def disc_count_heuristic(state):
     return (count_disks(state, WHITE) - count_disks(state, BLACK)) / 64
 \end{lstlisting}
 
-Eine weitere Heuristik ist die Mobilität der Spieler. Diese gibt an, wie
-viele mögliche Züge ein Spieler im Vergleich zum Gegner hat. Die Idee
-hinter dieser Heuristik ist, dass ein Spieler dadurch seine Freiheit
-maximiert, während die Freiheit des Gegners durch eine geringe Anzahl an
-Zügen eingeschränkt wird. Die Mobilitäts-Heuristik gibt an wie viele
-mögliche Züge mehr Weiß gegenüber Schwarz im aktuellen Spielzustand hat.
+\passthrough{\lstinline!mobility\_heuristic!} berechnet, wie in
+\ref{sec:theorycurrentmobility} beschrieben, die aktuelle Mobilität.
 Auch dieser Wert wird durch Division durch die Anzahl an Feldern
 normalisiert, um die Grenzen von \(-1\) und \(1\) einzuhalten. Zu
 beachten ist hier, dass auch die Anzahl möglicher Züge für einen Spieler
 bestimmt wird, der im Spielzustand gar nicht am Zug ist. Dies wirkt
 zunächst sematisch nicht sinvoll, hat sich jedoch, wie in
-\autoref{sec:currentmobility} gezeigt, im Vergleich gegenüber möglichen
+\ref{sec:currentmobility} gezeigt, im Vergleich gegenüber möglichen
 Alternativen, wie der Verwendung einer durchschnittlichen Mobilität, als
 effektiv bewiesen.
 
@@ -109,16 +101,16 @@ def mobility_heuristic(state):
                 len(state.possible_moves)) / 64
 \end{lstlisting}
 
-Nicht nur die aktuelle, sondern auch die potenzielle Mobilität kann vor
-allem in frühen Phasen des Spiels wichtig für die Bewertung einer
-Position sein. Die Funktion
-\passthrough{\lstinline!pot\_mob\_heuristic!} berechnet für einen
-Zustand \passthrough{\lstinline!state!} die Differenz der potenziellen
-Mobilität beider Spieler. Die potenzielle Mobilität eines Spielers ist
-gegeben durch die Summe aller freien Felder um gegnerische Spielsteine,
-da Michael Buro dieses Merkmal als in seiner Dissertation als beste
-Metrik für die potenzielle Mobilität ausgemacht hat
-\cite[S. 9]{evaluationfunctions}. Das Ergebnis wird durch \(3.5\)
+Nicht nur die aktuelle, sondern auch die potenzielle Mobilität, welche
+in \ref{sec:potmobility} beschrieben wird, kann vor allem in frühen
+Phasen des Spiels wichtig für die Bewertung einer Position sein. Die
+Funktion \passthrough{\lstinline!pot\_mob\_heuristic!} berechnet für
+einen Zustand \passthrough{\lstinline!state!} die Differenz der
+potenziellen Mobilität beider Spieler. Die potenzielle Mobilität eines
+Spielers ist hierbei gegeben durch die Summe aller freien Felder um
+gegnerische Spielsteine, da Michael Buro dieses Merkmal als in seiner
+Dissertation als beste Metrik für die potenzielle Mobilität ausgemacht
+hat \cite[S. 9]{evaluationfunctions}. Das Ergebnis wird durch \(3.5\)
 geteilt, da es im Durchschnitt \(3.5\) mal so viele potenzielle Züge wie
 tatsächliche Züge gibt.
 
@@ -156,13 +148,14 @@ def combined_mobility_heuristic(state):
 Beim Spielen von Othello fällt auf, dass es bestimmte Felder gibt, deren
 Belegung von Vorteil ist, sowie einige, deren Belegung eher nachteilhaft
 ist. Diese Eigenschaft macht sich die Cowthello-Heuristik
-\cite{cowthello} zunutze. Sie weist jedem Feld einen Wert zu, der
-angibt, wie Vorteilhaft der Besitz dieses Feldes ist, bzw. wie
-Nachteilhaft die Belegung des Feldes durch den Gegner ist. Diese
-Gewichte werden mit der aktuellen Belegung des Spielfelds multipliziert
-und die Ergebnisse anschließend aufsummiert. Der resultierende Wert
-schätzt dann den Nutzen der aktuellen Position ein. Auch bei dieser
-Heuristik findet eine Normalisierung statt.
+\cite{cowthello} zunutze, welche in \ref{sec:cowthello} beschrieben ist.
+Sie weist jedem Feld einen Wert zu, der angibt, wie Vorteilhaft der
+Besitz dieses Feldes ist, bzw. wie Nachteilhaft die Belegung des Feldes
+durch den Gegner ist. Diese Gewichte werden mit der aktuellen Belegung
+des Spielfelds multipliziert und die Ergebnisse anschließend
+aufsummiert. Der resultierende Wert schätzt dann den Nutzen der
+aktuellen Position ein. Auch bei dieser Heuristik findet eine
+Normalisierung statt.
 
 Aufgrund der Symmetrie des Othello Spielfeldes ist es für die
 Weight-Heuristik nicht nötig, für jedes Feld einzeln dessen Gewicht
@@ -201,74 +194,33 @@ def cowthello_heuristic(state):
     return np.sum(np.multiply(state.board, cowthello_weights))
 \end{lstlisting}
 
-Die Cowthello Heuristik wertet den Besitz einiger Felder, wie zum
-Beispiel die an die Ecken des Spielfeldes angrenzenden Felder, als
-negativ, da der Gegner dadurch wertvolle Felder, wie die Ecken des
-Spielfelds, erlangen kann. Wenn die Ecke jedoch bereits besetzt ist,
-spielt das keine Rolle mehr. Die
-\passthrough{\lstinline!cowthello\_safe\_heuristic!} versucht dies zu
-berücksichtigen. Zunächst wird dabei in der Funktion
-\passthrough{\lstinline!safe\_in\_corner!} ausgehend von einer durch
-\passthrough{\lstinline!rdir!} und \passthrough{\lstinline!cdir!}
-angegeben Ecke des Spielfeldes \passthrough{\lstinline!board!} bestimmt,
-welche Steine des Spielers \passthrough{\lstinline!player!} nicht mehr
-umgedreht werden können. Alle dadurch als sicher bestimmten Felder,
-werden in der Boolean-Matrix safe auf den Wert
-\passthrough{\lstinline!True!} gesetzt.
-
-\begin{lstlisting}[language=Python]
-def safe_in_corner(board, safe, player, rdir, cdir):
-    safe_in_row = 9
-    rows = range(8) if rdir == 1 else reversed(range(8))
-    for row in rows:
-        i = np.argmax(board[row,::cdir] != player)
-        safe_in_row = min(i, safe_in_row - 1)
-        if safe_in_row == 0:
-            break
-        safe[row,::cdir][:safe_in_row] = True
-    safe_in_col = 9
-    cols = range(8) if cdir == 1 else reversed(range(8))
-    for col in cols:
-        i = np.argmax(board[::rdir,col] != player)
-        safe_in_col = min(i, safe_in_col - 1)
-        if safe_in_col == 0:
-            break
-        safe[::rdir,col][:safe_in_col] = True
-\end{lstlisting}
-
-In der Funktion \passthrough{\lstinline!safe\_pieces!} wird die Funktion
-\passthrough{\lstinline!safe\_in\_corner!} für alle Ecken des Spielfelds
-\passthrough{\lstinline!board!} und dem Spieler
-\passthrough{\lstinline!player!} aufgerufen. Die sicheren Felder werden
-in der Boolean Matrix \passthrough{\lstinline!safe!} gesammelt, welche
-von der Funktion zurückgegeben wird.
-
-\begin{lstlisting}[language=Python]
-def safe_pieces(state, player):
-    board = state.board
-    safe = np.zeros((8, 8), dtype=np.bool)
-    safe_in_corner(board, safe, player, 1, 1)
-    safe_in_corner(board, safe, player, 1,-1)
-    safe_in_corner(board, safe, player,-1, 1)
-    safe_in_corner(board, safe, player,-1,-1)
-    return safe
-\end{lstlisting}
-
-Die \passthrough{\lstinline!cowthello\_safe\_heuristic!} bestimmt
-zunächst für beide Spieler die bereits gesicherten Felder. Die
-\passthrough{\lstinline!cowthello\_weights!} Matrix wird dann so
-angepasst, dass alle gesicherten Felder positiv gewichtet werden. Dazu
-wird der absolutwert der vorherigen Gewichtung verwendet. Die Berechnung
-der Heuristik, funktioniert dann, wie bei der unveränderten
-\passthrough{\lstinline!cowthello\_heuristic!}.
+Die Cowthello Heuristik wertet den Besitz der an die Ecken des
+Spielfeldes angrenzenden Felder, als negativ, da der Gegner dadurch
+möglicherweise den Besitz der Ecke erlangen kann. Wenn die Ecke jedoch
+bereits besetzt ist, spielt das keine Rolle mehr. Die
+\passthrough{\lstinline!cowthello\_safe\_heuristic!} berücksichtigt
+dies. Sobald eine Ecke besetzt wurde, wird für die umliegenden Felder
+der Absolutwert der Gewichtung verwendet.
 
 \begin{lstlisting}[language=Python]
 def cowthello_safe_heuristic(state):
-    black_safe = safe_pieces(state, BLACK)
-    white_safe = safe_pieces(state, WHITE)
     weights = np.copy(cowthello_weights)
-    weights[black_safe] = abs(weights[black_safe])
-    weights[white_safe] = abs(weights[white_safe])
+    if state.board[0,0] != NONE:
+        weights[1, 0] = abs(weights[1, 0])
+        weights[0, 1] = abs(weights[0, 1])
+        weights[1, 1] = abs(weights[1, 1])
+    if state.board[7,0] != NONE:
+        weights[6, 0] = abs(weights[6, 0])
+        weights[7, 1] = abs(weights[7, 1])
+        weights[6, 1] = abs(weights[6, 1])
+    if state.board[0,7] != NONE:
+        weights[1, 7] = abs(weights[1, 7])
+        weights[0, 6] = abs(weights[0, 6])
+        weights[1, 6] = abs(weights[1, 6])
+    if state.board[7,7] != NONE:
+        weights[6, 7] = abs(weights[6, 7])
+        weights[7, 6] = abs(weights[7, 6])
+        weights[6, 6] = abs(weights[6, 6])
     return np.sum(np.multiply(state.board, weights))
 \end{lstlisting}
 
