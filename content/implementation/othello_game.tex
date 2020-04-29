@@ -74,10 +74,9 @@ Zwecke genutzt:
   Berechnung der Heuristiken: Die Werte \passthrough{\lstinline!BLACK!},
   \passthrough{\lstinline!WHITE!} und \passthrough{\lstinline!NONE!}
   sind so gewählt, dass sie sich für die Berechnung der Heuristiken
-  eignen. Der in der Künstlichen Intelligenz maximierende Spieler hat
-  den positiven Wert 1, während der minimierende Spieler durch den
-  negativen Wert -1 repräsentiert wird. Kein Spieler, wird durch den
-  Wert 0 dargestellt.
+  eignen. Der in der \ac{KI} maximierende Spieler hat den positiven Wert
+  1, während der minimierende Spieler durch den negativen Wert -1
+  repräsentiert wird. Kein Spieler, wird durch den Wert 0 dargestellt.
 \end{enumerate}
 
 \begin{lstlisting}[language=Python]
@@ -145,12 +144,11 @@ entsprechen initialisiert werden.
 Die Funktion \passthrough{\lstinline!\_\_lt\_\_!} ist implementiert,
 damit auf \passthrough{\lstinline!GameState!}-Objekten der
 Vergleichsoperator angewendet werden kann. Das ist nötig, damit in der
-Künstlichen Intelligenz Tupel sortiert werden können, die beispielsweise
-aus einer Priorität und einen \passthrough{\lstinline!GameState!}
-bestehen. Da in diesem Fall nur die Sortierung nach der Priorität
-wichtig ist, ist die Implementation von
-\passthrough{\lstinline!\_\_lt\_\_!} irrelevant. Daher wird, der
-Einfachkeit wegen, immer True zurückgegeben.
+\ac{KI} Tupel sortiert werden können, die beispielsweise aus einer
+Priorität und einen \passthrough{\lstinline!GameState!} bestehen. Da in
+diesem Fall nur die Sortierung nach der Priorität wichtig ist, ist die
+Implementation von \passthrough{\lstinline!\_\_lt\_\_!} irrelevant.
+Daher wird, der Einfachkeit wegen, immer True zurückgegeben.
 
 \begin{lstlisting}[language=Python]
 class GameState:

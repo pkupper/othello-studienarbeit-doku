@@ -12,9 +12,9 @@
 \end{lstlisting}
 
 Dieses Notebook dient als Benutzerschnittstelle, über die ein
-menschlicher Spieler gegen die Künstliche Intelligenz antreten kann.
-Zusätzlich werden Mensch-gegen-Mensch und KI-gegen-KI Spiele ermöglicht.
-Dazu werden die Funktionalitäten der KI Implementierung, sowie die der
+menschlicher Spieler gegen die \ac{KI} antreten kann. Zusätzlich werden
+Mensch-gegen-Mensch und \ac{KI}-gegen-\ac{KI} Spiele ermöglicht. Dazu
+werden die Funktionalitäten der \ac{KI} Implementierung, sowie die der
 grafischen Benutzeroberfläche verwendet, welche im Folgenden eingebunden
 werden.
 
@@ -23,8 +23,8 @@ werden.
 %run othello_gui.ipynb
 \end{lstlisting}
 
-Damit bei Verwendung einer besonders schnellen Konfiguration der KI die
-einzelnen Züge immer noch nachvollziehbar sind, wird das Modul
+Damit bei Verwendung einer besonders schnellen Konfiguration der \ac{KI}
+die einzelnen Züge immer noch nachvollziehbar sind, wird das Modul
 \passthrough{\lstinline!time!} aus der Standardbibliothek eingebunden,
 dessen Funktion \passthrough{\lstinline!sleep!} im späteren Verlauf
 genutzt wird.
@@ -38,9 +38,9 @@ der GUI Implementierung wird die, in \autoref{fig:gui_settings} zu
 sehende, Benutzeroberfläche angezeigt, welche dem Benutzer die
 Konfiguration der Spieleinstellungen ermöglicht. Für beide Spieler kann
 festgelegt werden, ob dieser ein menschlicher Spieler ist, von einer der
-verfügbaren KI Strategien kontrolliert werden soll. Für die KI Agenten
-können zusätzlich dazugehörigen Parameter, wie die zu verwendende
-Heuristik und die Suchtiefe festgelegt werden.
+verfügbaren \ac{KI} Strategien kontrolliert werden soll. Für die \ac{KI}
+Agenten können zusätzlich dazugehörigen Parameter, wie die zu
+verwendende Heuristik und die Suchtiefe festgelegt werden.
 
 \begin{lstlisting}[language=Python]
 configure_settings()
@@ -55,7 +55,7 @@ configure_settings()
 
 Folgender Code dient zum Starten der interaktiven Applikation. Die
 Funktion \passthrough{\lstinline!next\_move!} wird für jeden Spielzug
-ausgeführt. Ist eine KI an der Reihe, so wird ein Zug der KI
+ausgeführt. Ist eine \ac{KI} an der Reihe, so wird ein Zug der \ac{KI}
 durchgeführt und die Funktion im Anschluss rekursiv für den nächsten Zug
 aufgerufen. Ist ein menschlicher Spieler and der Reihe, wird die
 Ausführung unterbrochen. Durch einen Klick auf das gewünschte Feld wird

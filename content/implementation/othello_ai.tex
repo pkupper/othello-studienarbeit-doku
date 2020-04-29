@@ -11,9 +11,9 @@
 </style>
 \end{lstlisting}
 
-Dieses Kapitel beschreibt die Implementierung der Künstlichen
-Intelligenz. Es werden mehrere, voneinander verschiedene, Strategien
-implementiert, um einen Vergleich von diesen zu ermöglichen.
+Dieses Kapitel beschreibt die Implementierung der \ac{KI}. Es werden
+mehrere, voneinander verschiedene, Strategien implementiert, um einen
+Vergleich von diesen zu ermöglichen.
 
 \hypertarget{importieren-der-externen-abhuxe4ngigkeiten}{%
 \subsection{Importieren der externen
@@ -39,9 +39,9 @@ import math
 import random
 \end{lstlisting}
 
-Die Implementierung der Künstlichen Intelligenz baut auf der
-Implementierung der Spielelogik von Othello auf. Das entsprechende
-Notebook muss also hier ausgeführt werden.
+Die Implementierung der \ac{KI} baut auf der Implementierung der
+Spielelogik von Othello auf. Das entsprechende Notebook muss also hier
+ausgeführt werden.
 
 \begin{lstlisting}[language=Python]
 %run othello_game.ipynb
@@ -289,24 +289,25 @@ def combined_heuristic(state):
 \subsection{Implementierung der
 Strategien}\label{implementierung-der-strategien}}
 
-Im Folgenden werden die verschiedenen Strategien der Künstlichen
-Intelligenz implementiert. Diese verwenden zum Teil die, im vorherigen
-Kaptitel implementierten, Heuristiken. Die Strategien bestehen jeweils
-aus einer bewertenden Funktion, die den Nutzen einer Spielsituation
-bestimmt, sowie aus einer aufrufenden Funktion, welche mithilfe der
-bewertenden Funktion den bestmöglichen Zug herleitet. Diese Komponenten
-können beliebig kombiniert werden. Im Folgenden werden zunächst die
-bewerteten Funktionen implementiert.
+Im Folgenden werden die verschiedenen Strategien der \ac{KI}
+implementiert. Diese verwenden zum Teil die, im vorherigen Kaptitel
+implementierten, Heuristiken. Die Strategien bestehen jeweils aus einer
+bewertenden Funktion, die den Nutzen einer Spielsituation bestimmt,
+sowie aus einer aufrufenden Funktion, welche mithilfe der bewertenden
+Funktion den bestmöglichen Zug herleitet. Diese Komponenten können
+beliebig kombiniert werden. Im Folgenden werden zunächst die bewerteten
+Funktionen implementiert.
 
 \hypertarget{zufuxe4llige-ki}{%
 \subsubsection{Zufällige KI}\label{zufuxe4llige-ki}}
 
-Die zufällige KI bewertet den Nutzen aller Züge gleich, gibt also immer
-den Wert \(0\) zurück. Da die Strategie-Funktionen völlig austauschbar
-sein sollen, müssen alle diese Funktionen dieselben Eingabeparameter
-haben. Im Fall der Funktion \passthrough{\lstinline!random\_ai!} wird
-jedoch keiner der definierten Parameter benötigt. Der Zweck dieser
-Künstlichen Intelligenz ist die Messung der Stärke, der anderen KIs.
+Die zufällige \ac{KI} bewertet den Nutzen aller Züge gleich, gibt also
+immer den Wert \(0\) zurück. Da die Strategie-Funktionen völlig
+austauschbar sein sollen, müssen alle diese Funktionen dieselben
+Eingabeparameter haben. Im Fall der Funktion
+\passthrough{\lstinline!random\_ai!} wird jedoch keiner der definierten
+Parameter benötigt. Der Zweck dieser \ac{KI} ist die Messung der Stärke,
+der anderen\acp{KI}.
 
 \begin{lstlisting}[language=Python]
 def random_ai(state, depth, heuristic, alpha, beta):
@@ -361,7 +362,7 @@ def minimax(state, depth, heuristic, alpha, beta):
 \hypertarget{alpha-beta-ki}{%
 \subsubsection{Alpha-Beta KI}\label{alpha-beta-ki}}
 
-Diese KI verwended den Minimax Algorithmus mit der Optimierung
+Diese \ac{KI} verwended den Minimax Algorithmus mit der Optimierung
 Alpha-Beta Pruning, welche in \autoref{sec:alphabeta} beschrieben ist,
 um die Nützlichkeit eines Spielzustands zu bestimmen.
 
@@ -395,11 +396,12 @@ def alphabeta(state, depth, heuristic, alpha, beta):
     if state.game_over:
         return get_utility(state)
     if depth == 0:
+        key = (state.board.tobytes(), state.turn, heuristic)
+        if key in transposition_table:
+            return transposition_table[key][0]
         debug_ab_count += 1
         h = heuristic(state)
-        key = (state.board.tobytes(), state.turn, heuristic)
-        if key not in transposition_table:
-            transposition_table[key] = (h, 0)
+        transposition_table[key] = (h, 0)
         return h
 
     moves = state.possible_moves
@@ -409,6 +411,7 @@ def alphabeta(state, depth, heuristic, alpha, beta):
         key = (child_state.board.tobytes(), child_state.turn, heuristic)
         cached = transposition_table.get(key)
         if cached == None:
+            debug_ab_count += 1
             cached = (heuristic(child_state), 0)
             transposition_table[key] = cached
         ordered_moves.append((cached[0], child_state, cached[1]))
@@ -445,12 +448,12 @@ def alphabeta(state, depth, heuristic, alpha, beta):
 \hypertarget{probcut-ki}{%
 \subsubsection{ProbCut KI}\label{probcut-ki}}
 
-An dieser Stelle beginnt die Implementierung der Künstlichen Intelligenz
-mittels des Minimax Algorithmus, Alpha-Beta Pruning und ProbCut. Die im
-Folgenden definierte Konstante \passthrough{\lstinline!PERCENTILE!}
-entspricht hierbei dem Term \(\Phi^{-1}(p)\) aus \autoref{sec:probcut}.
-Für ein \(p\) von \(93.3\%\) hat \passthrough{\lstinline!PERCENTILE!}
-den Wert \(1.5\). \passthrough{\lstinline!PROBCUT\_DEEP\_DEPTH!} und
+An dieser Stelle beginnt die Implementierung der \ac{KI} mittels des
+Minimax Algorithmus, Alpha-Beta Pruning und ProbCut. Die im Folgenden
+definierte Konstante \passthrough{\lstinline!PERCENTILE!} entspricht
+hierbei dem Term \(\Phi^{-1}(p)\) aus \autoref{sec:probcut}. Für ein
+\(p\) von \(93.3\%\) hat \passthrough{\lstinline!PERCENTILE!} den Wert
+\(1.5\). \passthrough{\lstinline!PROBCUT\_DEEP\_DEPTH!} und
 \passthrough{\lstinline!PROBCUT\_SHALLOW\_DEPTH!} entsprechen den
 Variablen \(d\) und \(d'\) aus \autoref{sec:probcut} dieser Arbeit.
 
@@ -485,12 +488,12 @@ def probcut(state, depth, heuristic, alpha, beta):
     if state.game_over:
         return get_utility(state)
     if depth == 0:
+        key = (state.board.tobytes(), state.turn, heuristic)
+        if key in transposition_table:
+            return transposition_table[key][0]
         debug_pc_count += 1
         h = heuristic(state)
-        key = (state.board.tobytes(), state.turn, heuristic)
-        if key not in transposition_table:
-            print("saved")
-            transposition_table[key] = (h, 0)
+        transposition_table[key] = (h, 0)
         return h
 
     if depth == PROBCUT_DEEP_DEPTH:
@@ -518,6 +521,7 @@ def probcut(state, depth, heuristic, alpha, beta):
         key = (child_state.board.tobytes(), child_state.turn, heuristic)
         cached = transposition_table.get(key)
         if cached == None:
+            debug_pc_count += 1
             cached = (heuristic(child_state), 0)
             transposition_table[key] = cached
         ordered_moves.append((cached[0], child_state, cached[1]))
@@ -554,7 +558,7 @@ def probcut(state, depth, heuristic, alpha, beta):
 \hypertarget{durchfuxfchren-der-zuxfcge}{%
 \subsection{Durchführen der Züge}\label{durchfuxfchren-der-zuxfcge}}
 
-Die folgenden Funktionen berechnen mithilfe einer angegebenen KI
+Die folgenden Funktionen berechnen mithilfe einer angegebenen \ac{KI}
 Strategie den nächsten Zug und wenden diesen auf den übergebenen Zustand
 \passthrough{\lstinline!state!} an. Damit die Strategien nicht völlig
 deterministisch sind, und somit besser die Stärke der einzelnen
@@ -629,9 +633,10 @@ Verwendung eines Cache, der
 Prunning basierenden Strategien, kann durch die Wiederverwendung der
 Ergebnisse vorheriger Aufrufe ein besseres Move-Ordering vorgenommen
 werden, und somit die Effizienz des Alpha-Beta Pruning gesteigert
-werden. Bei ausreichender Suchtiefe übertreffen die dadurch erzielten
-Ersparnisse, den zusätzlichen Aufwand, die Strategie-Funktionen mehrfach
-aufzurufen.
+werden. Die Idee dabei ist, dass bei ausreichender Suchtiefe die durch
+besseres Move-Ordering erzielten Ersparnisse den, durch den mehrfachen
+Aufruf der Strategie-Funktionen verursachten, zusätzlichen Rechenaufwand
+übertreffen.
 
 \begin{lstlisting}[language=Python]
 def ai_make_move_id(ai, state, depth, heuristic):

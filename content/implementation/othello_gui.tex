@@ -11,20 +11,20 @@
 </style>
 \end{lstlisting}
 
-Im folgenden Abschnitt wird eine Benutzeroberfläche für das Spiel
-Othello implementiert. Diese ermöglicht das Anzeigen Spielfelds und das
-Setzten von Steinen durch einen menschlichen Spieler per Mausklick.
-Außerdem wird ein Einstellungsmenü implementiert, über welches das Spiel
-und die KI Agenten konfiguriert werden können.
+Im folgenden Abschnitt wird eine \ac{GUI} für das Spiel Othello
+implementiert. Diese ermöglicht das Anzeigen Spielfelds und das Setzten
+von Steinen durch einen menschlichen Spieler per Mausklick. Außerdem
+wird ein Einstellungsmenü implementiert, über welches das Spiel und die
+\ac{KI} Agenten konfiguriert werden können.
 
 \hypertarget{importieren-der-externen-abhuxe4ngigkeiten}{%
 \subsection{Importieren der externen
 Abhängigkeiten}\label{importieren-der-externen-abhuxe4ngigkeiten}}
 
-Die grafische Benutzeroberfläche verwendet zur Darstellung des
-Spielzustandes, zum Anzeigen erweiterter Informationen sowie für die
-Benutzerinteraktion die Bibliotheken \passthrough{\lstinline!ipycanvas!}
-und \passthrough{\lstinline!ipywidgets!}. Diese können direkt im Jupyter
+Die \ac{GUI} verwendet zur Darstellung des Spielzustandes, zum Anzeigen
+erweiterter Informationen sowie für die Benutzerinteraktion die
+Bibliotheken \passthrough{\lstinline!ipycanvas!} und
+\passthrough{\lstinline!ipywidgets!}. Diese können direkt im Jupyter
 Notebook verwendet werden.
 
 Zusätzlich werden aus dem Paket \passthrough{\lstinline!math!} der
@@ -41,12 +41,11 @@ from ipywidgets import RadioButtons, HBox, VBox, IntSlider, Label
 \hypertarget{konfiguration-der-gui}{%
 \subsection{Konfiguration der GUI}\label{konfiguration-der-gui}}
 
-Die Grafische Benutzeroberfläche unterstützt optional die Anzeige aller
-möglichen Züge in der aktuellen Spielsituation, sowie die Darstellung
-der Menge \passthrough{\lstinline!frontier!}, welche im
-\autoref{sec:gamelogic} beschrieben wird. Ob diese Features verwendet
-werden, wird im Folgenden mit den Konstanten
-\passthrough{\lstinline!SHOW\_FRONTIER!} und
+Die \ac{GUI} unterstützt optional die Anzeige aller möglichen Züge in
+der aktuellen Spielsituation, sowie die Darstellung der Menge
+\passthrough{\lstinline!frontier!}, welche im \autoref{sec:gamelogic}
+beschrieben wird. Ob diese Features verwendet werden, wird im Folgenden
+mit den Konstanten \passthrough{\lstinline!SHOW\_FRONTIER!} und
 \passthrough{\lstinline!SHOW\_POSSIBLE\_MOVES!} konfiguriert.
 
 \begin{lstlisting}[language=Python]
@@ -116,7 +115,7 @@ output = ipywidgets.widgets.Output()
 \end{lstlisting}
 
 Das Widget \passthrough{\lstinline!utility\_lbl!} dient der Anzeige der,
-von den KI Spielern geschätzten, Nützlichkeit des Spielzustands.
+von den \ac{KI} Spielern geschätzten, Nützlichkeit des Spielzustands.
 
 \begin{lstlisting}[language=Python]
 utility_lbl = ipywidgets.widgets.Label()
@@ -222,10 +221,10 @@ canvas[1].on_mouse_down(mouse_down)
 \subsection{Spieleinstellungen}\label{spieleinstellungen}}
 
 Hier wird durch Nutzung von \passthrough{\lstinline!ipywidgets!} eine
-Benutzerschnittstelle erzeugt, über die für beide Spieler Einstellungen
-vorgenommen werden können. So kann zum Beispiel festelegt werden, ob ein
-Spieler vom Nutzer, oder von einem KI-Agenten kontrolliert werden soll,
-und Parameter der KI angepasst werden.
+\ac{GUI} erzeugt, über die für beide Spieler Einstellungen vorgenommen
+werden können. So kann zum Beispiel festelegt werden, ob ein Spieler vom
+Nutzer, oder von einem \ac{KI}-Agenten kontrolliert werden soll, und
+Parameter der \ac{KI} angepasst werden.
 
 \begin{lstlisting}[language=Python]
 algorithms = { 'Menschlicher Spieler': None,
