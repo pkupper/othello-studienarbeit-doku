@@ -77,13 +77,13 @@ Eine Verbesserung konnte erzielt werden, indem die aktuelle und die potenzielle 
 Das heißt, die Gewichtung der potenziellen Mobilität entspricht dem Anteil der belegten Felder und die aktuelle Mobilität
 dem Anteil der freien Felder.
 
-Um zu bestimmen, welche Kombination der Mobilitätsmetriken zur stärksten \ac{KI} führt, wurden verschiedene Kombinationen jeweils 50
-Mal mit einer Suchtiefe von drei gegeneinander spielen gelassen. Dabei hat jede \ac{KI} gleich oft angefangen, um einen
-eventuellen Vorteil dadurch auszuschließen. Es hat sich gezeigt, dass eine lineare Kombination der beiden Merkmale
-stärker ist, als aktuelle oder potenzielle Mobilität alleine. Eine lineare Kombination von aktueller und potenzieller
-Mobilität ist ähnlich gut wie nur die potenzielle Mobilität, hat allerdings mit 74\,\% Siegen einen Vorteil gegenüber
-dem Wechsel nach 36 Steinen und ist somit die stärkste Kombination. Tabelle \ref{table:mobility} im Anhang zeigt den
-Anteil der Siege und Niederlagen der verschiedenen Kombinationen.
+Um zu bestimmen, welche Kombination der Mobilitätsmetriken zur stärksten \ac{KI} führt, wurden verschiedene
+Kombinationen jeweils 50 Mal mit einer Suchtiefe von drei gegeneinander spielen gelassen. Dabei hat jede \ac{KI} gleich
+oft angefangen, um einen eventuellen Vorteil dadurch auszuschließen. Es hat sich gezeigt, dass eine lineare Kombination
+der beiden Merkmale stärker ist, als aktuelle oder potenzielle Mobilität alleine. Ein Wechsel nach 36 Steinen ist ähnlich gut wie nur die potenzielle Mobilität, hat allerdings mit 74\,\% Siegen einen
+Nachteil gegenüber der linearen Kombination von aktueller
+und potenzieller Mobilität. Somit ist die lineare Kombination am stärksten. Tabelle \ref{table:mobility} im
+Anhang zeigt den Anteil der Siege und Niederlagen der verschiedenen Kombinationen.
 
 \subsection{Gewichtung von Mobilität und Cowthello} \label{sec:mobcowweight}
 Letztendlich müssen die Mobilität- und Cowthello zu einer Heuristik kombiniert werden. Um die Gewichtung der beiden

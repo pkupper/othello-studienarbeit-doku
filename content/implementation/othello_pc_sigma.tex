@@ -2,7 +2,7 @@
 \section{ProbCut Standardabweichung
 (othello\_pc\_sigma.ipynb)}\label{probcut-standardabweichung-othello_pc_sigma.ipynb}}
 
-\label{sec:pcsigma}
+\label{sec:pcsigma} \ifx false
 
 \begin{lstlisting}[language=Python]
 %%HTML
@@ -11,7 +11,7 @@
 </style>
 \end{lstlisting}
 
-In diesem Notebook wird die für den ProbCut Algorithmus benötigte
+\fi In diesem Notebook wird die für den ProbCut Algorithmus benötigte
 Standardabweichung in Abhängigkeit von der aktuellen Spielphase, welche
 durch die Anzahl der Steine auf dem Spielfeld angegeben wird, bestimmt.
 Dazu wird in verschiedenen Spielzuständen jeweils eine Suche der Tiefe
@@ -138,9 +138,9 @@ plt.show()
     \label{fig:probcut_all_depths}
 \end{figure}
 
-Wie zu erwarten, ist eine klare lineare Abhängigkeit zu erkennen, welche
+Wie zu erwarten ist eine klare lineare Abhängigkeit zu erkennen, welche
 durch die ebenfalls dargestellte Regressionsgerade hervorgehoben wird.
-Die Ausreißer bei deep search Werten von \(1\) und \(-1\) entstehen
+Die Ausreißer bei Werten der tiefen Suche von \(1\) und \(-1\) entstehen
 dadurch, dass in diesen Spielzuständen mit einer tiefen Suche bereits
 der Ausgang des Spiels bestimmt werden kann, während bei der flachen
 Suche noch die Heuristik verwendet wird. Theoretisch kann bereits hier
@@ -197,7 +197,7 @@ plt.show()
 
 Bei der Betrachtung ergibt sich, dass im Bereich zwischen 5 und 58 Zügen
 eine annähernd quadratische Abhängigkeit vorliegt. Daher wird dieser
-Bereich mittels Polynomieller Regression angehähert und visualisiert.
+Bereich mittels polynomieller Regression angehähert und visualisiert.
 
 Folgender Code berechnet das Regressionspolynom zweiten grades der
 Standardabweichung in Abhängigkeit von der Anzahl der Steine auf dem
@@ -247,4 +247,4 @@ print(theta0, '+', theta1 + theta2, '* x +', theta3, '* x**2')
 \end{lstlisting}
 
 Die hier ausgegebene Funktion wird in der ProbCut Implementierung zur
-Bestimmung der Standardabweichung genutzt.
+Berechnung der Standardabweichung genutzt.

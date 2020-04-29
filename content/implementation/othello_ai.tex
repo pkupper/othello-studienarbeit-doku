@@ -2,7 +2,7 @@
 \section{KI Implementierung
 (othello\_ai.ipynb)}\label{ki-implementierung-othello_ai.ipynb}}
 
-\label{sec:aiimpl}
+\label{sec:aiimpl} \ifx false
 
 \begin{lstlisting}[language=Python]
 %%HTML
@@ -11,9 +11,11 @@
 </style>
 \end{lstlisting}
 
+\fi
+
 Dieses Kapitel beschreibt die Implementierung der \ac{KI}. Es werden
-mehrere, voneinander verschiedene, Strategien implementiert, um einen
-Vergleich von diesen zu ermöglichen.
+mehrere unterschiedliche Strategien implementiert, um einen Vergleich
+von diesen zu ermöglichen.
 
 \hypertarget{importieren-der-externen-abhuxe4ngigkeiten}{%
 \subsection{Importieren der externen
@@ -31,8 +33,8 @@ Die Konstanten werden von der Python Standardbibliothek in dem Modul
 Das Modul \passthrough{\lstinline!random!} wird im Rahmen dieser
 Implementierung für mehrere Zwecke genutzt. Zum einen zur
 Implementierung der \passthrough{\lstinline!random\_ai!}, einer
-Strategie, welche immer einen zufälligen Zug wählt. Zum anderen, um die
-auf Minimax basierenden Strategien nichtdeterministisch zu machen.
+Strategie, welche immer einen zufälligen Zug wählt und zum anderen, um
+die auf Minimax basierenden Strategien nicht-deterministisch zu machen.
 
 \begin{lstlisting}[language=Python]
 import math
@@ -61,15 +63,15 @@ utilities = {WHITE: '-', BLACK: '-'}
 
 Zum Abschätzen der Nützlichkeit eines Spielzustands wird eine Heuristik
 benötigt. Im Folgenden sind einige solcher Heuristiken implementiert. Da
-Weiß der maximierende Spieler, und Schwarz der minimierende Spieler ist,
+Weiß der maximierende Spieler und Schwarz der minimierende Spieler ist,
 repräsentiert ein höherer Wert der Heuristik einen für Weiß
 vorteilhaften Zug, während ein niedriger Wert einen Vorteil für Schwarz
 repräsentiert. Die Werte aller Heuristiken liegen zwischen \(-1\) und
 \(1\), wobei diese Randwerte einen garantierten Sieg für den jeweiligen
-Spieler darstellen. Der Wert \(0\) steht für einen, für beide Spieler
-gleich guten, Spielzustand.
+Spieler darstellen. Der Wert \(0\) steht für einen für beide Spieler
+gleich guten Spielzustand.
 
-Die Funktion \passthrough{\lstinline!disc\_count\_heuristik!}
+Die Funktion \passthrough{\lstinline!disc\_count\_heuristic!}
 implementiert die in \ref{sec:disccount} beschriebene Heuristik. Dafür
 wird die Differenz der Anzahlen an Steinen beider Spieler auf dem
 Spielfeld bestimmt. Diese wird zur Normalisierung durch die maximale
@@ -80,16 +82,16 @@ def disc_count_heuristic(state):
     return (count_disks(state, WHITE) - count_disks(state, BLACK)) / 64
 \end{lstlisting}
 
-\passthrough{\lstinline!mobility\_heuristic!} berechnet, wie in
-\ref{sec:theorycurrentmobility} beschrieben, die aktuelle Mobilität.
-Auch dieser Wert wird durch Division durch die Anzahl an Feldern
+\passthrough{\lstinline!mobility\_heuristic!} berechnet wie in
+\ref{sec:theorycurrentmobility} beschrieben die aktuelle Mobilität. Auch
+dieser Wert wird durch Division durch die Anzahl an Feldern
 normalisiert, um die Grenzen von \(-1\) und \(1\) einzuhalten. Zu
 beachten ist hier, dass auch die Anzahl möglicher Züge für einen Spieler
 bestimmt wird, der im Spielzustand gar nicht am Zug ist. Dies wirkt
 zunächst sematisch nicht sinvoll, hat sich jedoch, wie in
-\ref{sec:currentmobility} gezeigt, im Vergleich gegenüber möglichen
+\ref{sec:currentmobility} gezeigt, im Vergleich gegenüber möglicher
 Alternativen, wie der Verwendung einer durchschnittlichen Mobilität, als
-effektiv bewiesen.
+effektiver erwiesen.
 
 \begin{lstlisting}[language=Python]
 def mobility_heuristic(state):
@@ -107,12 +109,12 @@ Phasen des Spiels wichtig für die Bewertung einer Position sein. Die
 Funktion \passthrough{\lstinline!pot\_mob\_heuristic!} berechnet für
 einen Zustand \passthrough{\lstinline!state!} die Differenz der
 potenziellen Mobilität beider Spieler. Die potenzielle Mobilität eines
-Spielers ist hierbei gegeben durch die Summe aller freien Felder um
-gegnerische Spielsteine, da Michael Buro dieses Merkmal als in seiner
+Spielers ist hierbei gegeben durch die Summe aller freier Felder um
+gegnerische Spielsteine, da Michael Buro dieses Merkmal in seiner
 Dissertation als beste Metrik für die potenzielle Mobilität ausgemacht
 hat \cite[S. 9]{evaluationfunctions}. Das Ergebnis wird durch \(3.5\)
-geteilt, da es im Durchschnitt \(3.5\) mal so viele potenzielle Züge wie
-tatsächliche Züge gibt.
+geteilt, da es in zufälligen Spielen im Durchschnitt \(3.5\) mal so
+viele potenzielle Züge wie tatsächliche Züge gibt.
 
 \begin{lstlisting}[language=Python]
 def pot_mob_heuristic(state):
@@ -149,15 +151,15 @@ Beim Spielen von Othello fällt auf, dass es bestimmte Felder gibt, deren
 Belegung von Vorteil ist, sowie einige, deren Belegung eher nachteilhaft
 ist. Diese Eigenschaft macht sich die Cowthello-Heuristik
 \cite{cowthello} zunutze, welche in \ref{sec:cowthello} beschrieben ist.
-Sie weist jedem Feld einen Wert zu, der angibt, wie Vorteilhaft der
-Besitz dieses Feldes ist, bzw. wie Nachteilhaft die Belegung des Feldes
+Sie weist jedem Feld einen Wert zu, der angibt, wie vorteilhaft der
+Besitz dieses Feldes ist, bzw. wie nachteilhaft die Belegung des Feldes
 durch den Gegner ist. Diese Gewichte werden mit der aktuellen Belegung
 des Spielfelds multipliziert und die Ergebnisse anschließend
 aufsummiert. Der resultierende Wert schätzt dann den Nutzen der
 aktuellen Position ein. Auch bei dieser Heuristik findet eine
 Normalisierung statt.
 
-Aufgrund der Symmetrie des Othello Spielfeldes, ist es für die
+Aufgrund der Symmetrie des Othello Spielfeldes ist es für die
 Weight-Heuristik nicht nötig, für jedes Feld einzeln dessen Gewicht
 anzugeben. Stattdessen werden ausschließlich die Gewichte für ein
 Viertel des Spielfelds angegeben und dieses anschließend gespiegelt. Die
@@ -185,7 +187,7 @@ cowthello_weights = gen_cowthello_matrix()
 \end{lstlisting}
 
 Die Funktion \passthrough{\lstinline!cowthello\_heuristic!} bestimmt aus
-einem Spielzustand und der aufgestellten Gewichtematrix
+einem Spielzustand und der aufgestellten Gewichte-Matrix
 \passthrough{\lstinline!cowthello\_weights!} die gewichtete Summe,
 welche als Heuristik genutzt wird.
 
@@ -195,9 +197,9 @@ def cowthello_heuristic(state):
 \end{lstlisting}
 
 Die Cowthello Heuristik wertet den Besitz der an die Ecken des
-Spielfeldes angrenzenden Felder als negativ, da der Gegner dadurch
-möglicherweise den Besitz der Ecke erlangen kann. Wenn die Ecke jedoch
-bereits besetzt ist, spielt das keine Rolle mehr. Die
+Spielfelds angrenzenden Felder negativ, da der Gegner dadurch häufig den
+Besitz der Ecke erlangen kann. Wenn die Ecke jedoch bereits besetzt ist,
+spielt das keine Rolle mehr. Die
 \passthrough{\lstinline!cowthello\_safe\_heuristic!} berücksichtigt
 dies. Sobald eine Ecke besetzt wurde, wird für die umliegenden Felder
 der Absolutwert der Gewichtung verwendet.
@@ -246,7 +248,7 @@ implementiert. Diese verwenden zum Teil die im vorherigen Kaptitel
 implementierten Heuristiken. Die Strategien bestehen jeweils aus einer
 bewertenden Funktion, die den Nutzen einer Spielsituation bestimmt,
 sowie aus einer aufrufenden Funktion, welche mithilfe der bewertenden
-Funktion den bestmöglichen Zug herleitet. Diese Komponenten können
+Funktion den bestmöglichen Zug ermittelt. Diese Komponenten können
 beliebig kombiniert werden. Im Folgenden werden zunächst die bewertenden
 Funktionen implementiert.
 
@@ -258,7 +260,7 @@ immer den Wert \(0\) zurück. Da die Strategie-Funktionen völlig
 austauschbar sein sollen, müssen alle diese Funktionen dieselben
 Eingabeparameter haben. Im Fall der Funktion
 \passthrough{\lstinline!random\_ai!} wird jedoch keiner der definierten
-Parameter benötigt. Der Zweck dieser \ac{KI} ist die Messung der Stärke,
+Parameter benötigt. Der Zweck dieser \ac{KI} ist die Messung der Stärke
 der anderen \acp{KI}.
 
 \begin{lstlisting}[language=Python]
@@ -269,7 +271,7 @@ def random_ai(state, depth, heuristic, alpha, beta):
 \hypertarget{minimax-ki}{%
 \subsubsection{Minimax KI}\label{minimax-ki}}
 
-Die Minimax Strategie verwendet den unveränderten Minimax-Algorithmus,
+Die Minimax Strategie verwendet den unveränderten Minimax Algorithmus,
 wie er in \autoref{sec:minimax} beschrieben ist, zur Bestimmung der
 Nützlichkeit eines Zuges. Eingabeparameter sind hier der zu bewertende
 Spielzustand \passthrough{\lstinline!state!}, die gewünschte Suchtiefe
@@ -277,9 +279,9 @@ Spielzustand \passthrough{\lstinline!state!}, die gewünschte Suchtiefe
 \passthrough{\lstinline!heuristic!}. Die Parameter
 \passthrough{\lstinline!alpha!} und \passthrough{\lstinline!beta!}
 dienen, wie oben beschrieben, der Kompatibilität mit den folgenden
-Strategiefunktionen und werden in der \passthrough{\lstinline!minimax!}
-Funktion nicht verwendet. Der Rückgabeparameter gibt die ermittelte
-Nützlichkeit des Spielzustands an.
+Strategie-Funktionen und werden in der Funktion
+\passthrough{\lstinline!minimax!} nicht verwendet. Der Rückgabeparameter
+gibt die ermittelte Nützlichkeit des Spielzustands an.
 
 \begin{lstlisting}[language=Python]
 debug_mm_count = 0
@@ -314,13 +316,13 @@ def minimax(state, depth, heuristic, alpha, beta):
 \hypertarget{alpha-beta-ki}{%
 \subsubsection{Alpha-Beta KI}\label{alpha-beta-ki}}
 
-Diese \ac{KI} verwended den Minimax Algorithmus mit der Optimierung
+Diese \ac{KI} verwendet den Minimax Algorithmus mit der Optimierung
 Alpha-Beta Pruning, welche in \autoref{sec:alphabeta} beschrieben ist,
 um die Nützlichkeit eines Spielzustands zu bestimmen.
 
 Zum Merken der Ergebnisse vorheriger Ausführungen wird das Dictionary
 \passthrough{\lstinline!transposition\_table!} verwendet. Dies ist
-gerade bei der Verwendung von Iterative Deepening für das Move-Ordering
+gerade bei der Verwendung von Iterative Deepening für das Move Ordering
 vorteilhaft. Der Schlüssel des Dictionaries besteht aus dem Zustand des
 Spielbretts, dem Spieler, der an der Reihe ist, und der verwendeten
 Heuristik.
@@ -336,9 +338,9 @@ Funktion sind der zu bewertende Spielzustand
 \passthrough{\lstinline!depth!}, die zu verwendende Heuristik
 \passthrough{\lstinline!heuristic!}, sowie die Werte
 \passthrough{\lstinline!alpha!} und \passthrough{\lstinline!beta!}, die,
-wie in \autoref{sec:alphabeta} beschrieben, jeweils die sicher
-erreichbaren Nützlichkeiten für den maximierenden und minimierenden
-Spieler angeben und für das Abschneiden von Zweigen verwendet werden.
+wie in \autoref{sec:alphabeta} beschrieben, jeweils den sicher
+erreichbaren Nutzen für den maximierenden und minimierenden Spieler
+angeben und für das Abschneiden von Zweigen verwendet werden.
 
 \begin{lstlisting}[language=Python]
 debug_ab_count = 0
@@ -420,13 +422,13 @@ Implementierung der Alpha-Beta Strategie. Jedoch wird bei jedem Aufruf
 mit der Tiefe \passthrough{\lstinline!PROBCUT\_DEEP\_DEPTH!}, zunächst
 eine Suche mit der Tiefe
 \passthrough{\lstinline!PROBCUT\_SHALLOW\_DEPTH!} durchgeführt. Anhand
-der dabei ermittelten Nützlichkeit, wird entsprechend der in
+der dabei ermittelten Nützlichkeit wird entsprechend der in
 \autoref{sec:probcut} beschriebenen Regeln entschieden, ob eine Tiefe
-Suche durchgeführt werden muss, oder eine der beiden Grenzwerte
+Suche durchgeführt werden muss, oder einer der beiden Grenzwerte
 \passthrough{\lstinline!alpha!} oder \passthrough{\lstinline!beta!}
-zurückgegeben werden können. Zur Abschätzung der für den Probcut
+zurückgegeben werden kann. Zur Abschätzung der für den Probcut
 Algorithmus benötigten Standardabweichung
-\passthrough{\lstinline!sigma!}, wird eine quadratische Funktion in
+\passthrough{\lstinline!sigma!} wird eine quadratische Funktion in
 Abhängigkeit von der Anzahl an Steinen auf dem Spielfeld verwendet.
 Diese wird im folgenden \autoref{sec:pcsigma} hergeleitet. Die Eingabe-
 und der Rückgabeparameter gleichen der Funktion
@@ -517,8 +519,7 @@ deterministisch sind, und somit besser die Stärke der einzelnen
 Strategien und Heuristiken bestimmt werden kann, wird nicht immer der
 beste Zug ausgewählt, sondern stattdessen einer der Züge, die innerhalb
 eines festgelegten Abstands vom besten Zug liegen. Dieser Abstand wird
-im Folgenden als \passthrough{\lstinline!SELECTION\_TOLERANCE!}
-definiert.
+als \passthrough{\lstinline!SELECTION\_TOLERANCE!} definiert.
 
 \begin{lstlisting}[language=Python]
 SELECTION_TOLERANCE = 0.0001
@@ -539,8 +540,8 @@ jeden Zustand wird die Strategie-Funktion genau einmal mit der Tiefe
 \passthrough{\lstinline!-1!} wird hierbei verwendet, da bereits in der
 Funktion \passthrough{\lstinline!ai\_make\_move!} selbst eine Iteration
 über die Kindzustände durchgeführt wird. Die Strategie-Funktion erhält
-ausßerdem den übergebenen Parameter \passthrough{\lstinline!heuristic!},
-welche eine der implementierten Heuristikfunktionen sein kann.
+außerdem den übergebenen Parameter \passthrough{\lstinline!heuristic!},
+welcher eine der implementierten Heuristik-Funktionen sein kann.
 
 \begin{lstlisting}[language=Python]
 def ai_make_move(ai, state, depth, heuristic):
@@ -574,20 +575,20 @@ def ai_make_move(ai, state, depth, heuristic):
 
 Die Ausführungsfunktion \passthrough{\lstinline!ai\_make\_move\_id!}
 unterscheidet sich von \passthrough{\lstinline!ai\_make\_move!} dadurch,
-dass iterative Tiefensuche durchgeführt wird. Dazu wird die
+dass eine iterative Tiefensuche durchgeführt wird. Dazu wird die
 Strategie-Funktion, statt nur einmal mit der vorgegebenen Tiefe
 aufgerufen zu werden, beginnend von 1 mit immer höherer Suchtiefe
 aufgerufen. Wird die Tiefe \passthrough{\lstinline!depth!} erreicht, so
-wird einer der besten Züge, wie auch in
-\passthrough{\lstinline!ai\_make\_move!} ausgewählt. Durch die
-Verwendung eines Caches, der
-\passthrough{\lstinline!transposition\_table!}, in den auf Alpha-Beta
-Prunning basierenden Strategien, kann durch die Wiederverwendung der
-Ergebnisse vorheriger Aufrufe ein besseres Move-Ordering vorgenommen
-werden, und somit die Effizienz des Alpha-Beta Pruning gesteigert
-werden. Die Idee dabei ist, dass bei ausreichender Suchtiefe die durch
-besseres Move-Ordering erzielten Ersparnisse den, durch den mehrfachen
-Aufruf der Strategie-Funktionen verursachten, Mehraufwand übertreffen.
+wird wie auch in \passthrough{\lstinline!ai\_make\_move!} einer der
+besten Züge ausgewählt. Durch die Verwendung eines Caches, der
+\passthrough{\lstinline!transposition\_table!}, in den auf
+Alpha-Beta-Pruning basierenden Strategien, kann durch die
+Wiederverwendung der Ergebnisse vorheriger Aufrufe ein besseres Move
+Ordering vorgenommen werden, und somit die Effizienz des
+Alpha-Beta-Pruning gesteigert werden. Die Idee dabei ist, dass bei
+ausreichender Suchtiefe die durch besseres Move Ordering erzielten
+Ersparnisse den durch den mehrfachen Aufruf der Strategie-Funktionen
+verursachten, Mehraufwand übertreffen.
 
 \begin{lstlisting}[language=Python]
 def ai_make_move_id(ai, state, depth, heuristic):
@@ -627,8 +628,8 @@ def ai_make_move_id(ai, state, depth, heuristic):
 Tiefensuche}\label{zeitbeschruxe4nkte-tiefensuche}}
 
 Je nach Spielsituation ist die Mobilität der Spieler unterschiedlich
-hoch. Dadurch unterscheidet sich auch die Anzahl der zu betrachteten
-Spielzustände. Auch die Anzahl der durch Alpha-Beta Pruning entfernten
+hoch. Dadurch unterscheidet sich auch die Anzahl der zu betrachtenden
+Spielzustände. Auch die Anzahl der durch Alpha-Beta-Pruning entfernten
 Zweige kann variieren. Bei konstanter Suchtiefe ist daher mit variablen
 Ausführungszeiten zu rechnen. Im Spiel gegen einen menschlichen Spieler
 ist es jedoch wünschenswert, eine maximale Zugdauer nicht zu
@@ -637,15 +638,15 @@ möglichst gute Entscheidung genutzt werden.
 
 Das ist das Ziel der Ausführungsfunktion
 \passthrough{\lstinline!ai\_make\_move\_id\_timelimited!}, diese führt
-Iterative Deepening durch, kann jedoch nach jeder Suchtiefe abbrechen
-und einen der bis dahin besten Züge wählen. Hierbei wird die
+eine iterative Tiefensuche durch, kann jedoch nach jeder Iteration
+abbrechen und einen der bis dahin besten Züge wählen. Hierbei wird die
 Entscheidung zum Abbruch getroffen, wenn mit der nächsten Ausführung das
 durch den Parameter \passthrough{\lstinline!timelimit!} gegebene
 Zeitlimit voraussichtlich überschritten würde. Dafür wird die Dauer der
 nächsten Ausführung approximiert, indem bestimmt wird, um welchen Faktor
-sich die Ausführungszeiten bei den letzten beiden Ausführungen geändert
-haben. Dieser Faktor \passthrough{\lstinline!factor!} wird dann mit der
-Dauer der letzten Ausführung multipliziert um die Dauer der nächsten
+sich die Ausführungszeit bei den letzten beiden Ausführungen geändert
+hat. Dieser Faktor \passthrough{\lstinline!factor!} wird dann mit der
+Dauer der letzten Ausführung multipliziert, um die Dauer der nächsten
 Ausführung zu schätzen. Zu beachten ist, dass die Funktion
 \passthrough{\lstinline!ai\_make\_move\_id\_timelimited!} nicht exakt
 die gleiche Schnittstelle hat, wie die anderen Ausführungsfunktionen.

@@ -2,7 +2,7 @@
 \section{Othello Frontend
 (othello.ipynb)}\label{othello-frontend-othello.ipynb}}
 
-\label{sec:frontend}
+\label{sec:frontend} \ifx false
 
 \begin{lstlisting}[language=Python]
 %%HTML
@@ -11,7 +11,7 @@
 </style>
 \end{lstlisting}
 
-Dieses Notebook dient als Benutzerschnittstelle, über die ein
+\fi Dieses Notebook dient als Benutzerschnittstelle, über die ein
 menschlicher Spieler gegen die \ac{KI} antreten kann. Zusätzlich werden
 Mensch-gegen-Mensch und \ac{KI}-gegen-\ac{KI} Spiele ermöglicht. Dazu
 werden die Funktionalitäten der \ac{KI} Implementierung, sowie die der
@@ -34,8 +34,8 @@ import time
 \end{lstlisting}
 
 Durch den Aufruf von \passthrough{\lstinline!configure\_settings!} aus
-der GUI Implementierung wird die, in \autoref{fig:gui_settings} zu
-sehende, Benutzeroberfläche angezeigt, welche dem Benutzer die
+der \ac{GUI} Implementierung wird die in \autoref{fig:gui_settings} zu
+sehende Benutzeroberfläche angezeigt, welche dem Benutzer die
 Konfiguration der Spieleinstellungen ermöglicht. Für beide Spieler kann
 festgelegt werden, ob dieser ein menschlicher Spieler ist oder von einer
 der verfügbaren \ac{KI} Strategien kontrolliert werden soll. Für die
