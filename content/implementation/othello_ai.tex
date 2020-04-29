@@ -201,74 +201,33 @@ def cowthello_heuristic(state):
     return np.sum(np.multiply(state.board, cowthello_weights))
 \end{lstlisting}
 
-Die Cowthello Heuristik wertet den Besitz einiger Felder, wie zum
-Beispiel die an die Ecken des Spielfeldes angrenzenden Felder, als
-negativ, da der Gegner dadurch wertvolle Felder, wie die Ecken des
-Spielfelds, erlangen kann. Wenn die Ecke jedoch bereits besetzt ist,
-spielt das keine Rolle mehr. Die
-\passthrough{\lstinline!cowthello\_safe\_heuristic!} versucht dies zu
-berücksichtigen. Zunächst wird dabei in der Funktion
-\passthrough{\lstinline!safe\_in\_corner!} ausgehend von einer durch
-\passthrough{\lstinline!rdir!} und \passthrough{\lstinline!cdir!}
-angegeben Ecke des Spielfeldes \passthrough{\lstinline!board!} bestimmt,
-welche Steine des Spielers \passthrough{\lstinline!player!} nicht mehr
-umgedreht werden können. Alle dadurch als sicher bestimmten Felder,
-werden in der Boolean-Matrix safe auf den Wert
-\passthrough{\lstinline!True!} gesetzt.
-
-\begin{lstlisting}[language=Python]
-def safe_in_corner(board, safe, player, rdir, cdir):
-    safe_in_row = 9
-    rows = range(8) if rdir == 1 else reversed(range(8))
-    for row in rows:
-        i = np.argmax(board[row,::cdir] != player)
-        safe_in_row = min(i, safe_in_row - 1)
-        if safe_in_row == 0:
-            break
-        safe[row,::cdir][:safe_in_row] = True
-    safe_in_col = 9
-    cols = range(8) if cdir == 1 else reversed(range(8))
-    for col in cols:
-        i = np.argmax(board[::rdir,col] != player)
-        safe_in_col = min(i, safe_in_col - 1)
-        if safe_in_col == 0:
-            break
-        safe[::rdir,col][:safe_in_col] = True
-\end{lstlisting}
-
-In der Funktion \passthrough{\lstinline!safe\_pieces!} wird die Funktion
-\passthrough{\lstinline!safe\_in\_corner!} für alle Ecken des Spielfelds
-\passthrough{\lstinline!board!} und dem Spieler
-\passthrough{\lstinline!player!} aufgerufen. Die sicheren Felder werden
-in der Boolean Matrix \passthrough{\lstinline!safe!} gesammelt, welche
-von der Funktion zurückgegeben wird.
-
-\begin{lstlisting}[language=Python]
-def safe_pieces(state, player):
-    board = state.board
-    safe = np.zeros((8, 8), dtype=np.bool)
-    safe_in_corner(board, safe, player, 1, 1)
-    safe_in_corner(board, safe, player, 1,-1)
-    safe_in_corner(board, safe, player,-1, 1)
-    safe_in_corner(board, safe, player,-1,-1)
-    return safe
-\end{lstlisting}
-
-Die \passthrough{\lstinline!cowthello\_safe\_heuristic!} bestimmt
-zunächst für beide Spieler die bereits gesicherten Felder. Die
-\passthrough{\lstinline!cowthello\_weights!} Matrix wird dann so
-angepasst, dass alle gesicherten Felder positiv gewichtet werden. Dazu
-wird der absolutwert der vorherigen Gewichtung verwendet. Die Berechnung
-der Heuristik, funktioniert dann, wie bei der unveränderten
-\passthrough{\lstinline!cowthello\_heuristic!}.
+Die Cowthello Heuristik wertet den Besitz der an die Ecken des
+Spielfeldes angrenzenden Felder, als negativ, da der Gegner dadurch
+möglicherweise den Besitz der Ecke erlangen kann. Wenn die Ecke jedoch
+bereits besetzt ist, spielt das keine Rolle mehr. Die
+\passthrough{\lstinline!cowthello\_safe\_heuristic!} berücksichtigt
+dies. Sobald eine Ecke besetzt wurde, wird für die umliegenden Felder
+der Absolutwert der Gewichtung verwendet.
 
 \begin{lstlisting}[language=Python]
 def cowthello_safe_heuristic(state):
-    black_safe = safe_pieces(state, BLACK)
-    white_safe = safe_pieces(state, WHITE)
     weights = np.copy(cowthello_weights)
-    weights[black_safe] = abs(weights[black_safe])
-    weights[white_safe] = abs(weights[white_safe])
+    if state.board[0,0] != NONE:
+        weights[1, 0] = abs(weights[1, 0])
+        weights[0, 1] = abs(weights[0, 1])
+        weights[1, 1] = abs(weights[1, 1])
+    if state.board[7,0] != NONE:
+        weights[6, 0] = abs(weights[6, 0])
+        weights[7, 1] = abs(weights[7, 1])
+        weights[6, 1] = abs(weights[6, 1])
+    if state.board[0,7] != NONE:
+        weights[1, 7] = abs(weights[1, 7])
+        weights[0, 6] = abs(weights[0, 6])
+        weights[1, 6] = abs(weights[1, 6])
+    if state.board[7,7] != NONE:
+        weights[6, 7] = abs(weights[6, 7])
+        weights[7, 6] = abs(weights[7, 6])
+        weights[6, 6] = abs(weights[6, 6])
     return np.sum(np.multiply(state.board, weights))
 \end{lstlisting}
 
@@ -425,7 +384,7 @@ def alphabeta(state, depth, heuristic, alpha, beta):
         utility = math.inf
 
     for (_, tmp_state, cached_depth) in ordered_moves:
-        tmp_utility = alphabeta(tmp_state, depth - 1, heuristic, alpha, beta)
+        tmp_utility = alphabeta(tmp_state, depth-1, heuristic, alpha, beta)
         if depth - 1 > cached_depth:
             transposition_table[
                 (tmp_state.board.tobytes(),
@@ -651,14 +610,16 @@ def ai_make_move_id(ai, state, depth, heuristic):
             # maximizing
             for move in state.possible_moves:
                 new_state = make_move(state, move)
-                utility = ai(new_state, cur_depth-1, heuristic, -math.inf, math.inf)
+                utility = ai(new_state, cur_depth-1,
+                             heuristic, -math.inf, math.inf)
                 scored_moves.append((utility, move))
             best_score, _ = max(scored_moves)
         else:
             # minimizing
             for move in state.possible_moves:
                 new_state = make_move(state, move)
-                utility = ai(new_state, cur_depth-1, heuristic, -math.inf, math.inf)
+                utility = ai(new_state, cur_depth-1,
+                             heuristic, -math.inf, math.inf)
                 scored_moves.append((utility, move))
             best_score, _ = min(scored_moves)
         utilities[state.turn] = best_score
@@ -720,14 +681,16 @@ def ai_make_move_id_timelimited(ai, state, timelimit, heuristic):
             # maximizing
             for move in state.possible_moves:
                 new_state = make_move(state, move)
-                utility = ai(new_state, depth-1, heuristic, -math.inf, math.inf)
+                utility = ai(new_state, depth-1,
+                             heuristic, -math.inf, math.inf)
                 scored_moves.append((utility, move))
             best_score, _ = max(scored_moves)
         else:
             # minimizing
             for move in state.possible_moves:
                 new_state = make_move(state, move)
-                utility = ai(new_state, depth-1, heuristic, -math.inf, math.inf)
+                utility = ai(new_state, depth-1,
+                             heuristic, -math.inf, math.inf)
                 scored_moves.append((utility, move))
             best_score, _ = min(scored_moves)
         utilities[state.turn] = best_score
