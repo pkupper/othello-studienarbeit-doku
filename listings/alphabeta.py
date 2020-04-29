@@ -1,5 +1,5 @@
 def alphabeta(state, alpha, beta, heuristic):
-    if(state.game_over):
+    if state.game_over:
         return get_utility(state, state.turn)
     if state.turn == WHITE:
         # maximizing
@@ -18,6 +18,6 @@ def alphabeta(state, alpha, beta, heuristic):
             # minimizing
             utility = min(utility, tmp_utility)
             beta = min(beta, utility)
-        if(alpha >= beta):
+        if alpha >= beta:
             break # alpha-beta pruning
     return utility
