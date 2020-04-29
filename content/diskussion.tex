@@ -2,9 +2,32 @@
 
 \chapter{Diskussion}
 \label{chap:diskussion}
+Dieses Kapitel reflektiert die im Rahmen dieser Arbeit erzielten Ergebnisse und zeigt dabei die Stärken und
+Schwachstellen der KI auf.
+
+\section{Reflexion}
+Wie im vorigen Kapitel gesehen, ist die in dieser Arbeit entwickelte künstliche Intelligenz in der Lage, gegen mehrere
+online verfügbare KIs anzutreten und zeigt dabei herausragende Ergebnisse. Damit erfüllt sie das in \label{sec:goal}
+festgelegte Ziel.
+
+Dennoch besteht ein großes Potenzial für Verbesserungen und Optimierungen. Das größe Performance-Bottleneck besteht, wie
+zu erwarten ist, in der Berechnung der Heuristik. Insgesamt wird ca. \(67\%\) der Zeit dafür aufgewandt. Durch
+Optimierungen an dieser Stelle kann daher ein großer Performancegewinn erzielt werden, wodurch eine höhere Suchtiefe
+erzielbar wird. So gelang es Buro beispielsweise, in der KI Logistello eine Verbesserung der Ausführungsgeschwindigkeit
+um den Faktor 3 durch Verwendung einer approximierten Mobilität zu erlangen, wobei die Stärke der KI nur minimal
+beeinflusst wurde. \cite[S.~8]{evaluationfunctions}
+
+Durch die Verwendung einer kompilierten, statt einer interpretierten Programmiersprache kann die Performanz potenziell
+wesentlich gesteigert werden.
+
 
 \section{Ausblick}
-Die Gewichtung von Mobilität und Cowthello-Heurisik wurde nur auf 12.5\,\% genau bestimmt. Da die Unterschiede Stärke
-der KI sich jedoch immer geringer werden, ist eine genauere Bestimmung nur mit einer größeren Menge an Daten möglich. Um
-diese zu sammeln war im Rahmen dieser Arbeit nicht mehr genug Zeit. In weiteren Untersuchungen könnte diese Gewichtung
-genauer bestimmt werden.
+Die Gewichtung von Mobilität und Cowthello-Heuristik wurde nur auf Vielfache von 12.5\,\% genau bestimmt. Da die
+Unterschiede in der Stärke der KI jedoch immer geringer werden, ist eine genauere Bestimmung nur mit einer größeren
+Menge an Daten möglich, dessen Sammlung außerhalb des zeitlichen Rahmens dieser Arbeit liegt. In weiteren Untersuchungen
+könnte diese Gewichtung genauer bestimmt werden. Dadurch ließe sich potenziell eine geringe Verbesserung der Spielstärke
+erzielen.
+
+Ähnliches gilt für die Gewichtung der aktuellen und potenziellen Mobilität. Auch hier wurden nur wenige Alternativen
+gegeneinander ausgespielt, um zum Ergebnis einer linearen Kombination der Merkmale zu kommen. Eine tiefergehende
+Untersuchung kann hier möglicherweise zu einem besseren Ergebnis kommen.
