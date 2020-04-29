@@ -15,13 +15,14 @@ Evaluations-Funktion benötigt, die diesen nur ausreichend gut annähert, statt 
 Ein primitiver Ansatz für eine Evaluations-Funktion bei dem Spiel Othello ist die Differenz der Anzahlen von eigenen
 Steinen und gegnerischen Steinen auf dem Spielfeld, da diese am Ende über den Sieg entscheidet. Gegen Ende eines Spiels
 könnte dieser Ansatz eine passende Bewertung liefern, allerdings kann es vor allem in der Anfangsphase sinnvoll sein,
-weniger Steine zu haben. Viel wichtiger ist z.\,B. die Möglichkeit, neue Steine platzieren zu können.
+weniger Steine zu haben. Viel wichtiger ist z.\,B. der Besitz von Ecken oder die Möglichkeit, neue Steine platzieren zu können.
 
 \subsection{Mobilität}
 \label{sec:mobility}
 Ziel der Mobilität ist es, dass der Spieler möglichst viele Steine platzieren kann. Dadurch kann dessen
 Entscheidungsfreiheit maximiert, während die Freiheit des Gegners durch eine geringe Anzahl an Zügen eingeschränkt wird.
 Es wird Unterschieden zwischen aktueller und potenzieller Mobilität, welche im Folgenden beschrieben werden.
+\cite[S.~7f.]{evaluationfunctions}
 
 \subsubsection{Aktuelle Mobilität}
 \label{sec:theorycurrentmobility}
@@ -30,7 +31,7 @@ möglichen Zügen ist häufig schlecht, da der Spieler dann möglicherweise gezw
 Merkmal kann zunächst die Differenz der Anzahlen möglicher Züge beider Spieler betrachtet werden. Allerdings ist eine Stellung
 häufig besser, wenn man mehr mögliche Züge hat und der Gegner bei gleicher Differenz weniger mögliche Züge hat. Um diese
 Tatsache zu berücksichtigen, kann eine nicht-lineare Funktion verwendet werden.
-\cite[S. 7]{evaluationfunctions}
+\cite[S.~7]{evaluationfunctions}
 
 \subsubsection{Potenzielle Mobilität}
 \label{sec:potmobility}
@@ -38,7 +39,7 @@ Neben der aktuellen Mobilität kann auch die potenzielle Mobilität betrachtet w
 mögliche Mobilität in folgenden Zügen. Für diese Metrik hat Michael Buro als aussagekräftigstes Merkmal die Summe aller Anzahlen freier
 Felder um gegnerische Steine ausgemacht. Es wird also für jeden gegnerischen Stein überprüft, an wie viele freie Felder
 dieser grenzt und die Summe darüber gebildet.
-\cite[S. 8f.]{evaluationfunctions}
+\cite[S.~8f.]{evaluationfunctions}
 
 \subsection{Cowthello}
 \label{sec:cowthello}
@@ -64,4 +65,4 @@ In Cowthello wird die Heuristik verändert, sobald Ecken belegt werden.
 \cite{cowthello}
 
 Das ist sinnvoll, da die an eine Ecke angrenzenden Felder negativ bewertet werden, weil der Gegner dadurch häufig die
-Ecke bekommt. Wenn die Ecke bereits besetzt ist, spielt das keine Rolle mehr.%TODO: Lösungs
+Ecke bekommt. Wenn die Ecke bereits besetzt ist, spielt das keine Rolle mehr. Eine Möglichkeit, die Heuristik anzupassen, besteht darin, die Felder vor einer Ecke mit dem Absolutwert zu gewichten, sobald die Ecke besetzt ist.
