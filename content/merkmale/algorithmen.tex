@@ -21,8 +21,9 @@ Alpha-Beta Algorithmus.
 3 & 0.35 & 0.35 & 0.36 & 0.34 & 0.37 \\
 4 & 2.71 & 1.28 & 1.21 & 1.39 & 1.26 \\
 5 & 22.76 & 5.66 & 5.97 & 5.63 & 5.95 \\
-6 & 194 & 18.1 & 18.2 & 18.9 & 19.4 \\ 
+6 & 194 & 18.1 & 18.2 & 18.9 & 19.4 \\
 7 & 1786 & 72.9 & 71.3 & 74.3 & 81.0 \\
+8 & - & 242 & 221 & 252 & 270 \\
 \end{tabular}
 \caption{Benötigte Zeit in Sekunden für die Berechnung des nächsten Zuges}
 \label{table:calctimes}
@@ -31,7 +32,7 @@ Alpha-Beta Algorithmus.
 Tabelle \ref{table:numstates} zeigt, wie oft die Heuristik beim Berechnen des nächsten Zuges mit unterschiedlichen
 Suchtiefen ausgewertet wurde. Hier ist erkennbar, dass bei Verwendung von Iterative Deepening die Heuristik seltener
 auswerten muss. Das liegt daran, dass durch die bessere Sortierung gute Züge früher betrachtet werden und mehr Zweige
-ausgeschlossen werden können. Beim Vergleich von Alpha-Beta und ProbCut bei Suchtiefe 7 sieht man, dass auch hier
+ausgeschlossen werden können. Beim Vergleich von Alpha-Beta und ProbCut bei Suchtiefe 7 und 8 sieht man, dass auch hier
 teilweise Zweige nicht betrachtet werden und die Heuristik seltener ausgewertet werden muss. Es fällt allerdings auch
 auf, dass ProbCut vor allem in Kombination mit Iterative Deepening keinen Vorteil erzielen kann.
 
@@ -43,8 +44,9 @@ auf, dass ProbCut vor allem in Kombination mit Iterative Deepening keinen Vortei
 3 & 461 & 490 & 499 & 490 & 499  \\
 4 & 3487 & 1720 & 1523 & 1720 & 1523 \\
 5 & 28806 & 7387 & 7344 & 7387 & 7344 \\
-6 & 243815 & 23432 & 21931 & 24158 & 23334 \\ 
+6 & 243815 & 23432 & 21931 & 24158 & 23334 \\
 7 & 2193633 & 92059 & 85934 & 91514 & 96345 \\
+8 & - & 301806 & 262391 & 301299 & 310938 \\
 \end{tabular}
 \caption{Anzahl Auswertungen der Heuristik}
 \label{table:numstates}
