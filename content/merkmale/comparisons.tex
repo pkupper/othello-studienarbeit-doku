@@ -1,11 +1,10 @@
 %!TEX root = ../../dokumentation.tex
 
 \section{Suchtiefe}
-Ein wichtiger Faktor für die Stärke der KI ist die erreichte Suchtiefe.
-Die Erhöhung der Suchtiefe um eins führt dazu, dass die KI, je nach Gesamtsuchtiefe, zu 80~–~95\,\% gegen die KI mit geringerer Suchtiefe gewinnt.
-Diese Zahlen wurden ermittelt, indem die gleiche KI jeweils 20 Mal mit unterschiedlicher Suchtiefe gegeneinander spielen gelassen wurde.
-Die Ergebnisse befinden sich in der Tabelle \ref{table:search-depth}.
-Es ist also wichtig, eine möglichst hohe Suchtiefe in akzeptabler Zeit zu erreichen.
+Ein wichtiger Faktor für die Stärke der KI ist die erreichte Suchtiefe. Die Erhöhung der Suchtiefe um eins führt dazu,
+dass die KI zu mindestend 72\,\% gegen die KI mit geringerer Suchtiefe gewinnt. Diese Zahlen wurden ermittelt, indem die
+gleiche KI mit unterschiedlicher Suchtiefe gegeneinander spielen gelassen wurde. Die Ergebnisse befinden sich in der
+Tabelle \ref{table:search-depth}. Es ist also wichtig, eine möglichst hohe Suchtiefe in akzeptabler Zeit zu erreichen.
 Bei begrenzter Rechenzeit kann eine höhere Performanz zu einer stärkeren KI führen.
 
 \begin{table}[hb]
@@ -14,10 +13,9 @@ Bei begrenzter Rechenzeit kann eine höhere Performanz zu einer stärkeren KI f�
 \hline
 Suchtiefe S\,/\,W & \#Spiele & Siege S & Unentschieden & Siege W
 \\ \hline
-1\,/\,2 & 20 & 15\,\% &  0\,\% & 85\,\% \\
-2\,/\,3 & 20 &  5\,\% &  0\,\% & 95\,\% \\
-3\,/\,4 & 20 & 10\,\% &  0\,\% & 90\,\% \\
-4\,/\,5 & 20 & 15\,\% &  5\,\% & 80\,\% \\
+2\,/\,3 & 50 &  0\,\% &  0\,\% & 100\,\% \\
+3\,/\,4 & 50 & 28\,\% &  0\,\% & 72\,\% \\
+4\,/\,5 & 50 & 28\,\% &  0\,\% & 72\,\% \\
 \hline
 \end{tabular}
 \caption{Anteil gewonnener Spiele bei unterschiedlicher Suchtiefe}
@@ -29,7 +27,7 @@ In der Heuristik werden verschiedene Merkmale berücksichtigt. Diese müssen so 
 stark ist. Dabei kann es auch sein, dass ein Merkmal gar nicht mit in die Heuristik aufgenommen wird, da andere Merkmale
 besser sind.
 
-\subsection{Aktuelle Mobilität}
+\subsection{Berechnung der aktuellen Mobilität}
 \label{sec:currentmobility}
 Die aktuelle Mobilität soll berücksichtigen, wie viele Züge beide Spieler ziehen können, wobei eigene Züge positiv und
 gegnerische Züge negativ bewertet werden. Die Anzahl der möglichen Züge des Spielers an der Reihe kann leicht bestimmt
@@ -41,12 +39,25 @@ gezogen wird. Zur Schätzung wurden drei Möglichkeiten untersucht:
     \item Es wird für den aktuellen Spielzustand die Anzahl der möglichen Züge beider Spieler berechnet, obwohl ein
     Spieler nicht an der Reihe ist.
 \end{enumerate}
-Von den Autoren durchgeführte Tests, in denen die KI mit unterschiedlich berechneter aktueller Mobilität 20 Mal mit
-einer Suchtiefe von 4 gegen sich selbst gespielt hat, haben ergeben, dass die dritte Möglichkeit in der stärksten KI
-resultiert. Option 3 konnte zu 75\,\% gegen Option 2 gewinnen, 25\,\% waren Niederlagen. Gegen Option 1 konnte Option 3
-50\,\% Siege und 12\,\% Unentschieden erzielen. Dabei handelt es sich nicht um einen signifikanten Unterschied, aber da
-die Bestimmung der möglichen Züge aller Folgezustände ein hoher Rechnenaufwand ist, ist die dritte Möglichkeit die beste
-Option.
+Spiele der verschiedenen Heuristiken gegeneinander haben ergeben, dass die dritte Option zur stärksten KI führt. Die
+Ergebnisse von 50 Spielen der Suchtiefe 4 sind in Tabelle \ref{table:currentmobility} dargestellt. Option 3 ist klarer
+Gewinner gegen Option 2. Zwischen Option 1 und Option 3 ist der Unterschied nicht ganz so groß, aber dennoch deutlich
+und da die Bestimmung der möglichen Züge aller Folgezustände ein hoher Rechnenaufwand ist, ist die dritte Möglichkeit
+die beste Option.
+
+\begin{table}[hb]
+\centering
+\begin{tabular}{c|c|ccc}
+\hline
+Heuristik S\,/\,W & \#Spiele & Siege S & Unentschieden & Siege W \\
+\hline
+ 1.\,/\,3. & 50 & 36\,\% &  0\,\% & 64\,\% \\
+ 2.\,/\,3. & 50 &  2\,\% &  0\,\% & 98\,\% \\
+\hline
+\end{tabular}
+\caption{Einfluss aktueller und potenzieller Mobilität auf den Anteil der Siege}
+\label{table:currentmobility}
+\end{table}
 
 \subsection{Gewichtung von aktueller und potenzieller Mobilität}
 \label{sec:combinedmobility}
