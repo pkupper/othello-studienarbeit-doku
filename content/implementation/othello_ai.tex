@@ -132,7 +132,6 @@ def pot_mob_heuristic(state):
             yi = y + dy
             if 0 <= xi < 8 and 0 <= yi < 8 and board[xi][yi] != 0:
                 fields -= board[xi][yi]
-    # Im Durchschnitt gibt es 3.5 Mal mehr potenzielle wie tatsächliche Züge
     fields /= 3.5 
     return fields / 64
 \end{lstlisting}
@@ -448,8 +447,7 @@ entspricht hierbei dem Term \(\Phi^{-1}(p)\) aus \autoref{sec:probcut}.
 Für ein \(p\) von \(93.3\%\) hat \passthrough{\lstinline!PERCENTILE!}
 den Wert \(1.5\). \passthrough{\lstinline!PROBCUT\_DEEP\_DEPTH!} und
 \passthrough{\lstinline!PROBCUT\_SHALLOW\_DEPTH!} entsprechen den
-Variablen \(d\) und \(d'\) aus Abschnitt \autoref{sec:probcut} dieser
-Arbeit.
+Variablen \(d\) und \(d'\) aus \autoref{sec:probcut} dieser Arbeit.
 
 \begin{lstlisting}[language=Python]
 PERCENTILE = 1.5
@@ -488,16 +486,19 @@ def probcut(state, depth, heuristic, alpha, beta):
     if depth == PROBCUT_DEEP_DEPTH:
         num_p = state.num_pieces
         if num_p <= 58:
-            sigma = 0.00261067 + 0.00119532 * num_p + 2.65512979e-05 * num_p**2
-            bound = PERCENTILE * sigma + beta
-            if probcut(state, PROBCUT_SHALLOW_DEPTH,
-                       heuristic, bound-1, bound) >= bound:
-                return beta
-            
-            bound = -PERCENTILE * sigma + alpha
-            if probcut(state, PROBCUT_SHALLOW_DEPTH,
-                       heuristic, bound, bound+1) <= bound:
-                return alpha
+            sigma = 0.00574961 + 0.00121003 * num_p + 1.20564162e-05 * num_p**2
+            if beta < 1:
+                bound = PERCENTILE * sigma + beta
+                if probcut(state, PROBCUT_SHALLOW_DEPTH,
+                           heuristic, bound-1, bound) >= bound:
+                    print('cut b')
+                    return beta
+            if alpha > -1:
+                bound = -PERCENTILE * sigma + alpha
+                if probcut(state, PROBCUT_SHALLOW_DEPTH,
+                           heuristic, bound, bound+1) <= bound:
+                    print('cut a')
+                    return alpha
 
     moves = state.possible_moves
     child_states = [make_move(state, move) for move in moves]

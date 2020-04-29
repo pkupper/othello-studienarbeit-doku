@@ -60,13 +60,24 @@ def test_combined_heuristic_avg(state):
 settings = { BLACK: { 'heuristic': test_combined_heuristic_both,
                       'algorithm': alphabeta,
                       'depth': 4,
-                      'mode': ai_make_move },
+                      'mode': ai_make_move,'timelimit':None },
              WHITE: { 'heuristic': test_combined_heuristic_avg,
                       'algorithm': alphabeta,
                       'depth': 4,
-                      'mode': ai_make_move }}
+                      'mode': ai_make_move,'timelimit':None }}
 
-get_statistics(20, settings)
+get_statistics(25, settings)
+
+settings = { BLACK: { 'heuristic': test_combined_heuristic_both,
+                      'algorithm': alphabeta,
+                      'depth': 4,
+                      'mode': ai_make_move,'timelimit':None },
+             WHITE: { 'heuristic': test_combined_heuristic_avg,
+                      'algorithm': alphabeta,
+                      'depth': 4,
+                      'mode': ai_make_move,'timelimit':None }}
+
+get_statistics(25, settings)
 \end{lstlisting}
 
 Der folgende Code dient dazu, die beste Gewichtung einzelnen Komponenten
@@ -125,7 +136,7 @@ def get_avg_possible_moves(state):
     moves = []
     for move in state.possible_moves:
         moves.append(len(make_move(copy.deepcopy(state), move).possible_moves))
-    return sum(moves) / len(moves)
+    return sum(moves) / len(moves) if len(moves)>0 else 0
 
 def mobility_heuristic_exact(state):
     if state.turn == WHITE:
@@ -144,127 +155,155 @@ def mobility_heuristic_approx(state):
         return (w_mobility - b_mobility) / 64
 
 def test_combined_heuristic_exact(state):
-    if state.num_pieces >= 50:
-        return disc_count_heuristic(state)
     mobility = mobility_heuristic_exact(state)
     cowthello = cowthello_heuristic(state)
-    return 0.5 * mobility + 0.5 * cowthello
+    return 0.625 * mobility + 0.375 * cowthello
 
 def test_combined_heuristic_approx(state):
-    if state.num_pieces >= 50:
-        return disc_count_heuristic(state)
     mobility = mobility_heuristic_approx(state)
     cowthello = cowthello_heuristic(state)
-    return 0.5 * mobility + 0.5 * cowthello
+    return 0.625 * mobility + 0.375 * cowthello
 \end{lstlisting}
 
 \begin{lstlisting}[language=Python]
+settings = { BLACK: { 'heuristic': test_combined_heuristic_approx,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move,'timelimit':None },
+             WHITE: { 'heuristic': test_combined_heuristic_exact,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move,'timelimit':None }}
+
+get_statistics(25, settings)
+
 settings = { BLACK: { 'heuristic': test_combined_heuristic_exact,
                       'algorithm': alphabeta,
                       'depth': 3,
-                      'mode': ai_make_move },
+                      'mode': ai_make_move,'timelimit':None },
              WHITE: { 'heuristic': test_combined_heuristic_approx,
                       'algorithm': alphabeta,
                       'depth': 3,
-                      'mode': ai_make_move }}
+                      'mode': ai_make_move,'timelimit':None }}
 
-get_statistics(20, settings)
-\end{lstlisting}
-
-\begin{lstlisting}[language=Python]
-def test_combined_heuristic_pattern(state):
-    if state.num_pieces >= 50:
-        return disc_count_heuristic(state)
-    mobility = mobility_heuristic(state)
-    cowthello = cowthello_safe_heuristic(state)
-    patterns = pattern_heuristic(state)
-    return 0.45 * mobility + 0.45 * cowthello + 0.1 * patterns
-\end{lstlisting}
-
-\begin{lstlisting}[language=Python]
-settings = { BLACK: { 'heuristic': combined_heuristic,
-                      'algorithm': alphabeta,
-                      'depth': 4,
-                      'mode': ai_make_move },
-             WHITE: { 'heuristic': test_combined_heuristic_pattern,
-                      'algorithm': alphabeta,
-                      'depth': 4,
-                      'mode': ai_make_move }}
-
-get_statistics(50, settings)
+get_statistics(25, settings)
 \end{lstlisting}
 
 Potential mobility
 
 \begin{lstlisting}[language=Python]
 def test_combined_heuristic(state):
-    if state.num_pieces >= 50:
-        return disc_count_heuristic(state)
     mobility = mobility_heuristic(state)
-    cowthello = cowthello_heuristic(state)
+    cowthello = cowthello_safe_heuristic(state)
     return 0.5 * mobility + 0.5 * cowthello
 
 def test_combined_heuristic_p(state):
-    if state.num_pieces >= 50:
-        return disc_count_heuristic(state)
     mobility = pot_mob_heuristic(state)
-    cowthello = cowthello_heuristic(state)
+    cowthello = cowthello_safe_heuristic(state)
     return 0.5 * mobility + 0.5 * cowthello
 
 def test_combined_heuristic_pot(state):
-    if state.num_pieces >= 50:
-        return disc_count_heuristic(state)
     mobility = pot_mob_heuristic(state) if state.num_pieces <= 36 else mobility_heuristic(state)
-    cowthello = cowthello_heuristic(state)
+    cowthello = cowthello_safe_heuristic(state)
     return 0.5 * mobility + 0.5 * cowthello
 
 def test_combined_heuristic_pot2(state):
-    if state.num_pieces >= 50:
-        return disc_count_heuristic(state)
-    mobility = (1 - state.num_pieces / 50) * pot_mob_heuristic(state) + (state.num_pieces / 50) *  mobility_heuristic(state)
-    cowthello = cowthello_heuristic(state)
+    mobility = (1 - state.num_pieces / 64) * pot_mob_heuristic(state) + (state.num_pieces / 64) *  mobility_heuristic(state)
+    cowthello = cowthello_safe_heuristic(state)
+    return 0.5 * mobility + 0.5 * cowthello
+
+def test_combined_heuristic_pot4(state):
+    mobility = 0.5 * pot_mob_heuristic(state) + 0.5 *  mobility_heuristic(state)
+    cowthello = cowthello_safe_heuristic(state)
     return 0.5 * mobility + 0.5 * cowthello
 
 # Berücksichtigung, dass laut Buro bei 36 Steinen aktuelle und potentielle Mobilität gleich gut sind, vorrausgesetzt die Mobilitäten haben die gleiche Größenordnung
 def test_combined_heuristic_pot3(state):
-    if state.num_pieces >= 50:
-        return disc_count_heuristic(state)
-    mobility = (1 - state.num_pieces / 50 + 0.22) * pot_mob_heuristic(state) + (state.num_pieces / 50 - 0.22) *  mobility_heuristic(state)
-    cowthello = cowthello_heuristic(state)
+    mobility = (1 - state.num_pieces / 64 + 0.22) * pot_mob_heuristic(state) + (state.num_pieces / 64 - 0.22) *  mobility_heuristic(state)
+    cowthello = cowthello_safe_heuristic(state)
     return 0.5 * mobility + 0.5 * cowthello
 \end{lstlisting}
 
 \begin{lstlisting}[language=Python]
-settings = { BLACK: { 'heuristic': test_combined_heuristic_pot,
+settings = { BLACK: { 'heuristic': test_combined_heuristic,
                       'algorithm': alphabeta,
                       'depth': 3,
-                      'mode': ai_make_move },
+                      'mode': ai_make_move,
+                      'timelimit': None },
              WHITE: { 'heuristic': test_combined_heuristic_pot2,
                       'algorithm': alphabeta,
                       'depth': 3,
-                      'mode': ai_make_move }}
+                      'mode': ai_make_move,
+                      'timelimit': None }}
 
 get_statistics(50, settings)
 
 settings = { BLACK: { 'heuristic': test_combined_heuristic_pot2,
                       'algorithm': alphabeta,
                       'depth': 3,
-                      'mode': ai_make_move },
+                      'mode': ai_make_move,
+                      'timelimit': None },
+             WHITE: { 'heuristic': test_combined_heuristic,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move,
+                      'timelimit': None }}
+
+get_statistics(50, settings)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+settings = { BLACK: { 'heuristic': test_combined_heuristic,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move,
+                      'timelimit': None },
+             WHITE: { 'heuristic': test_combined_heuristic_p,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move,
+                      'timelimit': None }}
+
+get_statistics(25, settings)
+
+settings = { BLACK: { 'heuristic': test_combined_heuristic_p,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move,
+                      'timelimit': None },
+             WHITE: { 'heuristic': test_combined_heuristic,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move,
+                      'timelimit': None }}
+
+get_statistics(25, settings)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+settings = { BLACK: { 'heuristic': test_combined_heuristic_pot2,
+                      'algorithm': alphabeta,
+                      'depth': 3,
+                      'mode': ai_make_move,
+                      'timelimit': None },
              WHITE: { 'heuristic': test_combined_heuristic_pot3,
                       'algorithm': alphabeta,
                       'depth': 3,
-                      'mode': ai_make_move }}
+                      'mode': ai_make_move,
+                      'timelimit': None }}
 
 get_statistics(50, settings)
 
 settings = { BLACK: { 'heuristic': test_combined_heuristic,
                       'algorithm': alphabeta,
                       'depth': 3,
-                      'mode': ai_make_move },
+                      'mode': ai_make_move,
+                      'timelimit': None },
              WHITE: { 'heuristic': test_combined_heuristic_pot2,
                       'algorithm': alphabeta,
                       'depth': 3,
-                      'mode': ai_make_move }}
+                      'mode': ai_make_move,
+                      'timelimit': None }}
 
 get_statistics(50, settings)
 \end{lstlisting}

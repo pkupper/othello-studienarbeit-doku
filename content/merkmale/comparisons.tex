@@ -1,11 +1,10 @@
 %!TEX root = ../../dokumentation.tex
 
 \section{Suchtiefe}
-Ein wichtiger Faktor für die Stärke der KI ist die erreichte Suchtiefe.
-Die Erhöhung der Suchtiefe um eins führt dazu, dass die KI, je nach Gesamtsuchtiefe, zu 80~–~95\,\% gegen die KI mit geringerer Suchtiefe gewinnt.
-Diese Zahlen wurden ermittelt, indem die gleiche KI jeweils 20 Mal mit unterschiedlicher Suchtiefe gegeneinander spielen gelassen wurde.
-Die Ergebnisse befinden sich in der Tabelle \ref{table:search-depth}.
-Es ist also wichtig, eine möglichst hohe Suchtiefe in akzeptabler Zeit zu erreichen.
+Ein wichtiger Faktor für die Stärke der KI ist die erreichte Suchtiefe. Die Erhöhung der Suchtiefe um eins führt dazu,
+dass die KI zu mindestend 72\,\% gegen die KI mit geringerer Suchtiefe gewinnt. Diese Zahlen wurden ermittelt, indem die
+gleiche KI mit unterschiedlicher Suchtiefe gegeneinander spielen gelassen wurde. Die Ergebnisse befinden sich in der
+Tabelle \ref{table:search-depth}. Es ist also wichtig, eine möglichst hohe Suchtiefe in akzeptabler Zeit zu erreichen.
 Bei begrenzter Rechenzeit kann eine höhere Performanz zu einer stärkeren KI führen.
 
 \begin{table}[hb]
@@ -14,10 +13,9 @@ Bei begrenzter Rechenzeit kann eine höhere Performanz zu einer stärkeren KI f�
 \hline
 Suchtiefe S\,/\,W & \#Spiele & Siege S & Unentschieden & Siege W
 \\ \hline
-1\,/\,2 & 20 & 15\,\% &  0\,\% & 85\,\% \\
-2\,/\,3 & 20 &  5\,\% &  0\,\% & 95\,\% \\
-3\,/\,4 & 20 & 10\,\% &  0\,\% & 90\,\% \\
-4\,/\,5 & 20 & 15\,\% &  5\,\% & 80\,\% \\
+2\,/\,3 & 50 &  0\,\% &  0\,\% & 100\,\% \\
+3\,/\,4 & 50 & 28\,\% &  0\,\% & 72\,\% \\
+4\,/\,5 & 50 & 28\,\% &  0\,\% & 72\,\% \\
 \hline
 \end{tabular}
 \caption{Anteil gewonnener Spiele bei unterschiedlicher Suchtiefe}
