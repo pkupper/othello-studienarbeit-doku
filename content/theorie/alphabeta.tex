@@ -6,9 +6,9 @@ werden, die das Ergebnis des Algorithmus nicht mehr beeinflussen können. Ein Zw
 für den Spieler am Zug bereits ein Zug mit einem größeren Nutzen gefunden wurde, als bei dem zu betrachtenden Zweig
 maximal noch erzielbar ist.
 
-Erreicht wird dies durch zwei Variablen $Alpha$ und $Beta$ die jeweils für den maximierenden und den minimierenden
+Erreicht wird dies durch zwei Variablen $Alpha$ und $Beta$, die jeweils für den maximierenden und den minimierenden
 Spieler den garantierten Nutzen repräsentieren, den diese selbst bei einem optimal spielenden Gegner erreichen können.
-$Alpha$ und $Beta$ werden zu Beginn mit dem jeweils schlechtmöglichsten Nutzen initialisiert, also $Alpha = -\infty$ und
+$Alpha$ und $Beta$ werden zu Beginn mit dem jeweils schlechtmöglichsten Nutzen initialisiert, also mit $Alpha = -\infty$ und
 $Beta = \infty$. Die Variablen werden an die rekursiven Funktionsaufrufe weitergegeben und, falls ein besserer Zug für
 einen der Spieler auftritt, aktualisiert. Ist $Beta < Alpha$, d. h. sowohl der maximierende als auch der minimierende
 Spieler können bereits einen für sich jeweils besseren Zug forcieren, so muss der Zweig nicht weiter beachtet werden, da
