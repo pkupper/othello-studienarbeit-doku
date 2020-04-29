@@ -1,11 +1,11 @@
 %!TEX root = ../../dokumentation.tex
 
 \section{Suchtiefe}
-Ein wichtiger Faktor für die Stärke der KI ist die erreichte Suchtiefe. Die Erhöhung der Suchtiefe um eins führt dazu,
-dass die KI zu mindestend 72\,\% gegen die KI mit geringerer Suchtiefe gewinnt. Diese Zahlen wurden ermittelt, indem die
-gleiche KI mit unterschiedlicher Suchtiefe gegeneinander spielen gelassen wurde. Die Ergebnisse befinden sich in der
+Ein wichtiger Faktor für die Stärke der \ac{KI} ist die erreichte Suchtiefe. Die Erhöhung der Suchtiefe um eins führt dazu,
+dass die \ac{KI} zu mindestend 72\,\% gegen die \ac{KI} mit geringerer Suchtiefe gewinnt. Diese Zahlen wurden ermittelt, indem die
+gleiche \ac{KI} mit unterschiedlicher Suchtiefe gegeneinander spielen gelassen wurde. Die Ergebnisse befinden sich in der
 Tabelle \ref{table:search-depth}. Es ist also wichtig, eine möglichst hohe Suchtiefe in akzeptabler Zeit zu erreichen.
-Bei begrenzter Rechenzeit kann eine höhere Performanz zu einer stärkeren KI führen.
+Bei begrenzter Rechenzeit kann eine höhere Performanz zu einer stärkeren \ac{KI} führen.
 
 \begin{table}[hb]
 \centering
@@ -23,7 +23,7 @@ Suchtiefe S\,/\,W & \#Spiele & Siege S & Unentschieden & Siege W
 \end{table}
 
 \section{Heuristik}
-In der Heuristik werden verschiedene Merkmale berücksichtigt. Diese müssen so gewichtet werden, dass die KI möglichst
+In der Heuristik werden verschiedene Merkmale berücksichtigt. Diese müssen so gewichtet werden, dass die \ac{KI} möglichst
 stark ist. Dabei kann es auch sein, dass ein Merkmal gar nicht mit in die Heuristik aufgenommen wird, da andere Merkmale
 besser sind.
 
@@ -39,7 +39,7 @@ gezogen wird. Zur Schätzung wurden drei Möglichkeiten untersucht:
     \item Es wird für den aktuellen Spielzustand die Anzahl der möglichen Züge beider Spieler berechnet, obwohl ein
     Spieler nicht an der Reihe ist.
 \end{enumerate}
-Spiele der verschiedenen Heuristiken gegeneinander haben ergeben, dass die dritte Option zur stärksten KI führt. Die
+Spiele der verschiedenen Heuristiken gegeneinander haben ergeben, dass die dritte Option zur stärksten \ac{KI} führt. Die
 Ergebnisse von 50 Spielen der Suchtiefe 4 sind in Tabelle \ref{table:currentmobility} dargestellt. Option 3 ist klarer
 Gewinner gegen Option 2. Zwischen Option 1 und Option 3 ist der Unterschied nicht ganz so groß, aber dennoch deutlich
 und da die Bestimmung der möglichen Züge aller Folgezustände ein hoher Rechnenaufwand ist, ist die dritte Möglichkeit
@@ -69,16 +69,16 @@ größeren Nutzen, danach die aktuelle Mobilität. \cite[S.~20]{evaluationfuncti
 
 Der erste Ansatz, die aktuelle und die potenzielle Mobilität zu kombinieren, besteht darin, bis zu einer bestimmten
 Anzahl an Steinen auf dem Feld die potenzielle Mobilität zu verwenden, und danach die aktuelle Mobilität. Das hat den
-Vorteil, dass der Rechnenaufwand geringer ist, da immer nur ein Merkmal berechnet werden muss. Tests, in denen die KI
-gegen sich selbst mit unterschiedlichen Parametern spielen gelassen wurde, haben ergeben, dass die KI am häufigsten
+Vorteil, dass der Rechnenaufwand geringer ist, da immer nur ein Merkmal berechnet werden muss. Tests, in denen die \ac{KI}
+gegen sich selbst mit unterschiedlichen Parametern spielen gelassen wurde, haben ergeben, dass die \ac{KI} am häufigsten
 gewinnt, wenn die Grenze bei den von Buro bestimmten 36 Steinen auf dem Spielfeld liegt.
 
 Eine Verbesserung konnte erzielt werden, indem die aktuelle und die potenzielle Mobilität linear kombiniert wurden.
 Das heißt, die Gewichtung der potenziellen Mobilität entspricht dem Anteil der belegten Felder und die aktuelle Mobilität
 dem Anteil der freien Felder.
 
-Um zu bestimmen, welche Kombination der Mobilität zur stärksten KI führt, wurden verschiedene Kombinationen jeweils 50
-Mal mit einer Suchtiefe von drei gegeneinander spielen gelassen. Dabei hat jede KI gleich oft angefangen, um einen
+Um zu bestimmen, welche Kombination der Mobilität zur stärksten \ac{KI} führt, wurden verschiedene Kombinationen jeweils 50
+Mal mit einer Suchtiefe von drei gegeneinander spielen gelassen. Dabei hat jede \ac{KI} gleich oft angefangen, um einen
 eventuellen Vorteil dadurch auszuschließen. Es hat sich gezeigt, dass eine lineare Kombination der beiden Merkmale
 stärker ist, als aktuelle oder potenzielle Mobilität alleine. Eine lineare Kombination von aktueller und potenzieller
 Mobilität ist ähnlich gut wie nur die potenzielle Mobilität, hat allerdings mit 74\,\% Siegen einen Vorteil gegenüber
@@ -87,14 +87,14 @@ Anteil der Siege und Niederlagen der verschiedenen Kombinationen.
 
 \subsection{Gewichtung von Mobilität und Cowthello} \label{sec:mobcowweight}
 Letztendlich müssen die Mobilität und Cowthello zu einer Heuristik kombiniert werden. Um die Gewichtung der beiden
-Merkmale zu bestimmen wurde die KI mit unterschiedlich gewichteter Heuristik und Suchtiefe 3 gegeneinander spielen
+Merkmale zu bestimmen wurde die \ac{KI} mit unterschiedlich gewichteter Heuristik und Suchtiefe 3 gegeneinander spielen
 gelassen. Die Ergebnisse befinden sich in Tabelle \ref{table:combinedweighting}. Daraus ergibt sich, dass eine
-Gewichtung von 62.5\,\% Mobilität und 37.5\,\% Cowthello zur stärksten KI führt.
+Gewichtung von 62.5\,\% Mobilität und 37.5\,\% Cowthello zur stärksten \ac{KI} führt.
 
 \subsection{Anzahl der Steine}
 Da es das Ziel von Othello ist, möglichst viele eigene Steine auf dem Spielfeld zu haben, ist es naheliegend, diese am
 Ende des Spiels zu maximieren. Der Ansatz ist, ab einer bestimmten Anzahl an Steinen auf dem Spielfeld als Heuristik die
 Differenz der Anzahl der eigenen Spielsteine und der gegnerischen Spielsteine zu verwenden. Tests haben allerdings
-ergeben, dass die KI, die diese abgewandelte Heuristik verwendet, der unveränderten Heuristik deutlich unterlegen ist.
-Tabelle \ref{table:disccount} im Anhang zeigt die Ergebnisse von Spielen der KIs mit den unterschiedlichen Heuristiken
+ergeben, dass die \ac{KI}, die diese abgewandelte Heuristik verwendet, der unveränderten Heuristik deutlich unterlegen ist.
+Tabelle \ref{table:disccount} im Anhang zeigt die Ergebnisse von Spielen der \acp{KI} mit den unterschiedlichen Heuristiken
 gegeneinander. Diese Heuristik sollte also nicht verwendet werden.

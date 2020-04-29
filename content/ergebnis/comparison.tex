@@ -1,13 +1,13 @@
 %!TEX root = ../../dokumentation.tex
 
 \section{Vorgänger}
-Im letzten Jahr wurde bereits von zwei Studierenden eine Studienarbeit über die Entwicklung einer Othello-KI verfasst.
-In dieser wurden im Wesentlichen zwei alternative KI-Strategien implementiert.
+Im letzten Jahr wurde bereits von zwei Studierenden eine Studienarbeit über die Entwicklung einer Othello-\ac{KI} verfasst.
+In dieser wurden im Wesentlichen zwei alternative \ac{KI}-Strategien implementiert.
 \begin{enumerate}
-    \item Die erste KI nutzt den Monte-Carlo Algorithmus. Um den nächsten Spielzug zu berechnen, wird für alle möglichen
+    \item Die erste \ac{KI} nutzt den Monte-Carlo Algorithmus. Um den nächsten Spielzug zu berechnen, wird für alle möglichen
     Züge das Spiel $n$ Mal zufällig bis zum Ende gespielt.
     \cite[S.~19]{othellostudienarbeit}
-    \item Die zweite KI basiert auf dem Alpha-Beta-Algorithmus und kann verschiedene Heuristiken verwenden. Am
+    \item Die zweite \ac{KI} basiert auf dem Alpha-Beta-Algorithmus und kann verschiedene Heuristiken verwenden. Am
     erfolgreichsten war die „Stored Monte-Carlo-Heuristik“, die auf statistischen Daten über die
     Siegeswahrscheinlichkeit beim Setzen auf ein bestimmtes Feld in einem bestimmten Zug beruht.
     \cite[S.~30]{othellostudienarbeit}
@@ -16,27 +16,27 @@ Die Arbeit ist zu dem Ergebnis gekommen, dass die Implementierung des Monte-Carl
 Alpha-Beta-Algorithmus überlegen ist.
 \cite[S.~55]{othellostudienarbeit}
 
-Tabelle \ref{table:comp:previous} zeigt einen Vergleich der in dieser Arbeit entwickelten KI mit den oben genannten
+Tabelle \ref{table:comp:previous} zeigt einen Vergleich der in dieser Arbeit entwickelten \ac{KI} mit den oben genannten
 Strategien. Dabei wurde sowohl für ProbCut als auch für Alpha-Beta eine Suchtiefe von 5 verwendet. Mit 100\,\% Siegen
-ist die in dieser Arbeit entwickelte KI deutlich überlegen.
+ist die in dieser Arbeit entwickelte \ac{KI} deutlich überlegen.
 
 \begin{table}[H]
 \centering
 \begin{tabular}{c|c|ccc}
 \hline
-Gegnerische KI & \#Spiele & Siege ProbCut & Unentschieden & Siege Gegner \\
+Gegnerische \ac{KI} & \#Spiele & Siege ProbCut & Unentschieden & Siege Gegner \\
 \hline
 Monte-Carlo & 20 & 100\,\% & 0\,\% & 0\,\% \\
 Alpha-Beta  & 20 & 100\,\% & 0\,\% & 0\,\% \\
 \hline
 \end{tabular}
-\caption{Anteil der Siege und Niederlagen von ProbCut gegen die KI der Vorgängerarbeit}
+\caption{Anteil der Siege und Niederlagen von ProbCut gegen die \ac{KI} der Vorgängerarbeit}
 \label{table:comp:previous}
 \end{table}
 
 \section{Cowthello}
 
-Die Cowthello KI nutzt im Wesentlichen die Cowthello Heuristik, die auch in der in dieser Arbeit entwickelten KI
+Die Cowthello \ac{KI} nutzt im Wesentlichen die Cowthello Heuristik, die auch in der in dieser Arbeit entwickelten \ac{KI}
 verwendet wird, passt diese jedoch an, wenn Ecken des Spielfelds belegt werden. \cite{cowthello}
 
 Im Spiel gegen die in dieser Arbeit entwickelte ProbCut Strategie mit einer festen Suchtiefe von 5 Halbzügen gewinnt
@@ -46,11 +46,11 @@ die ProbCut Strategie, wie in Tabelle \ref{table:comp:cowthello} dargestellt, in
 \centering
 \begin{tabular}{c|c|ccc}
 \hline
-Gegnerische KI & \#Spiele & Siege ProbCut & Unentschieden & Siege Gegner \\
+Gegnerische \ac{KI} & \#Spiele & Siege ProbCut & Unentschieden & Siege Gegner \\
 \hline
 Cowthello & 5 & 100\,\% & 0\,\% & 0\,\% \\
 \hline
 \end{tabular}
-\caption{Anteil der Siege und Niederlagen von ProbCut gegen die Cowthello KI}
+\caption{Anteil der Siege und Niederlagen von ProbCut gegen die Cowthello \ac{KI}}
 \label{table:comp:cowthello}
 \end{table}
