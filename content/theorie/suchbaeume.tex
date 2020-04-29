@@ -7,13 +7,14 @@ bestimmter Spielzustand, in dem das Spiel gewonnen ist, gesucht wird und die Spi
 können. Dieses Suchproblem hat als Lösung eine Abfolge von Aktionen, die zum Sieg des Spiels führen. Jeder Knoten kann
 so erweitert werden, dass für jeden möglichen Spielzug, also jede Aktion, eine Kante zu einem neuen Knoten, also zu
 einem neuen Spielzustand, führt. Der Baum kann dann nach einem bestimmten Zustand durchsucht werden, der das gegebene
-Problem löst. Die Vorgehensweise dabei ist eine Tiefensuche. Zunächst wird eine Option untersucht und erst wenn diese
-nicht zu einer Lösung des Problems führt, werden die übrigen Optionen in Betracht gezogen.
+Problem löst. Die Vorgehensweise dabei ist eine Tiefensuche. Zunächst wird eine Option bis zum Ende des Spiels
+untersucht und erst wenn diese nicht zu einer Lösung des Problems führt, werden die übrigen Optionen in Betracht
+gezogen.
 \cite[S.~75]{ai2010russel}
 
 \subsection{Adversative Suche}
 In einem Spiel können die Züge des Gegners nicht beeinflusst werden. Deswegen ist ein einzelner Pfad von Aktionen
-uninteressant und eine sogenannte Strategie, die jeden Zug alle möglichen Reaktionen des Gegners betrachtet, ist
+uninteressant und eine sogenannte Strategie, die für jeden Zug alle möglichen Reaktionen des Gegners betrachtet, ist
 gesucht. Eine optimale Strategie führt unter der Annahme, dass auch der Gegner optimal spielt, zu einem mindestens
 genauso guten Ergebnis wie jede andere Strategie.
 \cite[S.~163f.]{ai2010russel}
@@ -24,14 +25,14 @@ verschiedenen Zuständen, die jedes Feld annehmen kann (frei, belegt von schwarz
 Speicherkomplexität bei $3^{64}\approx10^{30}$ möglichen Spielzuständen. Diese Zahl lässt sich durch Ausschließen
 offensichtlich ungültiger Zustände, in denen beispielsweise die mittleren vier Felder nicht belegt sind oder gesetzte
 Steine nicht verbunden sind, auf ca. $10^{28}$ reduzieren \cite[S.~167]{searchingforsolutions}.
-Bei einer Repräsentation von 2 Bit pro Spielfeld, also 16 Byte pro Zustand, würden diese Zustände ca. $10^{20}$\,GB
+Bei einer Repräsentation von 2 Bit pro Feld, also 16 Byte pro Spielzustand, würden diese Zustände ca. $10^{20}$\,GB
 Speicher benötigen. Der Spielbaum muss in diesem Fall also als theoretisches Konstrukt betrachtet werden, da er nicht
 komplett dargestellt werden kann. Ein Suchbaum ist ein Teil des Spielbaums, der jedoch nur die für eine Entscheidung
 relevanten Knoten beinhaltet.
 \cite[S.~162f.]{ai2010russel}
 
 Im allgemeinen Fall können Zustände mehrfach im Baum auftreten. Das passiert, wenn Spielzüge rückgängig gemacht werden
-können, beispielsweise können im Schach manche Figuren auf das vorherige Feld zurückgestellt werden. Für diese Spiele
+können. Beispielsweise können im Schach manche Figuren auf das vorherige Feld zurückgestellt werden. Für diese Spiele
 ist es sinnvoll, zyklische Pfade auszuschließen. Dadurch wird verhindert, dass durch beliebig viele Wiederholungen eine
 unendliche Menge an Pfaden entsteht.
 \cite[S.~75]{ai2010russel}
