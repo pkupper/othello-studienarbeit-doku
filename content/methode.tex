@@ -13,7 +13,7 @@ ermöglichen es, Dokumentation und Erklärungen direkt in Textfeldern beim entsp
 Die \ac{KI} soll auf dem Minimax-Algorithmus mit begrenzter Tiefensuche und den Erweiterungen Alpha-Beta und ProbCut
 basieren.
 
-Kapitel \ref{chap:implementation} enthält die Implementation von Jupyter Notebooks, welche die \ac{KI}, eine \ac{GUI}
+Kapitel \ref{chap:implementation} enthält die Jupyter Notebooks, welche die \ac{KI}, eine \ac{GUI}
 und Funktionalitäten zum Testen, Bestimmen und Evaluieren von Parametern implementieren.
 
 \section{Optimierung der Parameter}
@@ -23,7 +23,7 @@ Dazu wird die Alpha-Beta-\ac{KI} gegen sich selbst mit verschiedenen Heuristiken
 oft den ersten Zug, um auszuschließen, dass durch das Beginnen ein Vorteil oder Nachteil entsteht. Es wird der
 Alpha-Beta-Algorithmus verwendet, da die Standardabweichung des ProbCut-Algorithmus von der Heuristik abhängt und jedes
 Mal neu bestimmt werden müsste. Die Spiele verlaufen nicht deterministisch, da nicht unbedingt der Zug mit dem höchsten
-Nutzen gewählt wird, sondern ggf. auch ein Zug, dessen Nutzen sehr ähnlich ist. Die Auswahl geschieht zufällig.
+Nutzen gewählt wird, sondern ggf. auch ein Zug, dessen Nutzen sehr ähnlich ist. Die Auswahl zwischen geeigneten Zügen geschieht dabei zufällig.
 
 \section{Test gegen andere KIs}
 Beim Testen der \ac{KI} gegen andere \acp{KI} wird ähnlich wie in \autoref{sec:optimization} vorgegangen. Die zu vergleichenden

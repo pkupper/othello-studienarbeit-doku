@@ -3,19 +3,19 @@
 
 Alpha-Beta-Pruning ist eine Optimierung des Minimax Algorithmus, bei der komplette Zweige des Suchbaums ausgeschlossen
 werden, die das Ergebnis des Algorithmus nicht mehr beeinflussen können. Ein Zweig kann dann ausgeschlossen werden, wenn
-für den Spieler am Zug bereits ein Zug mit einem größeren Nutzen gefunden wurde, als bei dem zu betrachtenden Zweig
+für den Spieler, der am Zug ist, bereits ein Zug mit einem größeren Nutzen gefunden wurde, als bei dem zu betrachtenden Zweig
 maximal noch erzielbar ist.
 
 Erreicht wird dies durch zwei Variablen $Alpha$ und $Beta$ die jeweils für den maximierenden und den minimierenden
 Spieler den garantierten Nutzen repräsentieren, den diese selbst bei einem optimal spielenden Gegner erreichen können.
-$Alpha$ und $Beta$ werden zu Beginn mit dem jeweils schlechtmöglichsten Nutzen initialisiert, also $Alpha = -\infty$ und
-$Beta = \infty$. Die Variablen werden an die rekursiven Funktionsaufrufe weitergegeben und, falls ein besserer Zug für
+$Alpha$ und $Beta$ werden zu Beginn mit dem jeweils schlechtmöglichsten Nutzen initialisiert, also $Alpha := -\infty$ und
+$Beta := \infty$. Die Variablen werden an die rekursiven Funktionsaufrufe weitergegeben und, falls ein besserer Zug für
 einen der Spieler auftritt, aktualisiert. Ist $Beta < Alpha$, d. h. sowohl der maximierende als auch der minimierende
 Spieler können bereits einen für sich jeweils besseren Zug forcieren, so muss der Zweig nicht weiter beachtet werden, da
 er in einem Spiel mit optimalen Spielern nicht auftritt.
 \cite[S.~167]{ai2010russel}
 
-Das Beispiel in Abbildung \ref{fig:game_tree_ab_pruning} veranschaulicht das Alpha-Beta-Pruning: An Konten $A$ ist der
+Das Beispiel in Abbildung \ref{fig:game_tree_ab_pruning} veranschaulicht das Alpha-Beta-Pruning: Am Knoten $A$ ist der
 maximierende Spieler an der Reihe, an den Knoten $B$ und $C$ der minimierende Spieler. Der maximierende Spieler
 überprüft zunächst den Spielzug, der zu Konten $B$ führt. Alpha und Beta betragen noch $-\infty$ und $\infty$. An dieser
 Stelle werden die für den minimierenden Spieler möglichen Züge berechnet. Diese haben Minimax-Werte von $0.3$ und $0.6$.
@@ -53,7 +53,7 @@ Spiel vorbei ist, $possible\_moves$, das eine Liste aller möglichen Züge enth�
 Reihe enthält. Die Funktion $get\_utility$ berechnet das Endergebnis für einen Zustand und einen Spieler und die
 Funktion $make\_move$ führt auf einem Zustand einen Zug aus und gibt diesen zurück.
 
-\lstinputlisting[language=Python, float]{listings/alphabeta.py}
+\lstinputlisting[language=Python, float=h]{listings/alphabeta.py}
 
 Durch Anwendung von Alpha-Beta-Pruning wird das Ergebnis des Minimax Algorithmus nicht beeinflusst. Jedoch kann durch
 die Betrachtung einer geringeren Zahl von Knoten die Performanz signifikant verbessert werden.
@@ -62,14 +62,14 @@ die Betrachtung einer geringeren Zahl von Knoten die Performanz signifikant verb
 Bei einer beschränkten Tiefensuche kann somit bei Verwendung einer heuristischen Evaluations-Funktion die maximale
 Suchtiefe bei gleicher Rechenzeit erhöht werden, was zu einem besseren Ergebnis führt.
 
-\subsection{Move Ordering}
+\subsection{Move-Ordering}
 Da Alpha-Beta-Pruning nur dann Zweige ausschließen kann, wenn bereits bessere Zweige gefunden wurden, ist es von
 Vorteil, die Zweige in der Reihenfolge absteigenden Nutzens zu betrachten. So kann die Anzahl der ausgeschlossenen
 Zweige maximiert werden kann. Dies ist jedoch in der Praxis nicht optimal möglich, da dafür ja bereits eine korrekte
 Bewertung der Züge stattgefunden haben muss, was die Anwendung der Alpha-Beta Suche überflüssig machen würde. Eine
 ungefähre Anordnung der Züge, die dennoch zu einer wesentlichen Effizienzverbesserung führt, ist jedoch häufig möglich.
 Beispielsweise können in einem primitiven Ansatz beim Schach Züge, in denen eine gegnerische Figur geschlagen wird,
-priorisiert werden. Dieses Sortieren der Züge wird „Move Ordering“ genannt.
+priorisiert werden. Dieses Sortieren der Züge wird „Move-Ordering“ genannt.
 \cite[S.~169]{ai2010russel}
 
 Um für Othello eine geeignete Reihenfolge der Züge zu berechnen, kann zunächst eine Suche mit einer geringeren Tiefe

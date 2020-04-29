@@ -10,7 +10,7 @@ werden.
 
 Die in dieser Arbeit entwickelte \ac{KI} erreicht bei einer Rechenzeit von ca. 30 Sekunden pro Zug eine Suchtiefe von 5 bis
 8. ProbCut wird dabei erst mit einer Suchtiefe von 4 bis 7 aufgerufen, wobei beim ersten Aufruf $Alpha$ und $Beta$ noch
-den minimalen bzw. maximalen Wert haben. Wird eine tiefe Suche von 4 festgelegt, kann ProbCut also frühestens bei
+den minimalen bzw. maximalen Wert haben. Wird eine tiefe Suchtiefe von 4 festgelegt, kann ProbCut also frühestens bei
 Suchtiefe 6 zum Einsatz kommen. Diesen Wert zu erhöhen ist bei einer Rechenzeit von 30 Sekunden nicht sinnvoll. Möglich
 sind also eine flache Suche der Tiefe 1 und eine tiefe Suche der Tiefe 3 oder eine flache Suche der Tiefe 2 und eine
 tiefe Suche der Tiefe 4.
@@ -18,7 +18,7 @@ tiefe Suche der Tiefe 4.
 \subsection{Korrektheit von ProbCut}
 ProbCut schließt Zweige des Suchbaums aus, die mit einer bestimmten Wahrscheinlichkeit nicht zu einem guten Zug führen
 können. Als Grundlage werden statistische Daten verwendet. Ob diese hinreichend gut sind, sodass tatsächlich bis auf
-eine geringe Fehlerwahrscheinlichkeit der Zug mit dem besten Minimax-Wert gefunden wird, sollte überprüft werden. Dazu
+eine geringe Fehlerwahrscheinlichkeit der Zug mit dem besten Minimax-Wert gefunden wird, soll überprüft werden. Dazu
 kann in Spielen der beste Zug sowohl mit Alpha-Beta, als auch mit ProbCut bestimmt werden. Stimmt dieser nicht überein,
 hat ProbCut fälschlicherweise den Zweig ausgeschlossen, der zu dem besten Minimax-Wert führt.
 
@@ -35,8 +35,8 @@ $H_1:p<0.99$
 Anhand eines Stichprobenumfangs von $n=240$ soll auf einem Signifikanzniveau von $\alpha=5\%$ getestet werden. Daraus
 folgt, dass bei 234 oder weniger Übereinstimmungen die Nullhypothese abgelehnt werden kann.
 
-Zum Erheben der Daten der Stichprobe wurden Spiele mit zufälligen Zügen durchgeführt. Bei jedem aufgetretenen Zustand
-wurde für alle möglichen Züge der Nutzen mit Alpha-Beta und ProbCut bestimmt und überprüft, ob diese übereinstimmen.
-Dieses Vorgehen wurde gewählt, da auf Basis dieser Werte die Entscheidung getroffen wird, welcher Zug gezogen wird.
-Dabei kam es immer zu einer Übereinstimmung der Ergebnisse von Alpha-Beta und ProbCut und die Nullhypothese kann
+Zum Erheben der Daten der Stichprobe werden Spiele mit zufälligen Zügen durchgeführt. Bei jedem aufgetretenen Zustand
+wird für alle möglichen Züge der Nutzen mit Alpha-Beta und ProbCut bestimmt und überprüft, ob diese übereinstimmen.
+Dieses Vorgehen wird gewählt, da auf Basis dieser Werte die Entscheidung getroffen wird, welcher Zug gezogen wird.
+Dabei kommt es immer zu einer Übereinstimmung der Ergebnisse von Alpha-Beta und ProbCut. Die Nullhypothese kann also
 angenommen werden.

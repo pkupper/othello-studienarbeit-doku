@@ -1,11 +1,11 @@
 \section{Der Minimax-Algorithmus}
 \label{sec:minimax}
 
-Minimax ist ein Algorithmus zur Bestimmung des optimalen Spielzugs in einem deterministischen, rundenbasierten,
-zwei-Spieler Nullsummenspiel mit perfekter Information. Somit wird durch den Algorithmus eine optimale Strategie
+Minimax ist ein Algorithmus zur Bestimmung des optimalen Spielzugs für einen Spielzustand in einem deterministischen, rundenbasierten,
+zwei-Spieler Nullsummenspiel mit perfekter Information. Somit wird durch den Algorithmus auch eine optimale Strategie
 bestimmt.
 
-Dabei wird für jeden Knoten im Spielbaum des Spiels rekursiv der Nutzen des entsprechenden Spielzustands für alle
+Dabei wird für jeden Knoten im Spielbaum rekursiv der Nutzen des entsprechenden Spielzustands für alle
 Spieler bestimmt. Dieser Wert des Nutzens wird $Minimax$-Wert genannt.
 
 An den Blatt-Knoten des Spielbaums ist der Nutzen für alle Spieler bekannt, da der Gewinner bereits feststeht. Der
@@ -15,12 +15,12 @@ für den aktuell spielenden Spieler ausgewählt wird. Ist der maximierende Spiel
 Spielzustand $s$ also:
 
 \hspace*{1.3cm}
-$Minimax=max(\{Minimax(Result(s, a)) \mid a \in Actions(s)\})$
+$Minimax(s)=max(\{Minimax(Result(s, a)) \mid a \in Actions(s)\})$
 
 Wenn der minimierende Spieler an der Reihe ist, gilt analog:
 
 \hspace*{1.3cm}
-$Minimax=min(\{Minimax(Result(s, a)) \mid a \in Actions(s)\})$
+$Minimax(s)=min(\{Minimax(Result(s, a)) \mid a \in Actions(s)\})$
 
 Für den maximierenden bzw. minimierenden Spieler ist der Zug mit dem größten bzw. kleinsten $Minimax$-Wert der beste Zug
 gegen einen optimal spielenden Gegner.

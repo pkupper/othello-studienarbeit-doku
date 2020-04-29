@@ -31,7 +31,7 @@ Die Konstanten werden von der Python Standardbibliothek in dem Modul
 Das Modul \passthrough{\lstinline!random!} wird im Rahmen dieser
 Implementierung für mehrere Zwecke genutzt. Zum einen zur
 Implementierung der \passthrough{\lstinline!random\_ai!}, einer
-Strategie, welche immer einen zufälligen Zug wählt. Und außerdem, um die
+Strategie, welche immer einen zufälligen Zug wählt. Zum anderen, um die
 auf Minimax basierenden Strategien nichtdeterministisch zu machen.
 
 \begin{lstlisting}[language=Python]
@@ -66,8 +66,8 @@ repräsentiert ein höherer Wert der Heuristik einen für Weiß
 vorteilhaften Zug, während ein niedriger Wert einen Vorteil für Schwarz
 repräsentiert. Die Werte aller Heuristiken liegen zwischen \(-1\) und
 \(1\), wobei diese Randwerte einen garantierten Sieg für den jeweiligen
-Spieler darstellen. Der Wert \(0\) steht für einen für beide Spieler
-gleich guten Spielzustand.
+Spieler darstellen. Der Wert \(0\) steht für einen, für beide Spieler
+gleich guten, Spielzustand.
 
 Die Funktion \passthrough{\lstinline!disc\_count\_heuristik!}
 implementiert die in \ref{sec:disccount} beschriebene Heuristik. Dafür
@@ -132,8 +132,8 @@ Die Funktion \passthrough{\lstinline!combined\_mobility\_heuristic!}
 kombiniert die aktuelle und potenzielle Mobilität, wobei zu Beginn des
 Spiels die potenzielle Mobilität stärker gewichtet wird und gegen Ende
 des Spiels die aktuelle Mobilität. Michael Buro beschreibt in seiner
-Dissertation, dass die potenzielle Mobilität bis 36 Spielsteine auf dem
-Feld liegen wichtiger für die Bewertung ist, als die aktuelle Mobilität
+Dissertation, dass die potenzielle Mobilität, bis 36 Spielsteine auf dem
+Feld liegen, wichtiger für die Bewertung ist, als die aktuelle Mobilität
 \cite[S. 9]{evaluationfunctions}. Eigene Tests, welche in Kapitel
 \ref{sec:combinedmobility} beschrieben sind, ergeben, dass eine lineare
 Kombination der beiden Merkmale zu einem guten Ergebnis führt.
@@ -157,7 +157,7 @@ aufsummiert. Der resultierende Wert schätzt dann den Nutzen der
 aktuellen Position ein. Auch bei dieser Heuristik findet eine
 Normalisierung statt.
 
-Aufgrund der Symmetrie des Othello Spielfeldes ist es für die
+Aufgrund der Symmetrie des Othello Spielfeldes, ist es für die
 Weight-Heuristik nicht nötig, für jedes Feld einzeln dessen Gewicht
 anzugeben. Stattdessen werden ausschließlich die Gewichte für ein
 Viertel des Spielfelds angegeben und dieses anschließend gespiegelt. Die
@@ -195,7 +195,7 @@ def cowthello_heuristic(state):
 \end{lstlisting}
 
 Die Cowthello Heuristik wertet den Besitz der an die Ecken des
-Spielfeldes angrenzenden Felder, als negativ, da der Gegner dadurch
+Spielfeldes angrenzenden Felder als negativ, da der Gegner dadurch
 möglicherweise den Besitz der Ecke erlangen kann. Wenn die Ecke jedoch
 bereits besetzt ist, spielt das keine Rolle mehr. Die
 \passthrough{\lstinline!cowthello\_safe\_heuristic!} berücksichtigt
@@ -242,12 +242,12 @@ def combined_heuristic(state):
 Strategien}\label{implementierung-der-strategien}}
 
 Im Folgenden werden die verschiedenen Strategien der \ac{KI}
-implementiert. Diese verwenden zum Teil die, im vorherigen Kaptitel
-implementierten, Heuristiken. Die Strategien bestehen jeweils aus einer
+implementiert. Diese verwenden zum Teil die im vorherigen Kaptitel
+implementierten Heuristiken. Die Strategien bestehen jeweils aus einer
 bewertenden Funktion, die den Nutzen einer Spielsituation bestimmt,
 sowie aus einer aufrufenden Funktion, welche mithilfe der bewertenden
 Funktion den bestmöglichen Zug herleitet. Diese Komponenten können
-beliebig kombiniert werden. Im Folgenden werden zunächst die bewerteten
+beliebig kombiniert werden. Im Folgenden werden zunächst die bewertenden
 Funktionen implementiert.
 
 \hypertarget{zufuxe4llige-ki}{%
@@ -259,7 +259,7 @@ austauschbar sein sollen, müssen alle diese Funktionen dieselben
 Eingabeparameter haben. Im Fall der Funktion
 \passthrough{\lstinline!random\_ai!} wird jedoch keiner der definierten
 Parameter benötigt. Der Zweck dieser \ac{KI} ist die Messung der Stärke,
-der anderen\acp{KI}.
+der anderen \acp{KI}.
 
 \begin{lstlisting}[language=Python]
 def random_ai(state, depth, heuristic, alpha, beta):
@@ -271,7 +271,7 @@ def random_ai(state, depth, heuristic, alpha, beta):
 
 Die Minimax Strategie verwendet den unveränderten Minimax-Algorithmus,
 wie er in \autoref{sec:minimax} beschrieben ist, zur Bestimmung der
-Nützlichkeit eines Zuges. Eingabeparameter, sind hier der zu bewertende
+Nützlichkeit eines Zuges. Eingabeparameter sind hier der zu bewertende
 Spielzustand \passthrough{\lstinline!state!}, die gewünschte Suchtiefe
 \passthrough{\lstinline!depth!} sowie die zu verwendende Heuristik
 \passthrough{\lstinline!heuristic!}. Die Parameter
@@ -322,7 +322,7 @@ Zum Merken der Ergebnisse vorheriger Ausführungen wird das Dictionary
 \passthrough{\lstinline!transposition\_table!} verwendet. Dies ist
 gerade bei der Verwendung von Iterative Deepening für das Move-Ordering
 vorteilhaft. Der Schlüssel des Dictionaries besteht aus dem Zustand des
-Spielbretts, dem Spieler, der an der Reihe ist und der verwendeten
+Spielbretts, dem Spieler, der an der Reihe ist, und der verwendeten
 Heuristik.
 
 \begin{lstlisting}[language=Python]
@@ -427,7 +427,7 @@ Suche durchgeführt werden muss, oder eine der beiden Grenzwerte
 zurückgegeben werden können. Zur Abschätzung der für den Probcut
 Algorithmus benötigten Standardabweichung
 \passthrough{\lstinline!sigma!}, wird eine quadratische Funktion in
-Abhängigkeit von der Anzahl an steinen auf dem Spielfeld verwendet.
+Abhängigkeit von der Anzahl an Steinen auf dem Spielfeld verwendet.
 Diese wird im folgenden \autoref{sec:pcsigma} hergeleitet. Die Eingabe-
 und der Rückgabeparameter gleichen der Funktion
 \passthrough{\lstinline!alphabeta!}.
@@ -528,10 +528,10 @@ SELECTION_TOLERANCE = 0.0001
 \subsubsection{Suche mit fester Tiefe}\label{suche-mit-fester-tiefe}}
 
 Die Funktion \passthrough{\lstinline!ai\_make\_move!} ist die einfachste
-der Ausführungsfunktionen. Sie bewertet alle, durch einen Zug vom
-Zustand \passthrough{\lstinline!state!} erreichbaren, Spielpositionen
-und wählt aus diesen, wie oben beschrieben, einen der besten Züge aus.
-Die Bewertung der Spielzustände wird von der als Parameter übergebenen
+der Ausführungsfunktionen. Sie bewertet alle durch einen Zug vom Zustand
+\passthrough{\lstinline!state!} erreichbaren Spielpositionen und wählt
+aus diesen, wie oben beschrieben, einen der besten Züge aus. Die
+Bewertung der Spielzustände wird von der als Parameter übergebenen
 Funktion \passthrough{\lstinline!ai!} vorgenommen, welche eine der im
 vorherigen Abschnitt definierten Strategie-Funktionen sein kann. Für
 jeden Zustand wird die Strategie-Funktion genau einmal mit der Tiefe
@@ -580,15 +580,14 @@ aufgerufen zu werden, beginnend von 1 mit immer höherer Suchtiefe
 aufgerufen. Wird die Tiefe \passthrough{\lstinline!depth!} erreicht, so
 wird einer der besten Züge, wie auch in
 \passthrough{\lstinline!ai\_make\_move!} ausgewählt. Durch die
-Verwendung eines Cache, der
+Verwendung eines Caches, der
 \passthrough{\lstinline!transposition\_table!}, in den auf Alpha-Beta
 Prunning basierenden Strategien, kann durch die Wiederverwendung der
 Ergebnisse vorheriger Aufrufe ein besseres Move-Ordering vorgenommen
 werden, und somit die Effizienz des Alpha-Beta Pruning gesteigert
 werden. Die Idee dabei ist, dass bei ausreichender Suchtiefe die durch
 besseres Move-Ordering erzielten Ersparnisse den, durch den mehrfachen
-Aufruf der Strategie-Funktionen verursachten, zusätzlichen Rechenaufwand
-übertreffen.
+Aufruf der Strategie-Funktionen verursachten, Mehraufwand übertreffen.
 
 \begin{lstlisting}[language=Python]
 def ai_make_move_id(ai, state, depth, heuristic):
@@ -647,9 +646,10 @@ nächsten Ausführung approximiert, indem bestimmt wird, um welchen Faktor
 sich die Ausführungszeiten bei den letzten beiden Ausführungen geändert
 haben. Dieser Faktor \passthrough{\lstinline!factor!} wird dann mit der
 Dauer der letzten Ausführung multipliziert um die Dauer der nächsten
-Ausführung zu schätzen. Zu beachten ist, dass diese Funktion nicht exakt
+Ausführung zu schätzen. Zu beachten ist, dass die Funktion
+\passthrough{\lstinline!ai\_make\_move\_id\_timelimited!} nicht exakt
 die gleiche Schnittstelle hat, wie die anderen Ausführungsfunktionen.
-Der paramenter \passthrough{\lstinline!depth!} wurde hier durch das
+Der Parameter \passthrough{\lstinline!depth!} wurde hier durch das
 \passthrough{\lstinline!timelimit!} ersetzt. Dies ist beim Aufruf der
 Funktion zu beachten.
 

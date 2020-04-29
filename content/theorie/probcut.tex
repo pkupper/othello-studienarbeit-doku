@@ -22,7 +22,7 @@ zweite, tiefere Suche nicht mehr durchgeführt werden muss.
 Dazu verwendet ProbCut ein statistisches Modell \(v=v'+e\), bei dem \(v\) der Minimax-Wert der Suche mit Tiefe \(d\),
 \(v'\) der Minimax Wert der Suche mit Tiefe \(d'\) und \(e\) eine normalverteilte Fehlervariable ist. Der Minimax-Wert
 der Suche der Tiefe \(d'\) weicht also von dem Minimax-Wert der Suche der Tiefe \(d\) um die Fehlervariable \(e\) ab.
-Diese wird als normalverteilt mit dem Mittelwert $\mu=0$ und der Standardarbeichung \(\sigma^2\) modelliert, die anhand
+Diese wird als normalverteilt mit dem Mittelwert $\mu=0$ und der Standardarbeichung \(\sigma\) modelliert, die anhand
 von tatsächlichen Spielsituationen ermittelt wird.
 
 Ob $v\geq\beta$ mit einer festgelegten Wahrscheinlichkeit stimmt, kann wie folgt bestimmt werden:
@@ -45,7 +45,7 @@ Dabei ist $\Phi(x)=\frac{1}{2\pi}\int_{-\infty}^xe^{-\frac{1}{2}t^2}$ Verteilung
 Es gilt also mit einer Wahrscheinlichkeit von mindestens $p$:
 
 \hspace*{1.3cm}
-$\frac{(v'-\beta}{\sigma})\geq\Phi^{-1}(p)$
+$\frac{(v'-\beta)}{\sigma}\geq\Phi^{-1}(p)$
 
 \hspace*{1.3cm}
 $\iff v'\geq\Phi^{-1}(p)*\sigma+\beta$

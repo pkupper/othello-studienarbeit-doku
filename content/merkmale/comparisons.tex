@@ -30,9 +30,9 @@ besser sind.
 \subsection{Berechnung der aktuellen Mobilität}
 \label{sec:currentmobility}
 Die aktuelle Mobilität soll berücksichtigen, wie viele Züge beide Spieler ziehen können, wobei eigene Züge positiv und
-gegnerische Züge negativ bewertet werden. Die Anzahl der möglichen Züge des Spielers an der Reihe kann leicht bestimmt
+gegnerische Züge negativ bewertet werden. Die Anzahl der möglichen Züge des Spielers, der an der Reihe ist, kann leicht bestimmt
 werden. Die Anzahl der gegnerischen Züge kann jedoch nicht genau bestimmt werden, da noch nicht bekannt ist, welcher Zug
-gezogen wird. Zur Schätzung wurden drei Möglichkeiten untersucht:
+gezogen wird. Zur Schätzung werden drei Möglichkeiten untersucht:
 \begin{enumerate}
     \item Es wird der Durchschnitt der möglichen Züge aller Folgezustände berechnet.
     \item Es wird die durchschnittliche Anzahl an Zügen eines Spielers in der aktuellen Spielphase genommen.
@@ -41,8 +41,8 @@ gezogen wird. Zur Schätzung wurden drei Möglichkeiten untersucht:
 \end{enumerate}
 Spiele der verschiedenen Heuristiken gegeneinander haben ergeben, dass die dritte Option zur stärksten \ac{KI} führt. Die
 Ergebnisse von 50 Spielen der Suchtiefe 4 sind in Tabelle \ref{table:currentmobility} dargestellt. Option 3 ist klarer
-Gewinner gegen Option 2. Zwischen Option 1 und Option 3 ist der Unterschied nicht ganz so groß, aber dennoch deutlich
-und da die Bestimmung der möglichen Züge aller Folgezustände ein hoher Rechnenaufwand ist, ist die dritte Möglichkeit
+Gewinner gegen Option 2. Zwischen Option 1 und Option 3 ist der Unterschied nicht ganz so groß, aber dennoch deutlich.
+Da außerdem die Bestimmung der möglichen Züge in allen Folgezuständen ein hoher Rechnenaufwand ist, ist die dritte Möglichkeit
 die beste Option.
 
 \begin{table}[hb]
@@ -63,21 +63,21 @@ Heuristik S\,/\,W & \#Spiele & Siege S & Unentschieden & Siege W \\
 \label{sec:combinedmobility}
 Die aktuelle Mobilität und die potenzielle Mobilität zielen beide darauf ab, die Anzahl der möglichen Züge eines
 Spielers zu erhöhen. Michael Buro ist in seiner Dissertation zu dem Ergebnis gekommen, dass der Nutzen der aktuellen
-Mobilität annähernd linear zunimmt, wohingegen die potenzielle Mobilität annähernd linear zunimmt. Gegen Ende des Spiels
+Mobilität annähernd linear zunimmt, wohingegen die Bedeutung der potenziellen Mobilität annähernd linear abnimmt. Gegen Ende des Spiels
 verlieren beide Merkmale an Bedeutung. Bis 36 Steine auf dem Spielfeld liegen, hat die potenzielle Mobilität einen
 größeren Nutzen, danach die aktuelle Mobilität. \cite[S.~20]{evaluationfunctions}
 
 Der erste Ansatz, die aktuelle und die potenzielle Mobilität zu kombinieren, besteht darin, bis zu einer bestimmten
-Anzahl an Steinen auf dem Feld die potenzielle Mobilität zu verwenden, und danach die aktuelle Mobilität. Das hat den
-Vorteil, dass der Rechnenaufwand geringer ist, da immer nur ein Merkmal berechnet werden muss. Tests, in denen die \ac{KI}
+Anzahl an Steinen auf dem Feld die potenzielle Mobilität zu verwenden und danach die aktuelle Mobilität. Das hat den
+Vorteil, dass der Rechnenaufwand geringer ist, da immer nur ein Merkmal berechnet werden muss. Eigene Tests, in denen die \ac{KI}
 gegen sich selbst mit unterschiedlichen Parametern spielen gelassen wurde, haben ergeben, dass die \ac{KI} am häufigsten
-gewinnt, wenn die Grenze bei den von Buro bestimmten 36 Steinen auf dem Spielfeld liegt.
+gewinnt, wenn die Grenze in etwa bei den von Buro bestimmten 36 Steinen auf dem Spielfeld liegt.
 
 Eine Verbesserung konnte erzielt werden, indem die aktuelle und die potenzielle Mobilität linear kombiniert wurden.
 Das heißt, die Gewichtung der potenziellen Mobilität entspricht dem Anteil der belegten Felder und die aktuelle Mobilität
 dem Anteil der freien Felder.
 
-Um zu bestimmen, welche Kombination der Mobilität zur stärksten \ac{KI} führt, wurden verschiedene Kombinationen jeweils 50
+Um zu bestimmen, welche Kombination der Mobilitätsmetriken zur stärksten \ac{KI} führt, wurden verschiedene Kombinationen jeweils 50
 Mal mit einer Suchtiefe von drei gegeneinander spielen gelassen. Dabei hat jede \ac{KI} gleich oft angefangen, um einen
 eventuellen Vorteil dadurch auszuschließen. Es hat sich gezeigt, dass eine lineare Kombination der beiden Merkmale
 stärker ist, als aktuelle oder potenzielle Mobilität alleine. Eine lineare Kombination von aktueller und potenzieller
@@ -86,7 +86,7 @@ dem Wechsel nach 36 Steinen und ist somit die stärkste Kombination. Tabelle \re
 Anteil der Siege und Niederlagen der verschiedenen Kombinationen.
 
 \subsection{Gewichtung von Mobilität und Cowthello} \label{sec:mobcowweight}
-Letztendlich müssen die Mobilität und Cowthello zu einer Heuristik kombiniert werden. Um die Gewichtung der beiden
+Letztendlich müssen die Mobilität- und Cowthello zu einer Heuristik kombiniert werden. Um die Gewichtung der beiden
 Merkmale zu bestimmen wurde die \ac{KI} mit unterschiedlich gewichteter Heuristik und Suchtiefe 3 gegeneinander spielen
 gelassen. Die Ergebnisse befinden sich in Tabelle \ref{table:combinedweighting}. Daraus ergibt sich, dass eine
 Gewichtung von 62.5\,\% Mobilität und 37.5\,\% Cowthello zur stärksten \ac{KI} führt.
@@ -94,7 +94,7 @@ Gewichtung von 62.5\,\% Mobilität und 37.5\,\% Cowthello zur stärksten \ac{KI}
 \subsection{Anzahl der Steine}
 Da es das Ziel von Othello ist, möglichst viele eigene Steine auf dem Spielfeld zu haben, ist es naheliegend, diese am
 Ende des Spiels zu maximieren. Der Ansatz ist, ab einer bestimmten Anzahl an Steinen auf dem Spielfeld als Heuristik die
-Differenz der Anzahl der eigenen Spielsteine und der gegnerischen Spielsteine zu verwenden. Tests haben allerdings
+Differenz der Anzahl der eigenen Spielsteine und der gegnerischen Spielsteine zu verwenden. Eigene Tests haben allerdings
 ergeben, dass die \ac{KI}, die diese abgewandelte Heuristik verwendet, der unveränderten Heuristik deutlich unterlegen ist.
 Tabelle \ref{table:disccount} im Anhang zeigt die Ergebnisse von Spielen der \acp{KI} mit den unterschiedlichen Heuristiken
 gegeneinander. Diese Heuristik sollte also nicht verwendet werden.

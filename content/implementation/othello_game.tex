@@ -2,7 +2,7 @@
 \section{Spiellogik
 (othello\_game.ipynb)}\label{spiellogik-othello_game.ipynb}}
 
-\label{sec:gamelogic}
+\label{sec:gamelogic} \ifx false
 
 \begin{lstlisting}[language=Python]
 %%HTML
@@ -11,10 +11,10 @@
 </style>
 \end{lstlisting}
 
-Im Folgenden ist die Spielelogik des Spiels Othello implementiert. Dazu
-gehört die Implementation aller im \autoref{sec:spieltheorie} genannten
-Aspekte, wie zum Beispiel die Erzeugung eines Startzustands, sowie die
-Bestimmung und Durchführung von Spielzügen ausgehend von einem
+\fi Im Folgenden ist die Spielelogik des Spiels Othello implementiert.
+Dazu gehört die Implementation aller im \autoref{sec:spieltheorie}
+genannten Aspekte, wie zum Beispiel die Erzeugung eines Startzustands,
+sowie die Bestimmung und Durchführung von Spielzügen ausgehend von einem
 Spielzustand.
 
 \hypertarget{importieren-der-externen-abhuxe4ngigkeiten}{%
@@ -24,9 +24,9 @@ Abhängigkeiten}\label{importieren-der-externen-abhuxe4ngigkeiten}}
 Die Implementation stützt sich für bessere Performanz auf die
 Python-Bibliothek \passthrough{\lstinline!numpy!}, welche unter anderem
 homogene Felder und Matrizen implementiert. Eine solche Matrix wird als
-interne Repräsentation des Othello Spielfeldes genutzt. Insbesondere
-Operationen, die auf einen größeren Teil des Spielfeldes zugreifen
-müssen werden, können dadurch beschleunigt werden.
+interne Repräsentation des Othello Spielfelds genutzt. Insbesondere
+Operationen, die auf einen größeren Teil des Spielfelds zugreifen
+müssen, können dadurch beschleunigt werden.
 
 Für das Kopieren der Spielzustände wird das Modul
 \passthrough{\lstinline!copy!} aus der Python Standardbibliothek
@@ -76,15 +76,15 @@ Zwecke genutzt:
   sind so gewählt, dass sie sich für die Berechnung der Heuristiken
   eignen. Der in der \ac{KI} maximierende Spieler hat den positiven Wert
   1, während der minimierende Spieler durch den negativen Wert -1
-  repräsentiert wird. Kein Spieler, wird durch den Wert 0 dargestellt.
+  repräsentiert wird. Kein Spieler wird durch den Wert 0 dargestellt.
 \end{enumerate}
 
 \begin{lstlisting}[language=Python]
 BOARD_SIZE = 8
 
 BLACK = -1  # MINIMIZING PLAYER
-WHITE = 1  # MAXIMIZING PLAYER
-NONE = 0 # NO PLAYER
+WHITE =  1  # MAXIMIZING PLAYER
+NONE  =  0  # NO PLAYER
 \end{lstlisting}
 
 \hypertarget{game-state}{%
@@ -104,19 +104,19 @@ Attribute beschrieben:
   annehmen kann.
 \item
   Den Spieler \passthrough{\lstinline!turn!}, der im Spielzustand am Zug
-  ist. Zusätzlich enthält der Spielzustand weitere Informationen welche
+  ist. Zusätzlich enthält der Spielzustand weitere Informationen, die
   zur Verbesserung der Performanz genutzt werden.
 \item
   Die im aktuellen Spielzustand möglichen Züge werden als Paare von
   Koordinaten in der Variable \passthrough{\lstinline!possible\_moves!}
-  gespeichert werden. Ein Koordinatenpaar steht hierbei für das Setzen
-  eines Spielsteins auf die entsprechende Stelle auf dem Spielfeld unter
+  gespeichert. Ein Koordinatenpaar steht hierbei für das Setzen eines
+  Spielsteins auf die entsprechende Stelle auf dem Spielfeld unter
   Anwendung der Othello Regeln. Diese Variable ist Teil von
-  \passthrough{\lstinline!GameState!} damit pro Spielzustand, die
+  \passthrough{\lstinline!GameState!}, damit pro Spielzustand die
   möglichen Züge nicht mehrfach berechnet werden müssen.
 \item
   Die Menge der freien Felder, die horizontal, vertikal oder diagonal an
-  einen Stein angrenzen werden in der Variable
+  einen Stein angrenzen wird in der Variable
   \passthrough{\lstinline!frontier!} gespeichert. Beim Ermitteln der
   möglichen Züge kann dadurch die Performanz wesentlich gesteigert
   werden, da nur diese Menge und nicht das gesamte Spielfeld überprüft
@@ -129,7 +129,7 @@ Attribute beschrieben:
   \passthrough{\lstinline!game\_over!} gespeichert.
 \item
   Die Koordinaten des letzten Spielzugs werden zur späteren
-  Visualisierung in der Grafischen Benutzeroberfläche in der Variable
+  Visualisierung in der \ac{GUI} in der Variable
   \passthrough{\lstinline!last\_move!} gespeichert.
 \end{itemize}
 
@@ -139,7 +139,7 @@ Spielverlaufs immer aktuell gehalten.
 In dem Konstruktor \passthrough{\lstinline!\_\_init\_\_!} der Klasse
 \passthrough{\lstinline!GameState!} wird ein neuer Spielzustand
 entsprechend den Othello Spielregeln instanziiert, indem alle Variablen
-entsprechen initialisiert werden.
+entsprechend initialisiert werden.
 
 Die Funktion \passthrough{\lstinline!\_\_lt\_\_!} ist implementiert,
 damit auf \passthrough{\lstinline!GameState!}-Objekten der
@@ -148,7 +148,7 @@ Vergleichsoperator angewendet werden kann. Das ist nötig, damit in der
 Priorität und einen \passthrough{\lstinline!GameState!} bestehen. Da in
 diesem Fall nur die Sortierung nach der Priorität wichtig ist, ist die
 Implementation von \passthrough{\lstinline!\_\_lt\_\_!} irrelevant.
-Daher wird, der Einfachkeit wegen, immer True zurückgegeben.
+Daher wird der Einfachkeit halber immer True zurückgegeben.
 
 \begin{lstlisting}[language=Python]
 class GameState:
@@ -195,12 +195,13 @@ Die Funktion \passthrough{\lstinline!can\_flip\_in\_dir!} überprüft für
 ein Spielfeld \passthrough{\lstinline!board!} und den Spieler
 \passthrough{\lstinline!player!}, ob beim Setzen eines Steins auf die
 Position \passthrough{\lstinline!pos!} in die Richtung
-\passthrough{\lstinline!direction!} Steine umgedreht werden können. Die
-Variable \passthrough{\lstinline!board!} enthält das Spielfeld als
-Python-Liste, da einzelne Zugriffe so deutlich schneller sind, als bei
-einem Numpy-Array. \passthrough{\lstinline!can\_flip\_in\_dir!} gibt
-einen Wahrheitswert zurück. True gibt dabei an, dass Steine umgedreht
-werden können.
+\passthrough{\lstinline!direction!} nach den Regeln von Othello Steine
+umgedreht werden können. Die Variable \passthrough{\lstinline!board!}
+enthält das Spielfeld als Python-Liste, da einzelne Zugriffe so deutlich
+schneller sind, als bei einem Numpy-Array.
+\passthrough{\lstinline!can\_flip\_in\_dir!} gibt einen Wahrheitswert
+zurück. Dabei bedeutet \passthrough{\lstinline!True!}, dass Steine
+umgedreht werden können.
 
 \begin{lstlisting}[language=Python]
 def can_flip_in_dir(board, pos, direction, player):
@@ -229,11 +230,11 @@ def can_flip_in_dir(board, pos, direction, player):
 
 Die Funktion \passthrough{\lstinline!is\_move\_valid!} überprüft für ein
 gegebenes Spielfeld \passthrough{\lstinline!board!}, ob ein Zug auf die
-position \passthrough{\lstinline!pos!} für den Spieler
+Position \passthrough{\lstinline!pos!} für den Spieler
 \passthrough{\lstinline!player!} möglich ist. Das Ergebnis wird als
 Wahrheitswert zurückgegeben. \passthrough{\lstinline!board!} ist hier
-ebenfalls eine Python-Liste, da auch der Zugriff auf einzelne Elemente
-schneller ist, als bei einem numpy-Array.
+ebenfalls eine Python-Liste, da der Zugriff auf einzelne Elemente
+schneller ist, als bei einem Numpy-Array.
 
 \begin{lstlisting}[language=Python]
 def is_move_valid(board, pos, player):
@@ -247,8 +248,8 @@ def is_move_valid(board, pos, player):
 Endspielzustand \passthrough{\lstinline!state!} den Gewinner des Spiels
 anhand der Anzahl an Spielsteinen, die beide Spieler auf dem Spielfeld
 haben. Gewinnt Weiß, so wird der Wert der Konstante
-\passthrough{\lstinline!BLACK!} zurückgegeben. Gewinnt Schwarz, wird der
-Wert der Konstante \passthrough{\lstinline!WHITE!} zurückgegeben. Bei
+\passthrough{\lstinline!WHITE!} zurückgegeben. Gewinnt Schwarz, wird der
+Wert der Konstante \passthrough{\lstinline!BLACK!} zurückgegeben. Bei
 einem Unentschieden wird der Wert von \passthrough{\lstinline!NONE!}
 zurückgegeben.
 
@@ -283,10 +284,10 @@ def get_possible_moves(state, player):
     return possible_moves
 \end{lstlisting}
 
-Diese Funktion \passthrough{\lstinline!flip\_in\_dir!} dreht im
+Die Funktion \passthrough{\lstinline!flip\_in\_dir!} dreht im
 Spielzustand \passthrough{\lstinline!state!}, ausgehend von dem durch
-\passthrough{\lstinline!pos!} angegebenen Feld die für den Spieler
-\passthrough{\lstinline!player!} generischen Steine in die Richtung
+\passthrough{\lstinline!pos!} angegebenen Feld, die für den Spieler
+\passthrough{\lstinline!player!} gegnerischen Steine in die Richtung
 \passthrough{\lstinline!direction!} um. Der eingegebene
 \passthrough{\lstinline!state!} wird dabei modifiziert. Die Funktion hat
 keinen Rückgabewert.
@@ -305,12 +306,12 @@ def flip_in_dir(state, pos, direction, player):
 \end{lstlisting}
 
 \passthrough{\lstinline!update\_frontier!} wird nach jedem Zug
-aufgerufen um die Menge \passthrough{\lstinline!frontier!} des
+aufgerufen, um die Menge \passthrough{\lstinline!frontier!} des
 Spielzustands \passthrough{\lstinline!state!} zu aktualisieren. Die
 durch \passthrough{\lstinline!pos!} gegebene Koordinate wird entfernt,
 während die Koordinaten aller leeren umliegenden Felder hinzugefügt
 werden. Der Spielzustand \passthrough{\lstinline!state!} wird hierbei
-direkt verändert. Es wird kein Wert zurückgegeben.
+direkt verändert und es wird kein Wert zurückgegeben.
 
 \begin{lstlisting}[language=Python]
 def update_frontier(state, pos):
@@ -337,8 +338,8 @@ def count_disks(state, player):
 \end{lstlisting}
 
 \passthrough{\lstinline!get\_player\_string!} konvertiert die
-Zahlenreprösentation des Spielers \passthrough{\lstinline!player!} in
-den Namen des Spielers. Ist \passthrough{\lstinline!player == NONE!} so
+Zahlenrepräsentation des Spielers \passthrough{\lstinline!player!} in
+den Namen des Spielers. Ist \passthrough{\lstinline!player == NONE!}, so
 wird `Nobody' zurückgegeben.
 
 \begin{lstlisting}[language=Python]
@@ -352,10 +353,9 @@ den Othello Regeln auszuführen. Der auszuführende Zug wird hierbei durch
 den Parameter \passthrough{\lstinline!pos!} bestimmt, welcher die
 Spielfeldkoordinaten des zu setzenden Steins als Zwei-Tupel angibt.
 
-Zunächst wird überprüft, ob die Koordinaten
-\passthrough{\lstinline!pos!} bereits in der Variable
-\passthrough{\lstinline!frontier!} enthalten ist. Ist dies nicht der
-Fall, so kann die Funktion mit einer
+Zunächst wird überprüft, ob die Koordinate \passthrough{\lstinline!pos!}
+in der Variable \passthrough{\lstinline!frontier!} enthalten ist. Ist
+dies nicht der Fall, so kann die Funktion mit einer
 \passthrough{\lstinline!InvalidMoveException!} abgebrochen werden, da
 ein Spielstein nur auf ein leeres Feld gesetzt werden kann, welches an
 einen Spielstein angrenzt. Hierbei handelt es sich um eine Maßnahme zur
@@ -365,10 +365,10 @@ Ist \passthrough{\lstinline!pos!} in \passthrough{\lstinline!frontier!},
 so wird der Spielzustand kopiert, um den ursprünglich übergebenen
 Spielzustand nicht zu verändern.
 
-Anschließend werden alle gegnerischen Steine, welche vom neu gesetzten
-Stein eingeschlossen werden umgedreht. Wenn mindestens ein Stein
+Anschließend werden alle gegnerischen Steine umgedreht, welche vom neu
+gesetzten Stein eingeschlossen werden. Wenn mindestens ein Stein
 umgedreht wurde, wird \passthrough{\lstinline!disks\_flipped!} auf
-\passthrough{\lstinline!True!}gesetzt. Wenn das nicht der Fall war,
+\passthrough{\lstinline!True!} gesetzt. Wenn das nicht der Fall war,
 handelt es sich nicht um einen gültigen Zug und es wird eine
 \passthrough{\lstinline!InvalidMoveException!} geworfen. Andernfalls
 wird der neue Stein gesetzt und im resultierenden Zustand die Variablen
@@ -413,8 +413,8 @@ def make_move(state, pos):
 Die Funktion \passthrough{\lstinline!make\_state!} erzeugt einen
 Spielzustand aus einem beliebig vorbelegtem Spielfeld
 \passthrough{\lstinline!board!} und dem zu ziehenden Spieler
-\passthrough{\lstinline!turn!}. Diese Funktion wird zur Konstruktion
-von, zum Testen genutzten, Spielsituationen verwendet. Der Resultierende
+\passthrough{\lstinline!turn!}. Diese Funktion wird zur Konstruktion von
+zum Testen genutzten Spielsituationen verwendet. Der Resultierende
 \passthrough{\lstinline!GameState!} wird von der Funktion zurückgegeben.
 
 \begin{lstlisting}[language=Python]

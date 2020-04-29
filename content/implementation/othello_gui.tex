@@ -12,10 +12,10 @@
 \end{lstlisting}
 
 Im folgenden Abschnitt wird eine \ac{GUI} für das Spiel Othello
-implementiert. Diese ermöglicht das Anzeigen Spielfelds und das Setzten
+implementiert. Diese ermöglicht das Anzeigen Spielfelds und das Setzen
 von Steinen durch einen menschlichen Spieler per Mausklick. Außerdem
 wird ein Einstellungsmenü implementiert, über welches das Spiel und die
-\ac{KI} Agenten konfiguriert werden können.
+\ac{KI}-Agenten konfiguriert werden können.
 
 \hypertarget{importieren-der-externen-abhuxe4ngigkeiten}{%
 \subsection{Importieren der externen
@@ -44,7 +44,7 @@ from ipywidgets import RadioButtons, HBox, VBox, IntSlider, Label
 Die \ac{GUI} unterstützt optional die Anzeige aller möglichen Züge in
 der aktuellen Spielsituation, sowie die Darstellung der Menge
 \passthrough{\lstinline!frontier!}, welche im \autoref{sec:gamelogic}
-beschrieben wird. Ob diese Features verwendet werden, wird im Folgenden
+beschrieben wird. Ob diese Features verwendet werden wird im Folgenden
 mit den Konstanten \passthrough{\lstinline!SHOW\_FRONTIER!} und
 \passthrough{\lstinline!SHOW\_POSSIBLE\_MOVES!} konfiguriert.
 
@@ -106,7 +106,7 @@ turn_lbl = ipywidgets.widgets.Label()
 \end{lstlisting}
 
 Das \passthrough{\lstinline!output!} Widget macht die Ausgabe mithilfe
-von \passthrough{\lstinline!print()!}, sowie die Ausgabe von
+von \passthrough{\lstinline!print()!} sowie die Ausgabe von
 Fehlermeldungen trotz der Verwendung von IPyWidgets und IPyCanvas
 möglich.
 
@@ -114,8 +114,8 @@ möglich.
 output = ipywidgets.widgets.Output()
 \end{lstlisting}
 
-Das Widget \passthrough{\lstinline!utility\_lbl!} dient der Anzeige der,
-von den \ac{KI} Spielern geschätzten, Nützlichkeit des Spielzustands.
+Das Widget \passthrough{\lstinline!utility\_lbl!} dient der Anzeige der
+von den \ac{KI} Spielern geschätzten Nützlichkeit des Spielzustands.
 
 \begin{lstlisting}[language=Python]
 utility_lbl = ipywidgets.widgets.Label()
@@ -223,7 +223,7 @@ canvas[1].on_mouse_down(mouse_down)
 Hier wird durch Nutzung von \passthrough{\lstinline!ipywidgets!} eine
 \ac{GUI} erzeugt, über die für beide Spieler Einstellungen vorgenommen
 werden können. So kann zum Beispiel festelegt werden, ob ein Spieler vom
-Nutzer, oder von einem \ac{KI}-Agenten kontrolliert werden soll, und
+Nutzer, oder von einem \ac{KI}-Agenten kontrolliert werden soll und
 Parameter der \ac{KI} angepasst werden.
 
 \begin{lstlisting}[language=Python]

@@ -14,10 +14,10 @@
 In diesem Notebook wird die für den ProbCut Algorithmus benötigte
 Standardabweichung in Abhängigkeit von der aktuellen Spielphase, welche
 durch die Anzahl der Steine auf dem Spielfeld angegeben wird, bestimmt.
-Dazu wird in verschiedenen Spielzuständen, jeweils eine Suche der Tiefe
-\(d\) und eine Suche der Tiefe \(d'\) durchgeführt, und die Ergebnisse
+Dazu wird in verschiedenen Spielzuständen jeweils eine Suche der Tiefe
+\(d\) und eine Suche der Tiefe \(d'\) durchgeführt und die Ergebnisse
 als Datenpunkte gesammelt. Im Anschluss wird für jede Spielphase die
-Varianz bestimmt, und diese mit einer geschlossenen Formel angenähert.
+Varianz bestimmt und diese mit einer geschlossenen Formel angenähert.
 
 Das Notebook basiert auf der Implementation der \ac{KI}, welche daher im
 Folgenden eingebunden wird.
@@ -56,11 +56,11 @@ tiefe und eine flache Suche durchgeführt wird. Die jeweiligen Tiefen
 werden dabei durch die Parameter
 \passthrough{\lstinline!shallow\_depth!} und
 \passthrough{\lstinline!deep\_depth!} spezifiziert. Die verwendeten
-Spielzustände werden ausgehen vom Startzustand durch zufälliges Ziehen
+Spielzustände werden ausgehens vom Startzustand durch zufälliges Ziehen
 erreicht, welches in der \ac{KI}-Strategie
 \passthrough{\lstinline!random\_ai!} implementiert wird. Es werden
 insgesamt \passthrough{\lstinline!num\_games!} Spiele auf diese Weise
-gespielt, und jeder Zustand entsprechend untersucht. Die so erhaltenen
+gespielt und jeder Zustand entsprechend untersucht. Die so erhaltenen
 Daten werden in einer CSV-Datei gespeichert.
 
 \begin{lstlisting}[language=Python]
@@ -99,7 +99,7 @@ ausgeführt.
 sample_probcut_values(100, PROBCUT_SHALLOW_DEPTH, PROBCUT_DEEP_DEPTH)
 \end{lstlisting}
 
-Der Folgende Codeabschnitt lädt die zu verwendeten Datenpunkte aus einer
+Der folgende Codeabschnitt lädt die zu verwendeten Datenpunkte aus einer
 CSV-Datei. Dabei wird die externe Bibliothek
 \passthrough{\lstinline!pandas!} zum Datenimport genutzt.
 
@@ -140,14 +140,14 @@ plt.show()
 
 Wie zu erwarten, ist eine klare lineare Abhängigkeit zu erkennen, welche
 durch die ebenfalls dargestellte Regressionsgerade hervorgehoben wird.
-Die Ausreißer bei Deep Depth Werten von \(1\) und \(-1\) entstehen
-dadurch, dass in diesen Spielzuständen, mit einer Tiefen Suche bereits
-der Ausgang des Spiels bestimmt werden kann, während bei der Flachen
+Die Ausreißer bei deep search Werten von \(1\) und \(-1\) entstehen
+dadurch, dass in diesen Spielzuständen mit einer tiefen Suche bereits
+der Ausgang des Spiels bestimmt werden kann, während bei der flachen
 Suche noch die Heuristik verwendet wird. Theoretisch kann bereits hier
-die Standardabeweichung ermittelt, und dann in ProbCut genutzt werden.
+die Standardabeweichung ermittelt und dann in ProbCut genutzt werden.
 Bei zusätzlicher Betrachtung der Anzahl von Steinen auf dem Spielfeld
 stellt sich jedoch heraus, dass die Standardabweichung stark davon
-abhängt. Durch Einbeziehung der Steinzahl bei der Ermittleung der
+abhängt. Durch Einbeziehung der Steinzahl bei der Ermittlung der
 Standardabweichung lässt sich also eine genauere Aussage über die
 Standardabweichung machen.
 
@@ -199,7 +199,7 @@ Bei der Betrachtung ergibt sich, dass im Bereich zwischen 5 und 58 Zügen
 eine annähernd quadratische Abhängigkeit vorliegt. Daher wird dieser
 Bereich mittels Polynomieller Regression angehähert und visualisiert.
 
-Folgender Code berechnet das Regressionspolynom zweiten Gerades der
+Folgender Code berechnet das Regressionspolynom zweiten grades der
 Standardabweichung in Abhängigkeit von der Anzahl der Steine auf dem
 Spielfeld mit \passthrough{\lstinline!sklearn!} und stellt dieses, wie
 in \autoref{fig:probcut_sigma_polynomial_regression} zu sehen, grafisch
@@ -246,5 +246,5 @@ dem Spielfeld berechnet
 print(theta0, '+', theta1 + theta2, '* x +', theta3, '* x**2')
 \end{lstlisting}
 
-Die hier ausgegebenen Funktion wird in der ProbCut Implementierung zur
+Die hier ausgegebene Funktion wird in der ProbCut Implementierung zur
 Bestimmung der Standardabweichung genutzt.
