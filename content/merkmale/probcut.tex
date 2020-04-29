@@ -7,7 +7,13 @@ ProbCut benötigt als Parameter die Tiefe der flachen Suche und die Tiefe der ti
 Parameter sollte gerade sein, da die Heuristik nicht berücksichtigt, welcher Spieler an der Reihe ist. Bei einer
 ungeraden Differenz kann anhand der flachen Suche keine zuverlässige Aussage über das Ergebnis der tiefen Suche gemacht
 werden.
-%TODO: warum mindestens tiefe 2
+
+Die in dieser Arbeit entwickelte KI erreicht bei einer Rechenzeit von ca. 30 Sekunden pro Zug eine Suchtiefe von 5 bis
+8. ProbCut wird dabei erst mit einer Suchtiefe von 4 bis 7 aufgerufen, wobei beim ersten Aufruf $Alpha$ und $Beta$ noch
+den minimalen bzw. maximalen Wert haben. Wird eine tiefe Suche von 4 festgelegt, kann ProbCut also frühestens bei
+Suchtiefe 6 zum Einsatz kommen. Diesen Wert zu erhöhen ist bei einer Rechenzeit von 30 Sekunden nicht sinnvoll. Möglich
+sind also eine flache Suche der Tiefe 1 und eine tiefe Suche der Tiefe 3 oder eine flache Suche der Tiefe 2 und eine
+tiefe Suche der Tiefe 4.
 
 \subsection{Korrektheit von ProbCut}
 ProbCut schließt Zweige des Suchbaums aus, die mit einer bestimmten Wahrscheinlichkeit nicht zu einem guten Zug führen
