@@ -6,29 +6,31 @@
 Dieses Kapitel beschreibt die Vorgehensweise bei der Implementierung, Optimierung und beim Testen der \ac{KI}.
 
 \section{Implementierung}
-Ziel dieser Arbeit ist es, eine starke \ac{KI} zu entwickeln. Dabei soll der Code verständlich und leicht nachvollziehbar
-sein. Aus diesem Grund wird die \ac{KI} in der Programmiersprache Python in Jupyter Notebooks implementiert. Diese
-ermöglichen es, Dokumentation und Erklärungen direkt in Textfeldern beim entsprechenden Code zu schreiben.
+Ziel dieser Arbeit ist es, eine starke \ac{KI} zu entwickeln. Dabei soll der Code verständlich und leicht
+nachvollziehbar sein. Aus diesem Grund wird die \ac{KI} in der Programmiersprache Python in Jupyter Notebooks
+implementiert. Jupyter Notebooks ermöglichen es, Dokumentation und Erklärungen direkt in Textfeldern beim entsprechenden
+Code zu schreiben.
 
 Die \ac{KI} soll auf dem Minimax-Algorithmus mit begrenzter Tiefensuche und den Erweiterungen Alpha-Beta und ProbCut
 basieren.
 
-Kapitel \ref{chap:implementation} enthält die Jupyter Notebooks, welche die \ac{KI}, eine \ac{GUI}
-und Funktionalitäten zum Testen, Bestimmen und Evaluieren von Parametern implementieren.
+Kapitel \ref{chap:implementation} enthält die Jupyter Notebooks, welche die \ac{KI}, eine \ac{GUI} und Funktionalitäten
+zum Testen, Bestimmen und Evaluieren von Parametern implementieren.
 
 \section{Optimierung der Parameter}
 \label{sec:optimization}
-Um eine möglichst starke \ac{KI} zu entwickeln, muss überprüft werden, welche Merkmale wie stark in die Heuristik einfließen.
-Dazu wird die Alpha-Beta-\ac{KI} gegen sich selbst mit verschiedenen Heuristiken spielen gelassen. Beide \acp{KI} machen gleich
-oft den ersten Zug, um auszuschließen, dass durch das Beginnen ein Vorteil oder Nachteil entsteht. Es wird der
-Alpha-Beta-Algorithmus verwendet, da die Standardabweichung des ProbCut-Algorithmus von der Heuristik abhängt und jedes
-Mal neu bestimmt werden müsste. Die Spiele verlaufen nicht deterministisch, da nicht unbedingt der Zug mit dem höchsten
-Nutzen gewählt wird, sondern ggf. auch ein Zug, dessen Nutzen sehr ähnlich ist. Die Auswahl zwischen geeigneten Zügen geschieht dabei zufällig.
+Um eine möglichst starke \ac{KI} zu entwickeln, muss überprüft werden, welche Merkmale wie stark in die Heuristik
+einfließen. Zu diesem Zweck lässt man die Alpha-Beta-\ac{KI} unter Verwendung verschiedener Heuristiken gegen sich
+selbst spielen. Beide Varianten der \ac{KI} machen gleich oft den ersten Zug, um auszuschließen, dass durch das Beginnen
+ein Vorteil oder Nachteil entsteht. Es wird der Alpha-Beta-Algorithmus verwendet, da die Standardabweichung des
+ProbCut-Algorithmus von der Heuristik abhängt und jedes Mal neu bestimmt werden müsste. Die Spiele verlaufen nicht
+deterministisch, da nicht unbedingt der Zug mit dem höchsten Nutzen gewählt wird, sondern ggf. auch ein Zug, dessen
+Nutzen sehr ähnlich ist. Die Auswahl zwischen geeigneten Zügen geschieht dabei zufällig.
 
 \section{Test gegen andere KIs}
-Beim Testen der \ac{KI} gegen andere \acp{KI} wird ähnlich wie in \autoref{sec:optimization} vorgegangen. Die zu vergleichenden
-\acp{KI} treten mehrmals geneneinander an. Hierbei wird jedoch der ProbCut Algorithmus, in Kombination mit der, den
-Untersuchungen in \autoref{sec:optimization} nach, besten Heuristik verwendet. Diese Tests können entweder manuell
-durchgeführt werden, indem die Züge einer \ac{KI} in das Spiel gegen die andere \ac{KI} übertragen werden, oder alternativ
-durch Code automatisiert werden. Eine solche Automatisierung wird für den Vergleich mit den, in einer vorangegangenen
-Studienarbeit entwickelten, \acp{KI} verwendet.
+Beim Testen der \ac{KI} gegen andere \acp{KI} wird ähnlich wie in \autoref{sec:optimization} vorgegangen. Die zu
+vergleichenden \acp{KI} treten mehrmals geneneinander an. Hierbei wird jedoch der ProbCut-Algorithmus in Kombination mit
+der Heurisik verwendet, die den Untersuchungen in \autoref{sec:optimization} nach am stärksten ist. Diese Tests können
+entweder manuell durchgeführt werden, indem die Züge einer \ac{KI} in das Spiel gegen die andere \ac{KI} übertragen
+werden, oder lassen sich alternativ durch Code automatisieren. Eine solche Automatisierung wird für den Vergleich mit den, in
+einer vorangegangenen Studienarbeit entwickelten, \acp{KI} verwendet.

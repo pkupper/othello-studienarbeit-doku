@@ -3,29 +3,30 @@
 
 Der Minimax-Algorithmus erfordert in seiner Grundform das Durchsuchen des kompletten Spielbaums. Die Optimierung des
 Algorithmus durch die Alpha-Beta-Suche ermöglicht zwar das Weglassen von Teilen des Spielbaums, aber nur dann, wenn das
-Weglassen des Zweigs garantiert keine Auswirkung auf das Ergebnis des Algorithmus hat. ProbCut erweitert diese Idee
-durch die Möglichkeit Zweige auszuschließen, welche mit einer großen Wahrscheinlichkeit das Ergebnis nicht beeinflussen.
+Weglassen des betreffenden Zweigs garantiert keine Auswirkung auf das Ergebnis des Algorithmus hat. ProbCut erweitert
+diese Idee durch die Möglichkeit, Zweige auszuschließen, welche mit einer großen Wahrscheinlichkeit das Ergebnis nicht
+beeinflussen.
 
 Die mithilfe von ProbCut durchgeführten Verkleinerungen des Baums werden „probabilistic forward cuts“ genannt.
 
-Ein Zug ist dann für die Entscheidung irrelevant, wenn dessen Minimax Wert außerhalb des Alpha-Beta Fensters, d. h.
+Ein Zug ist dann für die Entscheidung irrelevant, wenn dessen Minimax-Wert außerhalb des Alpha-Beta-Fensters, d.\,h.
 außerhalb des Intervalls \([\alpha,\beta]\) liegt, da dieser Zug von beiden Spielern umgangen wird und deshalb im Spiel
-nicht auftritt. Dies entspricht der Abbruchbedingung beim Alpha-Beta Algorithmus. Ob das der Fall ist, ist jedoch in der
-Regel erst nach Anwendung des Alpha-Beta Algorithmus mit der maximal gewünschten Suchtiefe bekannt.
+nicht auftritt. Dies entspricht der Abbruchbedingung beim Alpha-Beta-Algorithmus. Ob ein Zug ignoriert werden kann, ist
+jedoch in der Regel erst nach Anwendung des Alpha-Beta-Algorithmus mit der maximal gewünschten Suchtiefe bekannt.
 
 ProbCut stellt einen statistischen Zusammenhang zwischen dem Minimax-Wert einer Suche der Tiefe \(d\) und dem
 Minimax-Wert einer flacheren Suche der Tiefe \(d'<d\) her. Anhand des Minimax-Wertes einer Suche der Tiefe \(d'\) wird
 bestimmt, ob der Minimax-Wert der Suche der Tiefe \(d\) mit einer gegebenen Wahrscheinlichkeit \(p\) außerhalb des
-Alpha-Beta Fensters liegt. Ist dies der Fall, so wird bereits nach der Suche der Tiefe \(d'\) abgebrochen, sodass die
+Alpha-Beta-Fensters liegt. Ist dies der Fall, so wird bereits nach der Suche der Tiefe \(d'\) abgebrochen, sodass die
 zweite, tiefere Suche nicht mehr durchgeführt werden muss.
 
-Dazu verwendet ProbCut ein statistisches Modell \(v=v'+e\), bei dem \(v\) der Minimax-Wert der Suche mit Tiefe \(d\),
-\(v'\) der Minimax Wert der Suche mit Tiefe \(d'\) und \(e\) eine normalverteilte Fehlervariable ist. Der Minimax-Wert
-der Suche der Tiefe \(d'\) weicht also von dem Minimax-Wert der Suche der Tiefe \(d\) um die Fehlervariable \(e\) ab.
-Diese wird als normalverteilt mit dem Mittelwert $\mu=0$ und der Standardarbeichung \(\sigma\) modelliert, die anhand
-von tatsächlichen Spielsituationen ermittelt wird.
+Dazu verwendet ProbCut ein statistisches Modell \(v=v'+e\), bei dem \(v\) der Minimax-Wert der Suche mit der Tiefe
+\(d\), \(v'\) der Minimax-Wert der Suche mit der Tiefe \(d'\) und \(e\) eine normalverteilte Fehlervariable ist. Der
+Minimax-Wert der Suche der Tiefe \(d'\) weicht also von dem Minimax-Wert der Suche der Tiefe \(d\) um die Fehlervariable
+\(e\) ab. Diese wird als normalverteilt mit dem Mittelwert $\mu=0$ und der Standardabweichung \(\sigma\) modelliert, die
+anhand von tatsächlichen Spielsituationen ermittelt wird.
 
-Ob $v\geq\beta$ mit einer festgelegten Wahrscheinlichkeit stimmt, kann wie folgt bestimmt werden:
+Ob $v\geq\beta$ mit einer festgelegten Wahrscheinlichkeit stimmt, lässt sich wie folgt bestimmen:
 
 Einsetzen des statistischen Modells $v=v'+e$:
 
@@ -39,10 +40,10 @@ $v\geq\beta\iff v'-\beta\geq -e$
 $v\geq\beta\iff \frac{v'-\beta}{\sigma}\geq \frac{-e}{\sigma}$
 
 $\frac{-e}{\sigma}$ ist standardnormalverteilt und hat die Verteilungsfunktion $\Phi$, da der Mittelwert $\mu_1=0$ und
-die Standardarbeichung $\sigma_1=\frac{\sigma}{\sigma}=1$ ist.
+die Standardabweichung $\sigma_1=\frac{\sigma}{\sigma}=1$ ist.
 
-Dabei ist $\Phi(x)=\frac{1}{2\pi}\int_{-\infty}^xe^{-\frac{1}{2}t^2}$ Verteilungsfunktion der Standardnormalverteilung.
-Es gilt also mit einer Wahrscheinlichkeit von mindestens $p$:
+Dabei ist $\Phi(x)=\frac{1}{2\pi}\int_{-\infty}^xe^{-\frac{1}{2}t^2}$ die Verteilungsfunktion der
+Standardnormalverteilung. Es gilt also mit einer Wahrscheinlichkeit von mindestens $p$:
 
 \hspace*{1.3cm}
 $\frac{(v'-\beta)}{\sigma}\geq\Phi^{-1}(p)$
@@ -61,10 +62,10 @@ Analog kann gezeigt werden, dass mit einer Wahrscheinlichkeit von mindestens $p$
 \(v\leq\alpha \iff v'\leq\alpha-\Phi^{-1}(p)*\sigma\)
 
 
-Tritt nach einer Suche der Tiefe \(d'\) einer der beiden Fälle auf der rechten Seite ein, so wird keine Suche der Tiefe
-\(d\) mehr durchgeführt, da \(v\) bereits mit einer Wahrscheinlichkeit von \(p\) außerhalb des Alpha-Beta Fensters liegt
+Tritt nach einer Suche der Tiefe \(d'\) einer der beiden Fälle auf der rechten Seite der Formeln ein, so wird keine Suche der Tiefe
+\(d\) mehr durchgeführt, da \(v\) bereits mit einer Wahrscheinlichkeit von \(p\) außerhalb des Alpha-Beta-Fensters liegt
 und der Zweig deshalb ausgeschlossen werden kann.
 
-Wie auch beim Alpha-Beta Algorithmus ergibt sich der Vorteil von ProbCut durch die Zeitersparnis, die durch das
+Wie auch beim Alpha-Beta-Algorithmus ergibt sich der Vorteil von ProbCut durch die Zeitersparnis, die durch das
 Weglassen von Zweigen erreicht wird. Dadurch kann die Suchtiefe bei den relevanten Zweigen erhöht werden.
 \cite[S.~1]{probcut}

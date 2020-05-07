@@ -4,7 +4,7 @@
 \label{chap:einleitung}
 
 Diese Arbeit behandelt die Implementierung einer Künstlichen Intelligenz (\acs{KI}) für das Brettspiel Othello. Dabei kommt ProbCut
-\cite[S.~1]{probcut}, eine Erweiterung des Alpha-Beta Algorithmus zum Einsatz.
+\cite[S.~1]{probcut}, eine Erweiterung des Alpha-Beta-Algorithmus, zum Einsatz.
 
 Die \LaTeX-Quellen dieser Arbeit sind auf GitHub unter \url{https://github.com/pkupper/othello-studienarbeit-doku}
 verfügbar. Die Implementierung ist unter \url{https://github.com/pkupper/othello-studienarbeit-code} zu finden.
@@ -12,15 +12,15 @@ verfügbar. Die Implementierung ist unter \url{https://github.com/pkupper/othell
 \section{Ziel der Arbeit}
 \label{sec:goal}
 
-Das Ziel der Arbeit ist es, eine möglichst starke \ac{KI} für das Spiel Othello zu entwickeln, welche
-gegen menschliche Spieler, sowie einige öffentlich verfügbare \ac{KI}-Agenten gewinnt.
+Das Ziel der Arbeit ist es, eine möglichst starke \ac{KI} für das Spiel Othello zu entwickeln, die sowohl
+gegen menschliche Spieler als auch gegen einige öffentlich verfügbare \ac{KI}-Agenten gewinnt.
 
-Zur Implementierung werden Jupyter Notebooks, sowie die Programmiersprache Python genutzt.
+Zur Implementierung werden Jupyter Notebooks sowie die Programmiersprache Python genutzt.
 Für menschliche Spieler wird eine \ac{GUI} zur Verfügung gestellt, über
 die diese gegen die \ac{KI} antreten können.
 
 \section{Struktur der Arbeit}
-Das \autoref{chap:theorie} stellt zunächst das Spiel Othello und dessen Spielregeln vor. Im Anschluss werden die
+In \autoref{chap:theorie} werden zunächst das Spiel Othello und dessen Spielregeln erläutert. Im Anschluss werden die
 relevanten theoretischen Grundlagen der Spieltheorie, sowie die für die Implementierung relevanten Algorithmen
 vorgestellt und erklärt.
 
@@ -28,14 +28,14 @@ vorgestellt und erklärt.
 verschiedene Varianten der \ac{KI} gegeneinander getestet und dadurch bewertet werden.
 
 \autoref{chap:implementation} beinhaltet die Implementation der \ac{KI} als Jupyter Notebook. Parallel
-zur Implementation wird deren Funktionsweise ausführlich erklärt.
+zur Implementation wird die Funktionsweise der \ac{KI} ausführlich erklärt.
 
-Das \autoref{chap:merkmale} behandelt die Bestimmung optimaler Parameter für die \ac{KI} und untersucht die
-verschiedenen Strategien. Dazu gehören die in der Heuristischen-Evaluationsfunktion verwendeten Merkmale und deren
+\autoref{chap:merkmale} behandelt die Bestimmung optimaler Parameter für die \ac{KI} und untersucht die
+verschiedenen Strategien. Dazu gehören die in der heuristischen Evaluationsfunktion verwendeten Merkmale und deren
 Gewichtung, die Messung der Auswirkungen von Alpha-Beta-Pruning und ProbCut, die Überprüfung der Korrektheit von
-ProbCut, sowie die Bestimmung der ProbCut Parameter.
+ProbCut sowie die Bestimmung der ProbCut-Parameter.
 
-In \autoref{chap:ergebnis} werden die Stärke der \ac{KI}, und die Auswirkungen von ProbCut untersucht.
+In \autoref{chap:ergebnis} werden die Stärke der \ac{KI} und die Auswirkungen von ProbCut untersucht.
 
 In \autoref{chap:diskussion} werden die Ergebnisse der Arbeit reflektiert bewertet. Außerdem werden Schlüsse bezüglich
 Problempunkten und potenziellen Weiterentwicklungen gezogen.
