@@ -1,9 +1,9 @@
 \section{Der Minimax-Algorithmus}
 \label{sec:minimax}
 
-Minimax ist ein Algorithmus zur Bestimmung des optimalen Spielzugs für einen Spielzustand in einem deterministischen, rundenbasierten,
-zwei-Spieler Nullsummenspiel mit perfekter Information. Somit wird durch den Algorithmus auch eine optimale Strategie
-bestimmt.
+Minimax ist ein Algorithmus zur Bestimmung des optimalen Spielzugs für einen Spielzustand in einem deterministischen,
+rundenbasierten, Zwei-Spieler-Nullsummenspiel mit perfekter Information. Somit wird durch den Algorithmus auch eine
+optimale Strategie bestimmt.
 
 Dabei wird für jeden Knoten im Spielbaum rekursiv der Nutzen des entsprechenden Spielzustands für alle
 Spieler bestimmt. Dieser Wert des Nutzens wird $Minimax$-Wert genannt.
@@ -26,10 +26,10 @@ Für den maximierenden bzw. minimierenden Spieler ist der Zug mit dem größten 
 gegen einen optimal spielenden Gegner.
 \cite[S.~164f.]{ai2010russel}
 
-Da bei einem zwei-Spieler Nullsummenspiel die Summe der Nutzen der beiden Spieler konstant ist und sich somit der
+Da bei einem Zwei-Spieler-Nullsummenspiel die Summe der Nutzen der beiden Spieler konstant ist und sich somit der
 Nutzen für einen Spieler aus dem Nutzen des anderen Spielers ergibt, muss nur der Nutzen für einen Spieler betrachtet
 werden. Dieser wird dann abwechselnd von diesem Spieler maximiert und von dessen Gegner minimiert. Die Spieler werden
 dann maximierender und minimierender Spieler genannt. Aus dieser Vorgehensweise ergibt sich der Name „Minimax“
-für die zwei-Spieler Variante des Algorithmus. Bei Spielen mit mehr als zwei Spielern kann diese Optimierung nicht
+für die Zwei-Spieler-Variante des Algorithmus. Bei Spielen mit mehr als zwei Spielern kann diese Optimierung nicht
 angewandt werden, weshalb in diesem Fall immer der Nutzen für alle Spieler getrennt betrachtet werden muss.
 \cite[S.~165]{ai2010russel}

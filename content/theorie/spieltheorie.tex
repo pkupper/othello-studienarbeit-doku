@@ -7,25 +7,31 @@ verschiedene Eigenschaften haben. Auf das Spiel Othello treffen beispielsweise d
 \begin{itemize}
     \item Determinismus
     \item Rundenbasiertheit
-    \item Zwei-Spieler
+    \item Zwei Spieler
     \item Nullsummenspiel
     \item Perfekte Information
 \end{itemize}
 
 Die Eigenschaft des Determinismus schließt auf Zufall basierende Elemente aus, die beispielsweise in Würfelspielen durch
-das Würfeln einer zufälligen Zahl auftreten. Da in Othello jeder Spielzug nur von der Entscheidung des Spielers abhängt,
-wird diese Eigenschaft erfüllt. Im Spielverlauf sind zudem immer zwei Spieler abwechselnd am Zug. Folglich werden auch
-die Eigenschaften Zwei-Spieler und Rundenbasiertheit erfüllt. Bei einem Nullsummenspiel handelt es sich um ein
-Spiel, bei dem das Ergebnis beider Spieler am Ende jedes Spiels die gleiche Summe hat. Beim Schach bekommt z. B. der
-Gewinner einen Punkt und der Verlierer keinen Punkt, bei einem Unentschieden bekommen beide Spieler einen halben Punkt.
-Die Summe beträgt also immer eins. Diese Regel kann auch in Othello angewandt werden, da ein Spiel entweder mit einem
-Sieg und einer Niederlage oder einem Unentschieden endet. Um die Höhe des Sieges zu berücksichtigen, kann für jeden
-Spieler die Anzahl der Steine gezählt werden. Dabei müssen lediglich nicht belegte Felder berücksichtigt und
-beispielsweise für den Gewinner mit mehr Steinen gezählt werden. Da sich die Anzahl der Gesamtfelder nicht ändert,
-beträgt die Summe der Punkte beider Spieler bei einer Spielfeldgröße von $8\times 8$ immer 64 und somit handelt es sich
-bei Othello um ein Nullsummenspiel. Bei einem Spiel mit perfekter Information können beide Spieler zu jeder Zeit den
-kompletten Zustand des Spiels einsehen. Anders als bei vielen Kartenspielen, in denen die Karten der
-Gegenspieler unbekannt sind, ist das in Othello der Fall.
+das Würfeln einer zufälligen Zahl auftreten. Othello erfüllt diese Eigenschaft, da jeder Spielzug nur von der
+Entscheidung des Spielers abhängt.
+
+Im Spielverlauf sind zudem immer zwei Spieler abwechselnd am Zug. Folglich werden auch die Eigenschaften Zwei Spieler
+und Rundenbasiertheit erfüllt.
+
+Bei einem Nullsummenspiel handelt es sich um ein Spiel, bei dem das Ergebnis beider Spieler am Ende jedes Spiels die
+gleiche Summe hat. Es handelt sich eigentlich um eine konstante Summe, allerdings hat sich der Begriff Nullsummenspiel
+etabliert. Beispielsweise bekommt beim Schach der Gewinner einen Punkt und der Verlierer keinen Punkt, bei einem Unentschieden
+bekommen beide Spieler einen halben Punkt. Die Summe beträgt also immer eins. Diese Regel kann auch in Othello angewandt
+werden, da ein Spiel entweder mit einem Sieg und einer Niederlage oder einem Unentschieden endet. Um die Höhe des Sieges
+zu berücksichtigen, kann für jeden Spieler die Anzahl der Steine gezählt werden. Dabei müssen lediglich nicht belegte
+Felder berücksichtigt und beispielsweise für den Gewinner mit mehr Steinen gezählt werden. Da sich die Anzahl der
+Gesamtfelder nicht ändert, beträgt die Summe der Punkte beider Spieler bei einer Spielfeldgröße von $8\times 8$ immer 64
+und somit handelt es sich bei Othello um ein Nullsummenspiel.
+
+Bei einem Spiel mit perfekter Information können beide Spieler zu jeder Zeit den kompletten Zustand des Spiels einsehen.
+Anders als bei vielen Kartenspielen, in denen die Karten der Gegenspieler unbekannt sind, ist in Othello für beide
+Spieler jederzeit das Spielfeld einsehbar und der Spielzustand bekannt.
 \cite[S.~161f.]{ai2010russel}
 
 Formal besteht ein Spiel aus folgenden sechs Elementen:
@@ -36,8 +42,8 @@ Formal besteht ein Spiel aus folgenden sechs Elementen:
     \item $Actions(s)$ ist eine Funktion, die für einen Spielzustand $s$ alle gültigen Züge berechnet.
     \item $Result(s, a)$ ist eine Funktion, die für einen Spielzustand $s$ und eine Aktion, also einen Spielzug $a$
     einen neuen Spielzustand berechnet.
-    \item $TerminalTest(s)$ ist eine Funktion, die für einen Spielzustand $s$ berechnet, ob das Spiel vorbei ist oder
-    nicht. Zustände, an denen das Spiel vorbei ist, werden Endzustände genannt.
+    \item $TerminalTest(s)$ ist eine Funktion, die für einen Spielzustand $s$ berechnet, ob das Spiel beendet ist oder
+    nicht. Zustände, bei denen das Spiel beendet ist, werden Endzustände genannt.
     \item $Utility(s, p)$ ist eine Funktion, die für einen Endzustand $s$ ein numerisches Endergebnis für den Spieler
     $p$ berechnet.
 \end{enumerate}
