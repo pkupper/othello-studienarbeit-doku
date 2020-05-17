@@ -151,23 +151,32 @@ Beim Spielen von Othello fällt auf, dass es bestimmte Felder gibt, deren
 Belegung von Vorteil ist, sowie einige, deren Belegung eher nachteilhaft
 ist. Diese Eigenschaft macht sich die Cowthello-Heuristik
 \cite{cowthello} zunutze, welche in \ref{sec:cowthello} beschrieben ist.
-Sie weist jedem Feld einen Wert zu, der angibt, wie vorteilhaft der
-Besitz dieses Feldes ist, bzw. wie nachteilhaft die Belegung des Feldes
+Sie weist jedem Feld einen Wert zu, der angibt, wie Vorteilhaft der
+Besitz dieses Feldes ist, bzw. wie Nachteilhaft die Belegung des Feldes
 durch den Gegner ist. Diese Gewichte werden mit der aktuellen Belegung
 des Spielfelds multipliziert und die Ergebnisse anschließend
 aufsummiert. Der resultierende Wert schätzt dann den Nutzen der
 aktuellen Position ein. Auch bei dieser Heuristik findet eine
 Normalisierung statt.
 
-Aufgrund der Symmetrie des Othello Spielfeldes ist es für die
-Weight-Heuristik nicht nötig, für jedes Feld einzeln dessen Gewicht
+Da die Ecken des Spielfeldes, sobald sie einmal belegt sind, nicht mehr
+vom Gegner erobert werden können, spielen diese eine besondere Rolle.
+Ist eine Ecke unbelegt, so sind die umliegenden Spielfelder anders zu
+bewerten, als bei einer belegten Ecke. Dies wird von der Cowthello
+Heuristik berücksichtigt.
+
+Aufgrund der Symmetrie des Othello Spielfeldes, ist es für die
+Cowthello-Heuristik nicht nötig, für jedes Feld einzeln dessen Gewicht
 anzugeben. Stattdessen werden ausschließlich die Gewichte für ein
 Viertel des Spielfelds angegeben und dieses anschließend gespiegelt. Die
 Funktion \passthrough{\lstinline!gen\_cowthello\_matrix!} generiert dann
 die Gewichte-Matrix für das gesamte Feld und führt auch die
 Normalisierung durch. Dabei werden die Gewichte aus dem Online-Othello
 Programm Cowthello \cite{cowthello} verwendet. Cowthello ist unter der
-URL \url{https://www.aurochs.org/games/cowthello/} verfügbar.
+URL \url{https://www.aurochs.org/games/cowthello/} verfügbar. Die
+Funktion \passthrough{\lstinline!gen\_cowthello\_matrix!} erzeugt
+hierbei die bei unbelegten Ecken verwendeten Gewichte. Sind Ecken
+belegt, werden die Gewichte später entsprechend angepasst.
 
 \begin{lstlisting}[language=Python]
 def gen_cowthello_matrix():
@@ -177,53 +186,59 @@ def gen_cowthello_matrix():
         [ 25,   1, 50,  5],
         [ 10,   1,  5,  1]
     ])
-    top_half = np.hstack((quarter, np.flip(quarter, axis=1)))
-    bottom_half = np.flip(top_half, axis=0)
-    raw_matrix = np.vstack((top_half, bottom_half))
-    max_possible = np.sum(np.absolute(raw_matrix))
-    return np.true_divide(raw_matrix, max_possible)
+    top = np.hstack((quarter, np.flip(quarter, axis=1)))
+    bottom = np.flip(top, axis=0)
+    cowthello_matrix = np.vstack((top, bottom))
+    return cowthello_matrix;
+\end{lstlisting}
 
-cowthello_weights = gen_cowthello_matrix()
+Die Funktion \passthrough{\lstinline!modify\_corner\_weights!} übernimmt
+die Modifikation der Gewichte-Matrix, für eine belegte Ecke. Die Ecke
+wird hierbei durch deren Koordinaten \passthrough{\lstinline!row!} und
+\passthrough{\lstinline!column!}, sowie die Richtung zum Mittelfeld des
+Spielfels \passthrough{\lstinline!rdir!}, \passthrough{\lstinline!cdir!}
+spezifiziert. Die als Parameter übergebene Gewichte-Matrix
+\passthrough{\lstinline!weights!} wird hierbei verändert.
+
+\begin{lstlisting}[language=Python]
+def modify_corner_weights(weights, row, col, rdir, cdir):
+    weights[row+rdir   , col       ] = 10
+    weights[row+2*rdir , col       ] = 10
+    weights[row        , col+cdir  ] = 10
+    weights[row        , col+2*cdir] = 10
+    weights[row+rdir   , col+cdir  ] = 1
+    weights[row+2*rdir , col+2*cdir] = 5
+\end{lstlisting}
+
+Um den Wert der Cowthello Heuristik zwischen 0 und 1 einzugrenzen, wird
+der maximal mögliche Wert der Heuristik berechnet und in der Variable
+\passthrough{\lstinline!norm\_factor!} gepeichert.
+
+\begin{lstlisting}[language=Python]
+norm_factor = np.sum(np.abs(gen_cowthello_matrix()))
 \end{lstlisting}
 
 Die Funktion \passthrough{\lstinline!cowthello\_heuristic!} bestimmt aus
-einem Spielzustand und der aufgestellten Gewichte-Matrix
+einem Spielzustand und der aufgestellten Gewichtematrix
 \passthrough{\lstinline!cowthello\_weights!} die gewichtete Summe,
-welche als Heuristik genutzt wird.
+welche als Heuristik genutzt wird. Für jede belegte Ecke wird die
+Gewichte-Matrix mittels
+\passthrough{\lstinline!modify\_corner\_weights!} entsprechend
+modifiziert.
 
 \begin{lstlisting}[language=Python]
 def cowthello_heuristic(state):
-    return np.sum(np.multiply(state.board, cowthello_weights))
-\end{lstlisting}
-
-Die Cowthello Heuristik wertet den Besitz der an die Ecken des
-Spielfelds angrenzenden Felder negativ, da der Gegner dadurch häufig den
-Besitz der Ecke erlangen kann. Wenn die Ecke jedoch bereits besetzt ist,
-spielt das keine Rolle mehr. Die
-\passthrough{\lstinline!cowthello\_safe\_heuristic!} berücksichtigt
-dies. Sobald eine Ecke besetzt wurde, wird für die umliegenden Felder
-der Absolutwert der Gewichtung verwendet.
-
-\begin{lstlisting}[language=Python]
-def cowthello_safe_heuristic(state):
-    weights = np.copy(cowthello_weights)
-    if state.board[0,0] != NONE:
-        weights[1, 0] = abs(weights[1, 0])
-        weights[0, 1] = abs(weights[0, 1])
-        weights[1, 1] = abs(weights[1, 1])
-    if state.board[7,0] != NONE:
-        weights[6, 0] = abs(weights[6, 0])
-        weights[7, 1] = abs(weights[7, 1])
-        weights[6, 1] = abs(weights[6, 1])
-    if state.board[0,7] != NONE:
-        weights[1, 7] = abs(weights[1, 7])
-        weights[0, 6] = abs(weights[0, 6])
-        weights[1, 6] = abs(weights[1, 6])
-    if state.board[7,7] != NONE:
-        weights[6, 7] = abs(weights[6, 7])
-        weights[7, 6] = abs(weights[7, 6])
-        weights[6, 6] = abs(weights[6, 6])
-    return np.sum(np.multiply(state.board, weights))
+    weights = gen_cowthello_matrix()
+    if state.board[0, 0] != NONE:
+        modify_corner_weights(weights, 0, 0, 1, 1)
+    if state.board[7, 0] != NONE:
+        modify_corner_weights(weights, 7, 0,-1, 1)
+    if state.board[0, 7] != NONE:
+        modify_corner_weights(weights, 0, 7, 1,-1)
+    if state.board[7, 7] != NONE:
+        modify_corner_weights(weights, 7, 7,-1,-1)
+    heuristic = np.sum(np.multiply(state.board,weights))
+    return heuristic / norm_factor
 \end{lstlisting}
 
 Die oben implementierten Heuristiken bewerten jeweils nur ein Merkmal
@@ -236,7 +251,7 @@ Gewichtung von Mobilität und Cowthello wird in Kapitel
 def combined_heuristic(state):
     mobility = combined_mobility_heuristic(state)
     cowthello = cowthello_safe_heuristic(state)
-    return 0.625 * mobility + 0.375 * cowthello
+    return 0.875 * mobility + 0.125 * cowthello
 \end{lstlisting}
 
 \hypertarget{implementierung-der-strategien}{%

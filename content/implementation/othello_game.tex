@@ -12,7 +12,7 @@
 \end{lstlisting}
 
 \fi Im Folgenden ist die Spielelogik des Spiels Othello implementiert.
-Dazu gehört die Implementation aller im \autoref{sec:spieltheorie}
+Dazu gehört die Implementierung aller im \autoref{sec:spieltheorie}
 genannten Aspekte, wie zum Beispiel die Erzeugung eines Startzustands,
 sowie die Bestimmung und Durchführung von Spielzügen ausgehend von einem
 Spielzustand.
@@ -21,7 +21,7 @@ Spielzustand.
 \subsection{Importieren der externen
 Abhängigkeiten}\label{importieren-der-externen-abhuxe4ngigkeiten}}
 
-Die Implementation stützt sich für bessere Performanz auf die
+Die Implementierung stützt sich für bessere Performanz auf die
 Python-Bibliothek \passthrough{\lstinline!numpy!}, welche unter anderem
 homogene Felder und Matrizen implementiert. Eine solche Matrix wird als
 interne Repräsentation des Othello Spielfelds genutzt. Insbesondere
@@ -41,7 +41,7 @@ import copy
 \subsection{Globale Konstanten}\label{globale-konstanten}}
 
 Im folgenden Abschnitt werden zunächst einige Konstanten definiert,
-welche in der späteren Implementation häufig genutzt werden.
+welche in der späteren Implementierung häufig genutzt werden.
 
 Die Konstante \passthrough{\lstinline!BOARD\_SIZE!} gibt die Anzahl an
 Zeilen und Spalten des quadratischen Othello Spielfelds an.
@@ -147,7 +147,7 @@ Vergleichsoperator angewendet werden kann. Das ist nötig, damit in der
 \ac{KI} Tupel sortiert werden können, die beispielsweise aus einer
 Priorität und einen \passthrough{\lstinline!GameState!} bestehen. Da in
 diesem Fall nur die Sortierung nach der Priorität wichtig ist, ist die
-Implementation von \passthrough{\lstinline!\_\_lt\_\_!} irrelevant.
+Implementierung von \passthrough{\lstinline!\_\_lt\_\_!} irrelevant.
 Daher wird der Einfachkeit halber immer True zurückgegeben.
 
 \begin{lstlisting}[language=Python]

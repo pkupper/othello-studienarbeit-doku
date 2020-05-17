@@ -91,11 +91,11 @@ def heuristic_weighting_interval(num, settings, lower, upper):
     MOB_PROP2 = lower
     print("Black mobility:", MOB_PROP, "/ White mobility:", MOB_PROP2)
     [b1,d1,w1] = get_statistics(num, settings)
-    MOBILITY_PROPORTION2 = upper
+    MOB_PROP2 = upper
     print("Black mobility:", MOB_PROP, "/ White mobility:", MOB_PROP2)
     [b2,d2,w2] = get_statistics(num, settings)
     
-MOBILITY_PROPORTION = 0.5
+MOB_PROP = 0.5
 
 def test_combined_heuristic_1(state):
     if state.num_pieces >= 50:
@@ -104,7 +104,7 @@ def test_combined_heuristic_1(state):
     cowthello = cowthello_heuristic(state)
     return MOB_PROP * mobility + (1 - MOB_PROP) * cowthello
 
-MOBILITY_PROPORTION2 = 0.5
+MOB_PROP2 = 0.5
 
 def test_combined_heuristic_2(state):
     if state.num_pieces >= 50:
@@ -118,11 +118,11 @@ def test_combined_heuristic_2(state):
 settings = { BLACK: { 'heuristic': test_combined_heuristic_1,
                       'algorithm': alphabeta,
                       'depth': 4,
-                      'mode': ai_make_move },
+                      'mode': ai_make_move,'timelimit':None },
              WHITE: { 'heuristic': test_combined_heuristic_2,
                       'algorithm': alphabeta,
                       'depth': 4,
-                      'mode': ai_make_move }}
+                      'mode': ai_make_move,'timelimit':None }}
 
 heuristic_weighting_interval(20, settings, 0, 1)
 \end{lstlisting}
