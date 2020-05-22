@@ -18,12 +18,12 @@ Alpha-Beta Algorithmus.
 \begin{tabular}{c|ccccc}
 \hline
 \diagbox{Tiefe}{KI} & Minimax & Alpha-Beta & AB\,+\,ID & ProbCut & PC\,+\,ID \\ \hline
-3 & 0.35 & 0.35 & 0.36 & 0.34 & 0.37 \\
-4 & 2.71 & 1.28 & 1.21 & 1.39 & 1.26 \\
-5 & 22.76 & 5.66 & 5.97 & 5.63 & 5.95 \\
-6 & 194 & 18.1 & 18.2 & 18.9 & 19.4 \\
-7 & 1786 & 72.9 & 71.3 & 74.3 & 81.0 \\
-8 & - & 242 & 221 & 252 & 270 \\
+3 & 0.31 & 0.32 & 0.33 & 0.31 & 0.33 \\
+4 & 2.37 & 1.14 & 1.16 & 1.15 & 1.17 \\
+5 & 20.58 & 4.96 & 5.30 & 4.99 & 5.30 \\
+6 & 178 & 16.8 & 17.3 & 17.3 & 18.1 \\
+7 & 1653 & 66.9 & 65.4 & 70.5 & 73.5 \\
+8 & - & 221 & 203 & 234 & 246 \\
 \end{tabular}
 \caption{Benötigte Zeit in Sekunden für die Berechnung des nächsten Zuges}
 \label{table:calctimes}
@@ -44,9 +44,9 @@ auf, dass ProbCut vor allem in Kombination mit Iterative Deepening keinen Vortei
 3 & 461 & 490 & 499 & 490 & 499  \\
 4 & 3487 & 1720 & 1523 & 1720 & 1523 \\
 5 & 28806 & 7387 & 7344 & 7387 & 7344 \\
-6 & 243815 & 23432 & 21931 & 24158 & 23334 \\
-7 & 2193633 & 92059 & 85934 & 91514 & 96345 \\
-8 & - & 301806 & 262391 & 301299 & 310938 \\
+6 & 243815 & 23432 & 21931 & 24524 & 23401 \\
+7 & 2193633 & 92059 & 85934 & 93884 & 94713 \\
+8 & - & 301806 & 262391 & 303779 & 312039 \\
 \end{tabular}
 \caption{Anzahl Auswertungen der Heuristik}
 \label{table:numstates}

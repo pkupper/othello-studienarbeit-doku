@@ -41,12 +41,13 @@ def debug_num_visited_states(state, depth):
     global debug_pc_count
 
     # calculate next move with each algorithm and measure time
-    debug_mm_count= 0
-    start = time.time()
-    ai_make_move(minimax, state, depth, combined_heuristic)
-    secs = time.time() - start
-    print("Minimax takes", secs, "s and evaluates the heuristic",
-          debug_mm_count, "times")
+    if depth < 8:
+        debug_mm_count= 0
+        start = time.time()
+        ai_make_move(minimax, state, depth, combined_heuristic)
+        secs = time.time() - start
+        print("Minimax takes", secs, "s and evaluates the heuristic",
+              debug_mm_count, "times")
     debug_ab_count= 0
     transposition_table = {}
     start = time.time()

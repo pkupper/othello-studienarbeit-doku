@@ -250,8 +250,8 @@ Gewichtung von Mobilität und Cowthello wird in Kapitel
 \begin{lstlisting}[language=Python]
 def combined_heuristic(state):
     mobility = combined_mobility_heuristic(state)
-    cowthello = cowthello_safe_heuristic(state)
-    return 0.875 * mobility + 0.125 * cowthello
+    cowthello = cowthello_heuristic(state)
+    return 0.625 * mobility + 0.375 * cowthello
 \end{lstlisting}
 
 \hypertarget{implementierung-der-strategien}{%
@@ -428,8 +428,8 @@ Variablen \(d\) und \(d'\) aus \autoref{sec:probcut} dieser Arbeit.
 
 \begin{lstlisting}[language=Python]
 PERCENTILE = 1.5
-PROBCUT_DEEP_DEPTH = 3
-PROBCUT_SHALLOW_DEPTH = 1
+PROBCUT_DEEP_DEPTH = 4
+PROBCUT_SHALLOW_DEPTH = 2
 \end{lstlisting}
 
 Die Implementierung der ProbCut Strategie gleicht in großen Teilen der
@@ -469,9 +469,9 @@ def probcut(state, depth, heuristic, alpha, beta):
         num_p = state.num_pieces
         if num_p <= 58:
             if PROBCUT_DEEP_DEPTH == 4:
-                sigma = 0.0057496 + 0.00121 * num_p + 1.20564e-05 * num_p**2
+                sigma = -0.007429 + 0.00276 * num_p - 2.11821e-05 * num_p**2
             elif PROBCUT_DEEP_DEPTH == 3:
-                sigma = 0.0028828 + 0.00165 * num_p + 6.02573e-06 * num_p**2
+                sigma = -0.008665 + 0.00311 * num_p - 2.96811e-05 * num_p**2
             if beta < 1:
                 bound = PERCENTILE * sigma + beta
                 if probcut(state, PROBCUT_SHALLOW_DEPTH,
