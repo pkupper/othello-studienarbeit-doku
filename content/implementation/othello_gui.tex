@@ -126,6 +126,9 @@ Spielzustand \passthrough{\lstinline!state!} auf den existierenden
 Canvas gezeichnet.
 
 \begin{lstlisting}[language=Python]
+DISK_RADIUS = 0.45
+HINT_RADIUS = 0.2
+
 def update_output(state):
     with ipycanvas.hold_canvas(canvas):
         canvas[1].clear()
@@ -137,20 +140,20 @@ def update_output(state):
             else:
                 canvas[1].fill_style = 'white'
             canvas[1].fill_arc((x+0.5) * CELL_SIZE, (y+0.5)
-                               * CELL_SIZE, CELL_SIZE/2.2, 0, 2*math.pi)
+                        * CELL_SIZE, CELL_SIZE*DISK_RADIUS, 0, 2*math.pi)
 
         if state.last_move != None:
             (x, y) = state.last_move
             canvas[1].stroke_style = 'red'
             canvas[1].line_width = 2
             canvas[1].stroke_arc((x+0.5) * CELL_SIZE, (y+0.5)
-                               * CELL_SIZE, CELL_SIZE/2.2, 0, 2*math.pi)
+                        * CELL_SIZE, CELL_SIZE*DISK_RADIUS, 0, 2*math.pi)
 
         if SHOW_FRONTIER:
             for (x, y) in state.frontier:
                 canvas[1].fill_style = 'gray'
                 canvas[1].fill_arc((x+0.5) * CELL_SIZE, (y+0.5)
-                                   * CELL_SIZE, CELL_SIZE/6, 0, 2*math.pi)
+                        * CELL_SIZE, CELL_SIZE*HINT_RADIUS, 0, 2*math.pi)
 
         if SHOW_POSSIBLE_MOVES:
             for (x, y) in get_possible_moves(state, state.turn):
@@ -159,14 +162,13 @@ def update_output(state):
                 else:
                     canvas[1].fill_style = 'white'
                 canvas[1].fill_arc((x+0.5) * CELL_SIZE, (y+0.5)
-                                   * CELL_SIZE, CELL_SIZE/6, 0, 2*math.pi)
+                        * CELL_SIZE, CELL_SIZE*HINT_RADIUS, 0, 2*math.pi)
 
     b_score = count_disks(state, BLACK)
     w_score = count_disks(state, WHITE)
     score_lbl.value = f'Black Player : {b_score} White Player : {w_score}'
-    b_util = utilities[BLACK]
-    w_util = utilities[WHITE]
-    utility_lbl.value = f'Utility: Black: {b_util} / White: {w_util}'
+    utility_lbl.value = 'Utility: Black: {:.4f} / White: {:.4f}'.format(
+        utilities[BLACK], utilities[WHITE])
     if state.game_over:
         turn_lbl.value = f'{get_player_string(get_utility(state))} wins'
     else:

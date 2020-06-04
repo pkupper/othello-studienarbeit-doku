@@ -55,7 +55,7 @@ können. Diese Werte werden in den entsprechenden Funktionen der
 Strategien aktualisiert.
 
 \begin{lstlisting}[language=Python]
-utilities = {WHITE: '-', BLACK: '-'}
+utilities = {WHITE: 0, BLACK: 0}
 \end{lstlisting}
 
 \hypertarget{heuristiken}{%
@@ -88,7 +88,7 @@ dieser Wert wird durch Division durch die Anzahl an Feldern
 normalisiert, um die Grenzen von \(-1\) und \(1\) einzuhalten. Zu
 beachten ist hier, dass auch die Anzahl möglicher Züge für einen Spieler
 bestimmt wird, der im Spielzustand gar nicht am Zug ist. Dies wirkt
-zunächst sematisch nicht sinvoll, hat sich jedoch, wie in
+zunächst semantisch nicht sinvoll, hat sich jedoch, wie in
 \ref{sec:currentmobility} gezeigt, im Vergleich gegenüber möglicher
 Alternativen, wie der Verwendung einer durchschnittlichen Mobilität, als
 effektiver erwiesen.
@@ -180,16 +180,16 @@ belegt, werden die Gewichte später entsprechend angepasst.
 
 \begin{lstlisting}[language=Python]
 def gen_cowthello_matrix():
-    quarter = np.array([
-        [100, -25, 25, 10],
-        [-25, -50,  1,  1],
-        [ 25,   1, 50,  5],
-        [ 10,   1,  5,  1]
+    return np.array([
+        [100, -25, 25, 10, 10, 25, -25, 100],
+        [-25, -50,  1,  1,  1,  1, -50, -25],
+        [ 25,   1, 50,  5,  5, 50,   1,  25],
+        [ 10,   1,  5,  1,  1,  5,   1,  10],
+        [ 10,   1,  5,  1,  1,  5,   1,  10],
+        [ 25,   1, 50,  5,  5, 50,   1,  25],
+        [-25, -50,  1,  1,  1,  1, -50, -25],
+        [100, -25, 25, 10, 10, 25, -25, 100]
     ])
-    top = np.hstack((quarter, np.flip(quarter, axis=1)))
-    bottom = np.flip(top, axis=0)
-    cowthello_matrix = np.vstack((top, bottom))
-    return cowthello_matrix;
 \end{lstlisting}
 
 Die Funktion \passthrough{\lstinline!modify\_corner\_weights!} übernimmt
@@ -338,9 +338,11 @@ um die Nützlichkeit eines Spielzustands zu bestimmen.
 Zum Merken der Ergebnisse vorheriger Ausführungen wird das Dictionary
 \passthrough{\lstinline!transposition\_table!} verwendet. Dies ist
 gerade bei der Verwendung von Iterative Deepening für das Move Ordering
-vorteilhaft. Der Schlüssel des Dictionaries besteht aus dem Zustand des
-Spielbretts, dem Spieler, der an der Reihe ist, und der verwendeten
-Heuristik.
+vorteilhaft. Der Schlüssel des Dictionaries ist ein 3-Tupel bestehend
+aus dem Zustand des Spielbretts, dem Spieler, der an der Reihe ist, und
+der verwendeten Heuristik. Die Werte des Dictionaries sind Paare, die
+sich aus der Nützlichkeit des Spielzustands und der Suchtiefe
+zusammensetzen, die zur Bestimmung der Nützlichkeit verwendet wurde.
 
 \begin{lstlisting}[language=Python]
 transposition_table = {}
