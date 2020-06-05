@@ -165,18 +165,14 @@ Ist eine Ecke unbelegt, so sind die umliegenden Spielfelder anders zu
 bewerten, als bei einer belegten Ecke. Dies wird von der Cowthello
 Heuristik berücksichtigt.
 
-Aufgrund der Symmetrie des Othello Spielfeldes, ist es für die
-Cowthello-Heuristik nicht nötig, für jedes Feld einzeln dessen Gewicht
-anzugeben. Stattdessen werden ausschließlich die Gewichte für ein
-Viertel des Spielfelds angegeben und dieses anschließend gespiegelt. Die
-Funktion \passthrough{\lstinline!gen\_cowthello\_matrix!} generiert dann
-die Gewichte-Matrix für das gesamte Feld und führt auch die
-Normalisierung durch. Dabei werden die Gewichte aus dem Online-Othello
-Programm Cowthello \cite{cowthello} verwendet. Cowthello ist unter der
-URL \url{https://www.aurochs.org/games/cowthello/} verfügbar. Die
-Funktion \passthrough{\lstinline!gen\_cowthello\_matrix!} erzeugt
-hierbei die bei unbelegten Ecken verwendeten Gewichte. Sind Ecken
-belegt, werden die Gewichte später entsprechend angepasst.
+Die Funktion \passthrough{\lstinline!gen\_cowthello\_matrix!} generiert
+die Gewichte-Matrix für das gesamte Feld. Dabei werden die Gewichte aus
+dem Online-Othello Programm Cowthello \cite{cowthello} verwendet.
+Cowthello ist unter der URL
+\url{https://www.aurochs.org/games/cowthello/} verfügbar. Die Funktion
+\passthrough{\lstinline!gen\_cowthello\_matrix!} erzeugt hierbei die bei
+unbelegten Ecken verwendeten Gewichte. Sind Ecken belegt, werden die
+Gewichte später entsprechend angepasst.
 
 \begin{lstlisting}[language=Python]
 def gen_cowthello_matrix():
